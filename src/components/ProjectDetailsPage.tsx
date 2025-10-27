@@ -522,9 +522,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         'בנק הפועלים_002': { address: 'רחוב דיזנגוף 100, תל אביב', amount: '' },
         'בנק הפועלים_003': { address: 'רחוב אלנבי 50, תל אביב', amount: '' },
         'בנק לאומי_001': { address: 'רחוב רוטשילד 1, תל אביב', amount: '' },
+        'בנק לאומי_678': { address: 'דרך מנחם בגין 121, תל אביב -יפו', amount: '' },
+        'בנק לאומי_123': { address: 'רחוב הרצל 15, ירושלים', amount: '' },
+        'בנק דיסקונט_001': { address: 'שדרות רוטשילד 20, תל אביב -יפו', amount: '' },
+        'Citibank_1': { address: 'דרך מנחם בגין 121 מגדל עזריאלי שרונה, תל אביב -יפו', amount: '' },
+        'HSBC_102': { address: 'ז\'בוטינסקי 2 בית אמות אטריום, רמת גן', amount: '' },
         'בנק לאומי_002': { address: 'רחוב בן יהודה 100, תל אביב', amount: '' },
         'בנק לאומי_003': { address: 'רחוב הרצל 50, תל אביב', amount: '' },
-        'בנק דיסקונט_001': { address: 'רחוב הרצל 1, תל אביב', amount: '' },
         'בנק דיסקונט_002': { address: 'רחוב דיזנגוף 100, תל אביב', amount: '' },
         'בנק דיסקונט_003': { address: 'רחוב אלנבי 50, תל אביב', amount: '' }
     });
@@ -11933,6 +11937,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, '');
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, '');
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.amount`, '');
+                                                                                        
+                                                                                        // If there's already a branch selected, try to fill address
+                                                                                        const currentBranch = (pledger as any).branchNumber;
+                                                                                        if (currentBranch && newValue) {
+                                                                                            const branchKey = `${newValue}_${currentBranch}`;
+                                                                                            const branchInfo = branchDetails[branchKey];
+                                                                                            if (branchInfo && branchInfo.address) {
+                                                                                                handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
+                                                                                                console.log('🔄 Auto-filled address after bank change:', branchInfo.address);
+                                                                                            }
+                                                                                        }
                                                                                     }}
                                                                                     onInputChange={(event, newInputValue) => {
                                                                                         console.log('🔄 Bank name input changed:', newInputValue);
@@ -11977,17 +11992,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                             console.log('🔄 Branch number selected:', newValue);
                                                                                             handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, newValue || '');
 
-                                                                                            // Auto-fill address and email based on selected branch
+                                                                                            // Auto-fill address based on selected branch
                                                                                             if (newValue && (pledger as any).name) {
                                                                                                 const branchKey = `${(pledger as any).name}_${newValue}`;
                                                                                                 const branchInfo = branchDetails[branchKey];
+                                                                                                console.log('🔄 Looking for branch key:', branchKey);
+                                                                                                console.log('🔄 Available branch details keys:', Object.keys(branchDetails).slice(0, 10));
                                                                                                 if (branchInfo) {
                                                                                                     console.log('🔄 Auto-filling branch details:', branchInfo);
                                                                                                     // Only fill if we have actual data
                                                                                                     if (branchInfo.address) {
                                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
+                                                                                                        console.log('🔄 Address filled:', branchInfo.address);
                                                                                                     }
-                                                                                                    // Note: amount field is now manual input, not auto-filled from branch data
+                                                                                                } else {
+                                                                                                    console.log('🔄 No branch info found for key:', branchKey);
                                                                                                 }
                                                                                             }
                                                                                         }}
