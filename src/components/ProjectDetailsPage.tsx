@@ -2343,11 +2343,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔄 Initial branchDetails:', Object.keys(branchDetails));
         console.log('🔄 Sample branch details:', branchDetails);
         const hydrateFromRecords = (records: any[]) => {
+            // Canonicalize bank names: keep only names that include בע"מ and normalize suffix
+            const canonicalize = (raw: string): string | null => {
+                if (!raw) return null;
+                const name = raw.replace(/["”“]/g, '״').replace(/\s+/g, ' ').trim();
+                const hasLtd = /(בע.?מ)\.?$/u.test(name) || /(בע.?מ)/u.test(name);
+                if (!hasLtd) return null;
+                const base = name.replace(/\s*בע.?מ\.?$/u, '').trim();
+                return `${base} בע״מ`;
+            };
+
             const branchesMap: { [bankName: string]: string[] } = {};
             const detailsMap: { [key: string]: { address: string, amount: string } } = {};
 
             records.forEach((rec: any) => {
-                const name = (rec.bank_name || rec.Bank_Name || '').toString().trim();
+                const rawName = (rec.bank_name || rec.Bank_Name || '').toString().trim();
+                const name = canonicalize(rawName);
                 const branch = (rec.branch_number || rec.Branch_Code || '').toString().trim();
                 const addressParts = [rec.address || rec.Branch_Address, rec.City].filter(Boolean).map((x: any) => x.toString().trim());
                 const address = addressParts.join(', ');
@@ -2364,38 +2375,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔄 Processed records - branchesMap keys:', Object.keys(branchesMap).length);
             console.log('🔄 Sample bank names:', Object.keys(branchesMap).slice(0, 5));
 
-            // Heuristic aliases for common banks to improve matching/UX
-            const aliasMap: { [key: string]: string[] } = {};
-            Object.keys(branchesMap).forEach((name) => {
-                const addAlias = (alias: string) => {
-                    if (!alias) return;
-                    if (!aliasMap[alias]) aliasMap[alias] = [];
-                    aliasMap[alias].push(...branchesMap[name]);
-                };
-
-                if (/לאומי/.test(name)) addAlias('בנק לאומי');
-                if (/הפועלים/.test(name)) addAlias('בנק הפועלים');
-                if (/דיסקונט/.test(name)) addAlias('בנק דיסקונט');
-                if (/מזרחי|טפחות/.test(name)) addAlias('בנק מזרחי טפחות');
-                if (/ירושלים/.test(name)) addAlias('בנק ירושלים');
-                if (/אגוד/.test(name)) addAlias('בנק אגוד');
-                if (/מרכנתיל/.test(name)) addAlias('בנק מרכנתיל דיסקונט');
-                if (/יהב/.test(name)) addAlias('בנק יהב');
-                if (/אוצר\s*החייל/.test(name)) addAlias('בנק אוצר החייל');
-                if (/הבינלאומי/.test(name)) addAlias('הבנק הבינלאומי');
-            });
-
-            Object.entries(aliasMap).forEach(([alias, branches]) => {
-                const uniq = Array.from(new Set([...(branchesMap[alias] || []), ...branches]));
-                branchesMap[alias] = uniq;
-            });
-
             // Deduplicate and sort branch codes
             Object.keys(branchesMap).forEach((n) => {
                 branchesMap[n] = Array.from(new Set(branchesMap[n])).sort((a, b) => a.localeCompare(b, 'he'));
             });
 
-            const uniqueBankNames = Array.from(new Set([...bankNames, ...Object.keys(branchesMap)])).sort((a, b) => a.localeCompare(b, 'he'));
+            const uniqueBankNames = Object.keys(branchesMap).sort((a, b) => a.localeCompare(b, 'he'));
             setBankNames(uniqueBankNames);
             setBankBranches(branchesMap);
             setBranchDetails(detailsMap);
@@ -2429,7 +2414,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.log('🔄 Direct API returned records:', records.length);
                     if (records.length > 0) {
                         hydrateFromRecords(records);
-                } else {
+                    } else {
                         console.log('❌ No records in direct API response');
                     }
                 } else {
@@ -12007,7 +11992,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                                 const branchInfo = branchDetails[branchKey];
                                                                                                 if (branchInfo) {
                                                                                                     console.log('🔄 Found branch info:', branchInfo);
-                                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
+                                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
                                                                                                     console.log('🔄 Address set to:', branchInfo.address);
                                                                                                 } else {
                                                                                                     console.log('🔄 No branch info found for:', branchKey);
@@ -12018,6 +12003,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                             console.log('🔄 Branch number input changed:', newInputValue);
                                                                                             console.log('🔄 Available branches for', (pledger as any).name, ':', bankBranches[(pledger as any).name]);
                                                                                             handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, newInputValue);
+                                                                                            // Auto-fill when user types an exact branch that exists in branchDetails
+                                                                                            const bankName = (pledger as any).name;
+                                                                                            if (bankName && newInputValue) {
+                                                                                                const key = `${bankName}_${newInputValue}`;
+                                                                                                const info = branchDetails[key];
+                                                                                                if (info?.address) {
+                                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, info.address);
+                                                                                                    console.log('🔄 Address set (typed):', info.address);
+                                                                                                }
+                                                                                            }
                                                                                         }}
                                                                                         renderInput={(params) => (
                                                                                             <TextField
