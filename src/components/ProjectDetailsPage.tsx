@@ -2348,6 +2348,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 }
             });
 
+            console.log('🔄 Processed records - branchesMap keys:', Object.keys(branchesMap).length);
+            console.log('🔄 Sample bank names:', Object.keys(branchesMap).slice(0, 5));
+
             // Heuristic aliases for common banks to improve matching/UX
             const aliasMap: { [key: string]: string[] } = {};
             Object.keys(branchesMap).forEach((name) => {
@@ -2410,7 +2413,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 if (resp.ok) {
                     const json = await resp.json();
                     const records = json?.result?.records || [];
-                    hydrateFromRecords(records);
+                    console.log('🔄 Direct API returned records:', records.length);
+                    if (records.length > 0) {
+                        hydrateFromRecords(records);
+                    } else {
+                        console.log('❌ No records in direct API response');
+                    }
                 } else {
                     console.error('❌ data.gov.il fetch failed:', resp.status);
                 }
