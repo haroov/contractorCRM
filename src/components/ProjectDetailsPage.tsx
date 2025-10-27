@@ -468,6 +468,7 @@ interface ProjectDetailsPageProps {
 }
 
 export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPageProps) {
+    console.log('🚀 ProjectDetailsPage component loaded');
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -11996,20 +11997,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                             handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, newValue || '');
 
                                                                                             // Auto-fill address based on selected branch
+                                                                                            console.log('🔄 Branch selected:', newValue, 'Bank:', (pledger as any).name);
                                                                                             if (newValue && (pledger as any).name) {
                                                                                                 const branchKey = `${(pledger as any).name}_${newValue}`;
+                                                                                                console.log('🔄 Looking for key:', branchKey);
+                                                                                                console.log('🔄 All keys:', Object.keys(branchDetails));
                                                                                                 const branchInfo = branchDetails[branchKey];
-                                                                                                console.log('🔄 Looking for branch key:', branchKey);
-                                                                                                console.log('🔄 Available branch details keys:', Object.keys(branchDetails).slice(0, 10));
                                                                                                 if (branchInfo) {
-                                                                                                    console.log('🔄 Auto-filling branch details:', branchInfo);
-                                                                                                    // Only fill if we have actual data
-                                                                                                    if (branchInfo.address) {
-                                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
-                                                                                                        console.log('🔄 Address filled:', branchInfo.address);
-                                                                                                    }
+                                                                                                    console.log('🔄 Found branch info:', branchInfo);
+                                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
+                                                                                                    console.log('🔄 Address set to:', branchInfo.address);
                                                                                                 } else {
-                                                                                                    console.log('🔄 No branch info found for key:', branchKey);
+                                                                                                    console.log('🔄 No branch info found for:', branchKey);
                                                                                                 }
                                                                                             }
                                                                                         }}
