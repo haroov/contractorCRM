@@ -63,6 +63,7 @@ import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
 import GoogleMap from './GoogleMap';
 import EmergencyStationsMap from './EmergencyStationsMap';
+import { authenticatedFetch } from '../config/api';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -91,6 +92,17 @@ const formatCrestaData = (crestaData: any): string => {
 
 // Import the generic FileUpload component
 import FileUpload from './FileUpload';
+
+// Helper: permissive filter for Autocomplete (substring match, supports empty input)
+const filterAutocompleteOptions = (options: string[], state: { inputValue: string }) => {
+    try {
+        const input = (state.inputValue || '').toLowerCase();
+        if (!input) return options.slice(0, 100);
+        return options.filter(opt => (opt || '').toString().toLowerCase().includes(input)).slice(0, 100);
+    } catch {
+        return options.slice(0, 100);
+    }
+};
 
 
 // Building Details Table Component
@@ -2315,54 +2327,98 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     }, [project]);
 
-    // Load bank names and branches from enrichment data
+    // Load bank names and branches (server first, fallback to data.gov.il)
     useEffect(() => {
+        const hydrateFromRecords = (records: any[]) => {
+            const branchesMap: { [bankName: string]: string[] } = {};
+            const detailsMap: { [key: string]: { address: string, amount: string } } = {};
+
+            records.forEach((rec: any) => {
+                const name = (rec.bank_name || rec.Bank_Name || '').toString().trim();
+                const branch = (rec.branch_number || rec.Branch_Code || '').toString().trim();
+                const addressParts = [rec.address || rec.Branch_Address, rec.City].filter(Boolean).map((x: any) => x.toString().trim());
+                const address = addressParts.join(', ');
+
+                if (!name || !branch) return;
+                if (!branchesMap[name]) branchesMap[name] = [];
+                if (!branchesMap[name].includes(branch)) branchesMap[name].push(branch);
+
+                if (address) {
+                    detailsMap[`${name}_${branch}`] = { address, amount: '' };
+                }
+            });
+
+            // Heuristic aliases for common banks to improve matching/UX
+            const aliasMap: { [key: string]: string[] } = {};
+            Object.keys(branchesMap).forEach((name) => {
+                const addAlias = (alias: string) => {
+                    if (!alias) return;
+                    if (!aliasMap[alias]) aliasMap[alias] = [];
+                    aliasMap[alias].push(...branchesMap[name]);
+                };
+
+                if (/לאומי/.test(name)) addAlias('בנק לאומי');
+                if (/הפועלים/.test(name)) addAlias('בנק הפועלים');
+                if (/דיסקונט/.test(name)) addAlias('בנק דיסקונט');
+                if (/מזרחי|טפחות/.test(name)) addAlias('בנק מזרחי טפחות');
+                if (/ירושלים/.test(name)) addAlias('בנק ירושלים');
+                if (/אגוד/.test(name)) addAlias('בנק אגוד');
+                if (/מרכנתיל/.test(name)) addAlias('בנק מרכנתיל דיסקונט');
+                if (/יהב/.test(name)) addAlias('בנק יהב');
+                if (/אוצר\s*החייל/.test(name)) addAlias('בנק אוצר החייל');
+                if (/הבינלאומי/.test(name)) addAlias('הבנק הבינלאומי');
+            });
+
+            Object.entries(aliasMap).forEach(([alias, branches]) => {
+                const uniq = Array.from(new Set([...(branchesMap[alias] || []), ...branches]));
+                branchesMap[alias] = uniq;
+            });
+
+            // Deduplicate and sort branch codes
+            Object.keys(branchesMap).forEach((n) => {
+                branchesMap[n] = Array.from(new Set(branchesMap[n])).sort((a, b) => a.localeCompare(b, 'he'));
+            });
+
+            const uniqueBankNames = Array.from(new Set([...bankNames, ...Object.keys(branchesMap)])).sort((a, b) => a.localeCompare(b, 'he'));
+            setBankNames(uniqueBankNames);
+            setBankBranches(branchesMap);
+            setBranchDetails(detailsMap);
+            console.log('🔄 Loaded bank names:', uniqueBankNames.length);
+        };
+
         const loadBankData = async () => {
+            // 1) Try server
             try {
                 console.log('🔄 Loading bank data from /api/enrichment/banks');
-                const response = await fetch('/api/enrichment/banks');
-                console.log('🔄 Response status:', response.status);
+                const response = await authenticatedFetch('/api/enrichment/banks');
                 if (response.ok) {
                     const banks = await response.json();
-                    console.log('🔄 Banks data:', banks);
-                    const bankNamesList = banks.map((bank: any) => bank.bank_name).filter(Boolean);
-                    console.log('🔄 Bank names list:', bankNamesList);
-                    setBankNames(bankNamesList);
-
-                    // Create branches mapping and branch details
-                    const branchesMap: { [bankName: string]: string[] } = {};
-                    const detailsMap: { [key: string]: { address: string, email: string } } = {};
-                    banks.forEach((bank: any) => {
-                        if (bank.bank_name && bank.branch_number) {
-                            if (!branchesMap[bank.bank_name]) {
-                                branchesMap[bank.bank_name] = [];
-                            }
-                            branchesMap[bank.bank_name].push(bank.branch_number);
-
-                            // Create unique key for branch details
-                            const branchKey = `${bank.bank_name}_${bank.branch_number}`;
-                            // Only add if we have actual data
-                            if (bank.address) {
-                                detailsMap[branchKey] = {
-                                    address: bank.address || '',
-                                    amount: '' // Amount is manual input, not from database
-                                };
-                            }
-                        }
-                    });
-                    setBankBranches(branchesMap);
-                    setBranchDetails(detailsMap);
-                    console.log('🔄 Bank branches map:', branchesMap);
-                    console.log('🔄 Branch details map:', detailsMap);
-                } else {
-                    console.error('🔄 Failed to load banks, status:', response.status);
-                    const errorText = await response.text();
-                    console.error('🔄 Error response:', errorText);
+                    if (Array.isArray(banks) && banks.length > 0) {
+                        hydrateFromRecords(banks);
+                        return;
+                    }
                 }
-            } catch (error) {
-                console.error('Error loading bank data:', error);
+            } catch (e) {
+                console.warn('⚠️ Server bank endpoint failed, trying data.gov.il directly');
+            }
+
+            // 2) Fallback: data.gov.il CKAN API
+            try {
+                console.log('🔄 Fallback: loading bank data directly from data.gov.il');
+                const url = 'https://data.gov.il/api/3/action/datastore_search?resource_id=1c5bc716-8210-4ec7-85be-92e6271955c2&limit=32000';
+                const resp = await fetch(url);
+                if (resp.ok) {
+                    const json = await resp.json();
+                    const records = json?.result?.records || [];
+                    hydrateFromRecords(records);
+                } else {
+                    console.error('❌ data.gov.il fetch failed:', resp.status);
+                }
+            } catch (err) {
+                console.error('❌ Error loading banks from data.gov.il:', err);
             }
         };
+
         loadBankData();
     }, []);
 
@@ -11856,6 +11912,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 <Autocomplete
                                                                                     freeSolo
                                                                                     options={bankNames}
+                                                                                    filterOptions={(options, state) => filterAutocompleteOptions(options as string[], state as any)}
                                                                                     value={(pledger as any).name || ''}
                                                                                     onChange={(event, newValue) => {
                                                                                         console.log('🔄 Bank name selected:', newValue);
@@ -11903,6 +11960,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     <Autocomplete
                                                                                         freeSolo
                                                                                         options={bankBranches[(pledger as any).name] || []}
+                                                                                        filterOptions={(options, state) => filterAutocompleteOptions(options as string[], state as any)}
                                                                                         value={(pledger as any).branchNumber || ''}
                                                                                         onChange={(event, newValue) => {
                                                                                             console.log('🔄 Branch number selected:', newValue);
