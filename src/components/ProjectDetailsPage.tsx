@@ -2336,6 +2336,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Load bank names and branches (server first, fallback to data.gov.il)
     useEffect(() => {
+        // Debug: Log initial branch details
+        console.log('🔄 Initial branchDetails:', Object.keys(branchDetails));
+        console.log('🔄 Sample branch details:', branchDetails);
         const hydrateFromRecords = (records: any[]) => {
             const branchesMap: { [bankName: string]: string[] } = {};
             const detailsMap: { [key: string]: { address: string, amount: string } } = {};
@@ -11937,7 +11940,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, '');
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, '');
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.amount`, '');
-                                                                                        
+
                                                                                         // If there's already a branch selected, try to fill address
                                                                                         const currentBranch = (pledger as any).branchNumber;
                                                                                         if (currentBranch && newValue) {
