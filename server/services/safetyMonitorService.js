@@ -245,6 +245,12 @@ class SafetyMonitorService {
             return cleaned;
         }
 
+        // Also support subjects with the phrase "באתר <name>"
+        const atSite = subject.match(/באתר\s+([^\n\r]+)/);
+        if (atSite) {
+            return atSite[1].trim();
+        }
+
         // Fallbacks for alternative formats
         let projectMatch = subject.match(/דוח (?:מדד בטיחות|חריגים יומי|חריגי עובדים|חריגי ציוד)\s*[-–]\s*(.+)$/);
         if (!projectMatch) projectMatch = subject.match(/^(.+?)\s*[-–]\s*דוח (?:מדד בטיחות|חריגים יומי|חריגי עובדים|חריגי ציוד)/);
@@ -796,12 +802,6 @@ class SafetyMonitorService {
 
                 if (!link) continue;
 
-                // Extract site name from subject
-                const siteName = this.extractProjectName(subject);
-                const contractorName = this.extractContractorName(sender);
-
-                if (!siteName) continue;
-
                 // Process incident/accident report → auto-create claim
                 if (this.isIncidentSubject(subject)) {
                     console.log('🆘 Found incident/accident email');
@@ -810,7 +810,8 @@ class SafetyMonitorService {
                         const incident = await this.parseAccidentReportFromPdf(pdfPath, subject);
 
                         // Prefer site from PDF; fallback to subject-derived
-                        const finalSite = incident.siteName || siteName;
+                        const finalSite = incident.siteName || this.extractProjectName(subject);
+                        const contractorName = this.extractContractorName(sender);
                         const match = await this.findMatchingProject(finalSite || siteName, contractorName);
                         const contractorMatch = await this.findMatchingContractor(contractorName);
 
@@ -837,6 +838,11 @@ class SafetyMonitorService {
                         console.error('❌ Error processing incident email:', err.message);
                     }
                 }
+
+                // Extract site name for other report types
+                const siteName = this.extractProjectName(subject);
+                const contractorName = this.extractContractorName(sender);
+                if (!siteName) continue;
 
                 // Process safety index report
                 if (subject.includes('מדד בטיחות')) {
