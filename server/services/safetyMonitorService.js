@@ -141,11 +141,40 @@ class SafetyMonitorService {
     }
 
     extractPdfLink(message) {
-        const parts = message.payload.parts || [];
-        const htmlPart = parts.find(p => p.mimeType === 'text/html');
-        const body = htmlPart ? Buffer.from(htmlPart.body.data, 'base64').toString('utf8') : '';
-        const urlMatch = body.match(/https:\/\/www\.safeguardapps\.com\/storage\/servlet\/Image\?[^"'<>]+/);
-        return urlMatch ? urlMatch[0] : null;
+        const decode = (data = '') => {
+            try {
+                // Gmail uses base64url
+                const normalized = data.replace(/-/g, '+').replace(/_/g, '/');
+                return Buffer.from(normalized, 'base64').toString('utf8');
+            } catch { return ''; }
+        };
+
+        const collectBodies = (part) => {
+            let texts = [];
+            if (!part) return texts;
+            if (part.body && part.body.data) {
+                const txt = decode(part.body.data);
+                if (txt) texts.push(txt);
+            }
+            if (Array.isArray(part.parts)) {
+                for (const sub of part.parts) {
+                    texts = texts.concat(collectBodies(sub));
+                }
+            }
+            return texts;
+        };
+
+        // Gather all text bodies from all parts, including top-level body
+        let bodies = collectBodies(message.payload || {});
+        if (message.payload && message.payload.body && message.payload.body.data) {
+            bodies.push(decode(message.payload.body.data));
+        }
+        const joined = bodies.join('\n');
+
+        // Look for direct Safeguard link (http or https)
+        const re = /(https?:\/\/www\.safeguardapps\.com\/storage\/servlet\/Image\?[^"'<>\s]+)/i;
+        const m = joined.match(re);
+        return m ? m[1] : null;
     }
 
     getSubject(message) {
