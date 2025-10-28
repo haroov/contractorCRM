@@ -22,6 +22,8 @@
 # Gmail API Configuration
 GMAIL_TARGET_EMAIL=ai@chocoinsurance.com
 GMAIL_SENDER_FILTER=support@safeguardapps.com
+# Comma-separated list of Hebrew incident subjects to detect (optional)
+GMAIL_INCIDENT_SUBJECTS="דוח אירועי בטיחות, תאונה, בוצע דיווח חקיר, דיווח חקיר"
 
 # Cron Job Schedule (default: 7:00 AM Israel time)
 SAFETY_CRON_SCHEDULE=0 7 * * *

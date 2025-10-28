@@ -75,9 +75,16 @@ class SafetyMonitorService {
         // Accept either exact sender or whole domain
         const senderFilter = process.env.GMAIL_SENDER_FILTER || '@safeguardapps.com';
 
-        // Fetch the last 5 days to include weekends/timezone drifts
+        // Fetch the last 7 days to include weekends/timezone drifts
         // Require attachments and look for relevant Hebrew subjects
-        const subjectFilter = '(subject:("מדד בטיחות" OR "חריגים יומי" OR "חריגי עובדים" OR "חריגי ציוד"))';
+        const incidentSubjectsEnv = (process.env.GMAIL_INCIDENT_SUBJECTS || '').split(',').map(s => s.trim()).filter(Boolean);
+        const incidentSubjectsDefault = ['"דוח אירועי בטיחות"', '"תאונה"', '"בוצע דיווח חקיר"', '"דיווח חקיר"'];
+        const incidentSubjects = incidentSubjectsEnv.length ? incidentSubjectsEnv.map(s => `"${s}"`) : incidentSubjectsDefault;
+
+        const safetySubjects = ['"מדד בטיחות"', '"חריגים יומי"', '"חריגי עובדים"', '"חריגי ציוד"'];
+        const allSubjects = [...safetySubjects, ...incidentSubjects].join(' OR ');
+        const subjectFilter = `(subject:(${allSubjects}))`;
+
         const labelFilter = process.env.GMAIL_LABEL ? `label:${process.env.GMAIL_LABEL}` : null;
         const baseQuery = [
             `from:${senderFilter}`,
@@ -755,6 +762,42 @@ class SafetyMonitorService {
 
                 if (!siteName) continue;
 
+                // Process incident/accident report → auto-create claim
+                if (this.isIncidentSubject(subject)) {
+                    console.log('🆘 Found incident/accident email');
+                    try {
+                        const pdfPath = await this.downloadPdfFromUrl(link, `incident_${msg.id}.pdf`);
+                        const incident = await this.parseAccidentReportFromPdf(pdfPath, subject);
+
+                        // Prefer site from PDF; fallback to subject-derived
+                        const finalSite = incident.siteName || siteName;
+                        const match = await this.findMatchingProject(finalSite || siteName, contractorName);
+                        const contractorMatch = await this.findMatchingContractor(contractorName);
+
+                        const projectIdStr = match ? String(match.project._id) : null;
+                        const projectNameStr = match ? match.project.projectName : null;
+
+                        const createdOrMerged = await this.createOrMergeClaimForIncident({
+                            projectId: projectIdStr,
+                            projectName: projectNameStr || finalSite || siteName || '',
+                            eventDate: incident.eventDate,
+                            eventTime: incident.eventTime,
+                            eventLocation: incident.eventLocation || '',
+                            description: incident.summary || '',
+                            severity: incident.severity || '',
+                            reportLink: link,
+                            gmailMessageId: msg.id,
+                            siteName: finalSite || siteName || '',
+                            contractorName: contractorMatch ? contractorMatch.contractor.name : contractorName,
+                            rawText: incident.rawText
+                        });
+
+                        console.log(`✅ Incident handled (${createdOrMerged.action}) for site ${finalSite || siteName} on ${incident.eventDate}`);
+                    } catch (err) {
+                        console.error('❌ Error processing incident email:', err.message);
+                    }
+                }
+
                 // Process safety index report
                 if (subject.includes('מדד בטיחות')) {
                     console.log('📌 Found safety index email');
@@ -888,6 +931,196 @@ class SafetyMonitorService {
             console.error('❌ Error in fetchAndProcessReports:', error);
             throw error;
         }
+    }
+
+    isIncidentSubject(subject = '') {
+        const envSubjects = (process.env.GMAIL_INCIDENT_SUBJECTS || '').split(',').map(s => s.trim()).filter(Boolean);
+        const keywords = envSubjects.length ? envSubjects : ['דוח אירועי בטיחות', 'תאונה', 'בוצע דיווח חקיר', 'דיווח חקיר'];
+        return keywords.some(k => subject.includes(k));
+    }
+
+    async parseAccidentReportFromPdf(filePath, subject = '') {
+        const buffer = fs.readFileSync(filePath);
+        const data = await pdfParse(buffer);
+        const textFull = (data.text || '').replace(/\s+/g, ' ').trim();
+
+        // Site name
+        let siteName = '';
+        let m = textFull.match(/שם\s*האתר[:|]?\s*([^|\n]+?)(?=\s*\||\s*סטטוס|\s*הופק|\s*תאריך|$)/);
+        if (m) siteName = m[1].trim();
+        if (!siteName && subject) siteName = this.extractProjectName(subject) || '';
+
+        // Event date & time
+        let eventDate = '';
+        let eventTime = '';
+        let dt = textFull.match(/תאריך\s*ושעה\s*(\d{2}\/\d{2}\/\d{4})\s*(\d{2}:\d{2})/);
+        if (dt) { eventDate = dt[1]; eventTime = dt[2]; }
+        if (!eventDate) {
+            const dOnly = textFull.match(/(\d{2}\/\d{2}\/\d{4})\s*(\d{2}:\d{2})?/);
+            if (dOnly) { eventDate = dOnly[1]; eventTime = dOnly[2] || ''; }
+        }
+
+        // Summary and severity
+        let summary = '';
+        const sum = textFull.match(/תמצית\s*([^|\n]+?)(?=\s*חומרה|\s*מיקום|$)/);
+        if (sum) summary = sum[1].trim();
+
+        let severity = '';
+        const sev = textFull.match(/חומרה\s*([^|\n]+)/);
+        if (sev) severity = sev[1].trim();
+
+        // Location
+        let eventLocation = '';
+        const loc = textFull.match(/מיקום\s*האירוע\s*([^|\n]+?)(?=\s*מידע\s*נוסף|$)/);
+        if (loc) eventLocation = loc[1].trim();
+
+        return {
+            siteName,
+            eventDate,
+            eventTime,
+            summary,
+            severity,
+            eventLocation,
+            rawText: textFull
+        };
+    }
+
+    async createOrMergeClaimForIncident(incident) {
+        const claims = this.db.collection('claims');
+        const projects = this.db.collection('projects');
+
+        const projectId = incident.projectId || null;
+
+        // Idempotency: if any claim already contains this gmailMessageId in source, skip new create
+        if (incident.gmailMessageId) {
+            const existingByMsg = await claims.findOne({ 'source.gmailMessageId': incident.gmailMessageId });
+            if (existingByMsg) {
+                // Ensure attachment link exists
+                await this.ensureAttachment(existingByMsg._id, incident.reportLink, incident.severity);
+                return { action: 'skipped-existing', claimId: existingByMsg._id };
+            }
+        }
+
+        // Dedupe by project + date window ±3 days + description similarity
+        const dateStrings = this.generateNearbyDates(incident.eventDate, 3);
+        let duplicate = null;
+        if (projectId && incident.eventDate) {
+            const candidates = await claims.find({ projectId, eventDate: { $in: dateStrings } }).toArray();
+            const norm = (s = '') => s.toString().toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').trim();
+            const target = norm(incident.description);
+            for (const c of candidates) {
+                const score = this.calculateSimilarity(target, norm(c.description || ''));
+                if (score >= 0.6) { duplicate = c; break; }
+            }
+        }
+
+        if (duplicate) {
+            await this.ensureAttachment(duplicate._id, incident.reportLink, incident.severity);
+            // Also enrich existing claim with source if missing
+            if (!duplicate.source) {
+                await claims.updateOne({ _id: duplicate._id }, { $set: { source: { vendor: 'Safeguard', gmailMessageId: incident.gmailMessageId, severity: incident.severity, reportLink: incident.reportLink }, updatedAt: new Date() } });
+            }
+            return { action: 'merged', claimId: duplicate._id };
+        }
+
+        // Create new claim document
+        const claimDoc = {
+            projectId: projectId,
+            projectName: incident.projectName,
+            eventDate: incident.eventDate || '',
+            eventTime: incident.eventTime || '',
+            eventLocation: incident.eventLocation || '',
+            eventAddress: '',
+            description: incident.description || '',
+            propertyDamageInsured: null,
+            propertyDamageThirdParty: null,
+            bodilyInjuryThirdParty: null,
+            bodilyInjuryEmployee: null,
+            hasWitnesses: false,
+            witnesses: [],
+            hasAdditionalResponsible: false,
+            additionalResponsible: [],
+            insuredNegligence: null,
+            generalAttachments: [
+                {
+                    id: incident.gmailMessageId || String(Date.now()),
+                    documentType: 'safeguard-incident',
+                    documentDescription: incident.severity || '',
+                    fileUrl: incident.reportLink,
+                    thumbnailUrl: '',
+                    validUntil: ''
+                }
+            ],
+            status: 'open',
+            parties: '',
+            procedures: '',
+            summary: '',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            source: {
+                vendor: 'Safeguard',
+                gmailMessageId: incident.gmailMessageId || null,
+                severity: incident.severity || '',
+                reportLink: incident.reportLink || '',
+                siteName: incident.siteName || '',
+                contractorName: incident.contractorName || ''
+            }
+        };
+
+        const insertRes = await claims.insertOne(claimDoc);
+
+        // Update project's claimsIdArray
+        if (projectId) {
+            try {
+                const proj = await projects.findOne({ _id: new ObjectId(projectId) });
+                let arr = [];
+                if (proj && proj.claimsIdArray) {
+                    if (Array.isArray(proj.claimsIdArray)) arr = proj.claimsIdArray; else if (typeof proj.claimsIdArray === 'string' && proj.claimsIdArray.trim() !== '') arr = [proj.claimsIdArray];
+                }
+                const idStr = String(insertRes.insertedId);
+                if (!arr.includes(idStr)) arr.push(idStr);
+                await projects.updateOne({ _id: new ObjectId(projectId) }, { $set: { claimsIdArray: arr } });
+            } catch (e) {
+                console.warn('⚠️ Failed updating project.claimsIdArray for incident claim:', e.message);
+            }
+        }
+
+        return { action: 'created', claimId: insertRes.insertedId };
+    }
+
+    async ensureAttachment(claimId, url, description = '') {
+        if (!url) return;
+        const claims = this.db.collection('claims');
+        const claim = await claims.findOne({ _id: claimId });
+        const list = Array.isArray(claim?.generalAttachments) ? claim.generalAttachments : [];
+        const exists = list.some(a => a.fileUrl === url);
+        if (!exists) {
+            list.push({ id: String(Date.now()), documentType: 'safeguard-incident', documentDescription: description || '', fileUrl: url, thumbnailUrl: '', validUntil: '' });
+            await claims.updateOne({ _id: claimId }, { $set: { generalAttachments: list, updatedAt: new Date() } });
+        }
+    }
+
+    generateNearbyDates(dateStr, days = 3) {
+        const out = [];
+        const parse = (s) => {
+            const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (!m) return null;
+            return new Date(Date.UTC(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10)));
+        };
+        const fmt = (d) => {
+            const dd = String(d.getUTCDate()).padStart(2, '0');
+            const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+            const yyyy = d.getUTCFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        };
+        const base = parse(dateStr);
+        if (!base) return [dateStr];
+        for (let i = -days; i <= days; i++) {
+            const d = new Date(base);
+            d.setUTCDate(d.getUTCDate() + i);
+            out.push(fmt(d));
+        }
+        return out;
     }
 
     async getReportsForProject(projectId) {
