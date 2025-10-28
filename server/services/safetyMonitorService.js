@@ -82,38 +82,49 @@ class SafetyMonitorService {
         const incidentSubjects = incidentSubjectsEnv.length ? incidentSubjectsEnv.map(s => `"${s}"`) : incidentSubjectsDefault;
 
         const safetySubjects = ['"מדד בטיחות"', '"חריגים יומי"', '"חריגי עובדים"', '"חריגי ציוד"'];
-        const allSubjects = [...safetySubjects, ...incidentSubjects].join(' OR ');
-        const subjectFilter = `(subject:(${allSubjects}))`;
-
         const labelFilter = process.env.GMAIL_LABEL ? `label:${process.env.GMAIL_LABEL}` : null;
-        const baseQuery = [
+
+        // Query A: safety/weekly (usually with attachments)
+        const safetySubjectFilter = `(subject:(${safetySubjects.join(' OR ')}))`;
+        const safetyQuery = [
             `from:${senderFilter}`,
             'has:attachment',
             'newer_than:7d',
-            subjectFilter,
+            safetySubjectFilter,
             labelFilter
         ].filter(Boolean).join(' ');
 
-        // Primary search
-        let q = baseQuery;
+        // Query B: incident/accident (may NOT have attachments) → do NOT require has:attachment
+        const incidentSubjectFilter = `(subject:(${incidentSubjects.join(' OR ')}))`;
+        const incidentQuery = [
+            `from:${senderFilter}`,
+            'newer_than:7d',
+            incidentSubjectFilter,
+            labelFilter
+        ].filter(Boolean).join(' ');
 
-        const res = await gmail.users.messages.list({
-            userId: 'me',
-            q,
-            maxResults: 100,
-        });
-        let messages = res.data.messages || [];
+        // Execute both queries and merge unique message IDs
+        const [resSafety, resIncident] = await Promise.all([
+            gmail.users.messages.list({ userId: 'me', q: safetyQuery, maxResults: 100 }),
+            gmail.users.messages.list({ userId: 'me', q: incidentQuery, maxResults: 100 })
+        ]);
 
-        // Fallback search if nothing found (broaden sender, keep subjects)
+        const map = new Map();
+        for (const msg of (resSafety.data.messages || [])) map.set(msg.id, msg);
+        for (const msg of (resIncident.data.messages || [])) map.set(msg.id, msg);
+        let messages = Array.from(map.values());
+
+        // Fallback: if still empty, broaden by removing sender filter but keeping subjects
         if (messages.length === 0) {
-            const fallbackQuery = [
-                'has:attachment',
-                'newer_than:7d',
-                subjectFilter,
-                labelFilter
-            ].filter(Boolean).join(' ');
-            const res2 = await gmail.users.messages.list({ userId: 'me', q: fallbackQuery, maxResults: 100 });
-            messages = res2.data.messages || [];
+            const safetyFallback = ['newer_than:7d', safetySubjectFilter, labelFilter].filter(Boolean).join(' ');
+            const incidentFallback = ['newer_than:7d', incidentSubjectFilter, labelFilter].filter(Boolean).join(' ');
+            const [r1, r2] = await Promise.all([
+                gmail.users.messages.list({ userId: 'me', q: safetyFallback, maxResults: 100 }),
+                gmail.users.messages.list({ userId: 'me', q: incidentFallback, maxResults: 100 })
+            ]);
+            for (const m of (r1.data.messages || [])) map.set(m.id, m);
+            for (const m of (r2.data.messages || [])) map.set(m.id, m);
+            messages = Array.from(map.values());
         }
 
         return messages;
