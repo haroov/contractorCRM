@@ -992,8 +992,14 @@ class SafetyMonitorService {
 
         // Site name
         let siteName = '';
-        let m = textFull.match(/שם\s*האתר[:|]?\s*([^|\n]+?)(?=\s*\||\s*סטטוס|\s*הופק|\s*תאריך|$)/);
+        // Primary: capture value after "שם האתר:" until the next pipe
+        let m = textFull.match(/שם\s*האתר\s*[:|]\s*([^|]+?)\s*(?=\|)/);
         if (m) siteName = m[1].trim();
+        // Fallbacks
+        if (!siteName) {
+            m = textFull.match(/שם\s*האתר\s*[:|]\s*([^|]+)$/);
+            if (m) siteName = m[1].trim();
+        }
         if (!siteName && subject) siteName = this.extractProjectName(subject) || '';
 
         // Event date & time
@@ -1043,6 +1049,26 @@ class SafetyMonitorService {
             if (existingByMsg) {
                 // Ensure attachment link exists
                 await this.ensureAttachment(existingByMsg._id, incident.reportLink, incident.severity);
+                // If claim is not linked to project yet and we have a project, link it now
+                if (!existingByMsg.projectId && projectId) {
+                    await claims.updateOne(
+                        { _id: existingByMsg._id },
+                        { $set: { projectId: projectId, projectName: incident.projectName, updatedAt: new Date() } }
+                    );
+                    try {
+                        const proj = await projects.findOne({ _id: new ObjectId(projectId) });
+                        let arr = [];
+                        if (proj && proj.claimsIdArray) {
+                            if (Array.isArray(proj.claimsIdArray)) arr = proj.claimsIdArray; else if (typeof proj.claimsIdArray === 'string' && proj.claimsIdArray.trim() !== '') arr = [proj.claimsIdArray];
+                        }
+                        const idStr = String(existingByMsg._id);
+                        if (!arr.includes(idStr)) arr.push(idStr);
+                        await projects.updateOne({ _id: new ObjectId(projectId) }, { $set: { claimsIdArray: arr } });
+                    } catch (e) {
+                        console.warn('⚠️ Failed updating project.claimsIdArray on existing claim link:', e.message);
+                    }
+                    return { action: 'linked-existing', claimId: existingByMsg._id };
+                }
                 return { action: 'skipped-existing', claimId: existingByMsg._id };
             }
         }
