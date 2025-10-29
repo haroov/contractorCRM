@@ -1434,9 +1434,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     };
 
     const handleIDChange = (index: number, value: string) => {
-        // Only allow numeric input
-        const numericValue = value.replace(/\D/g, '');
-        updateInjuredEmployee(index, 'idNumber', numericValue);
+        // Allow alphanumeric input for foreign workers
+        updateInjuredEmployee(index, 'idNumber', value);
     };
 
     const validateIsraeliMobile = (phone: string): boolean => {
@@ -3036,15 +3035,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         value={employee.idNumber}
                                                                         onChange={(e) => handleIDChange(index, e.target.value)}
                                                                         variant="outlined"
-                                                                        inputProps={{ maxLength: 9 }}
-                                                                        error={employee.idNumber.length > 0 && (employee.idNumber.length < 9 || !validateIsraeliID(employee.idNumber))}
-                                                                        helperText={
-                                                                            employee.idNumber.length > 0 && employee.idNumber.length < 9
-                                                                                ? 'תעודת זהות חייבת להכיל 9 ספרות'
-                                                                                : employee.idNumber.length === 9 && !validateIsraeliID(employee.idNumber)
-                                                                                    ? 'מספר תעודת זהות לא תקין'
-                                                                                    : ''
-                                                                        }
+                                                                        inputProps={{ maxLength: 20 }}
+                                                                        error={false}
+                                                                        helperText=""
                                                                         sx={{
                                                                             '& .MuiOutlinedInput-root': {
                                                                                 '&:hover fieldset': { borderColor: '#6b47c1' },
