@@ -88,6 +88,7 @@
     "react-i18next": "^16.0.1",
     "react-router-dom": "^7.8.2",
     "recharts": "^2.15.4",
+    "sharp": "^0.33.5",
     "stylis": "^4.3.6",
     "stylis-plugin-rtl": "^2.1.1",
     "tailwind-merge": "^3.3.1",

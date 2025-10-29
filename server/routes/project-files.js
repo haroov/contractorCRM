@@ -107,8 +107,36 @@ router.post('/upload-project-file', (req, res, next) => {
                 console.error('❌ Thumbnail error stack:', thumbnailError.stack);
                 // Continue without thumbnail - don't fail the upload
             }
+        } 
+        // Generate thumbnail for image files (JPG, PNG)
+        else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+            console.log('🖼️ Image file detected, generating thumbnail...');
+            try {
+                const sharp = require('sharp');
+                const { savePngToVercelBlob } = require('../lib/saveToVercelBlob');
+
+                console.log('🖼️ Creating image thumbnail with targetWidth: 200');
+                const thumbnailBuffer = await sharp(file.buffer)
+                    .resize(200, null, { 
+                        withoutEnlargement: true,
+                        fit: 'inside'
+                    })
+                    .png()
+                    .toBuffer();
+
+                const blobKey = `thumbnails/project-${projectId || 'temp'}-${Date.now()}.png`;
+                console.log('💾 Saving thumbnail to Vercel Blob with key:', blobKey);
+
+                thumbnailUrl = await savePngToVercelBlob(blobKey, thumbnailBuffer, true);
+                console.log('✅ Thumbnail generated and uploaded:', thumbnailUrl);
+
+            } catch (thumbnailError) {
+                console.error('❌ Error generating image thumbnail:', thumbnailError);
+                console.error('❌ Thumbnail error stack:', thumbnailError.stack);
+                // Continue without thumbnail - don't fail the upload
+            }
         } else {
-            console.log('📄 File is not PDF, skipping thumbnail generation');
+            console.log('📄 File is not PDF or image, skipping thumbnail generation');
         }
 
         const response = {
