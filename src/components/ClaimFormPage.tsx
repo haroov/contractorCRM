@@ -81,7 +81,7 @@ interface InjuredEmployee {
         position: string;
     };
     representative: {
-        represented: boolean;
+        represented: boolean | null;
         name?: string;
         address?: string;
         phone?: string;
@@ -92,30 +92,30 @@ interface InjuredEmployee {
     lastSalary: number;
     injuryDescription: string;
     medicalTreatment: {
-        received: boolean;
+        received: boolean | null;
         medicalDocuments?: MedicalDocument[];
     };
     nationalInsuranceReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         reportFile?: string;
         reportFileThumbnail?: string;
     };
     laborMinistryReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         reportFile?: string;
         reportFileThumbnail?: string;
     };
     policeReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         reportFile?: string;
         reportFileThumbnail?: string;
         stationName?: string;
     };
     insuranceCompanyReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         policyNumber?: string;
         claimNumber?: string;
@@ -145,7 +145,7 @@ interface ThirdPartyVictim {
     damageNature?: string;
     damageAmount?: string;
     medicalTreatment: {
-        received: boolean;
+        received: boolean | null;
         hospitalName?: string;
         medicalDocuments: {
             documentName: string;
@@ -156,14 +156,14 @@ interface ThirdPartyVictim {
         }[];
     };
     policeReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         reportFile?: string;
         reportFileThumbnail?: string;
         stationName?: string;
     };
     insuranceCompanyReport: {
-        reported: boolean;
+        reported: boolean | null;
         reportDate?: string;
         reportFile?: string;
         reportFileThumbnail?: string;
@@ -171,11 +171,11 @@ interface ThirdPartyVictim {
         claimNumber?: string;
     };
     insuredNegligence: {
-        contributed: boolean;
+        contributed: boolean | null;
         details?: string;
     };
     additionalFactors: {
-        present: boolean;
+        present: boolean | null;
         details?: string;
     };
     attachedDocuments: {
@@ -185,7 +185,7 @@ interface ThirdPartyVictim {
         thumbnailUrl: string;
     }[];
     representative?: {
-        hasRepresentative: boolean;
+        hasRepresentative: boolean | null;
         name?: string;
         address?: string;
         phone?: string;
@@ -573,30 +573,30 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             lastSalary: employee.lastSalary || 0,
                             injuryDescription: employee.injuryDescription || '',
                             medicalTreatment: {
-                                received: employee.medicalTreatment?.received || false,
+                                received: employee.medicalTreatment?.received ?? null,
                                 medicalDocuments: employee.medicalTreatment?.medicalDocuments || []
                             },
                             nationalInsuranceReport: {
-                                reported: employee.nationalInsuranceReport?.reported || false,
+                                reported: employee.nationalInsuranceReport?.reported ?? null,
                                 reportDate: employee.nationalInsuranceReport?.reportDate || '',
                                 reportFile: employee.nationalInsuranceReport?.reportFile || '',
                                 reportFileThumbnail: employee.nationalInsuranceReport?.reportFileThumbnail || ''
                             },
                             laborMinistryReport: {
-                                reported: employee.laborMinistryReport?.reported || false,
+                                reported: employee.laborMinistryReport?.reported ?? null,
                                 reportDate: employee.laborMinistryReport?.reportDate || '',
                                 reportFile: employee.laborMinistryReport?.reportFile || '',
                                 reportFileThumbnail: employee.laborMinistryReport?.reportFileThumbnail || ''
                             },
                             policeReport: {
-                                reported: employee.policeReport?.reported || false,
+                                reported: employee.policeReport?.reported ?? null,
                                 reportDate: employee.policeReport?.reportDate || '',
                                 stationName: employee.policeReport?.stationName || '',
                                 reportFile: employee.policeReport?.reportFile || '',
                                 reportFileThumbnail: employee.policeReport?.reportFileThumbnail || ''
                             },
                             insuranceCompanyReport: {
-                                reported: employee.insuranceCompanyReport?.reported || false,
+                                reported: employee.insuranceCompanyReport?.reported ?? null,
                                 reportDate: employee.insuranceCompanyReport?.reportDate || '',
                                 policyNumber: employee.insuranceCompanyReport?.policyNumber || '',
                                 claimNumber: employee.insuranceCompanyReport?.claimNumber || ''
@@ -608,7 +608,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 thumbnailUrl: doc.thumbnailUrl || ''
                             })),
                             representative: employee.representative || {
-                                represented: false,
+                                represented: null,
                                 name: '',
                                 address: '',
                                 phone: '',
@@ -632,19 +632,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             damageNature: victim.damageNature || '',
                             damageAmount: victim.damageAmount || '',
                             medicalTreatment: {
-                                received: victim.medicalTreatment?.received || false,
+                                received: victim.medicalTreatment?.received ?? null,
                                 hospitalName: victim.medicalTreatment?.hospitalName || '',
                                 medicalDocuments: victim.medicalTreatment?.medicalDocuments || []
                             },
                             policeReport: {
-                                reported: victim.policeReport?.reported || false,
+                                reported: victim.policeReport?.reported ?? null,
                                 reportDate: victim.policeReport?.reportDate || '',
                                 reportFile: victim.policeReport?.reportFile || '',
                                 reportFileThumbnail: victim.policeReport?.reportFileThumbnail || '',
                                 stationName: victim.policeReport?.stationName || ''
                             },
                             insuranceCompanyReport: {
-                                reported: victim.insuranceCompanyReport?.reported || false,
+                                reported: victim.insuranceCompanyReport?.reported ?? null,
                                 reportDate: victim.insuranceCompanyReport?.reportDate || '',
                                 reportFile: victim.insuranceCompanyReport?.reportFile || '',
                                 reportFileThumbnail: victim.insuranceCompanyReport?.reportFileThumbnail || '',
@@ -652,16 +652,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 claimNumber: victim.insuranceCompanyReport?.claimNumber || ''
                             },
                             insuredNegligence: {
-                                contributed: victim.insuredNegligence?.contributed || false,
+                                contributed: victim.insuredNegligence?.contributed ?? null,
                                 details: victim.insuredNegligence?.details || ''
                             },
                             additionalFactors: {
-                                present: victim.additionalFactors?.present || false,
+                                present: victim.additionalFactors?.present ?? null,
                                 details: victim.additionalFactors?.details || ''
                             },
                             attachedDocuments: victim.attachedDocuments || [],
                             representative: victim.representative || {
-                                hasRepresentative: false,
+                                hasRepresentative: null,
                                 name: '',
                                 address: '',
                                 phone: '',

@@ -830,7 +830,13 @@ class SafetyMonitorService {
                             gmailMessageId: msg.id,
                             siteName: finalSite || siteName || '',
                             contractorName: contractorMatch ? contractorMatch.contractor.name : contractorName,
-                            rawText: incident.rawText
+                            rawText: incident.rawText,
+                            // Employee details from PDF
+                            employeeId: incident.employeeId,
+                            employeeFirstName: incident.employeeFirstName,
+                            employeeLastName: incident.employeeLastName,
+                            subcontractorName: incident.subcontractorName,
+                            medicalTreatmentReceived: incident.medicalTreatmentReceived
                         });
 
                         console.log(`✅ Incident handled (${createdOrMerged.action}) for site ${finalSite || siteName} on ${incident.eventDate}`);
@@ -1026,6 +1032,35 @@ class SafetyMonitorService {
         const loc = textFull.match(/מיקום\s*האירוע\s*([^|\n]+?)(?=\s*מידע\s*נוסף|$)/);
         if (loc) eventLocation = loc[1].trim();
 
+        // Employee details
+        let employeeId = '';
+        let employeeFirstName = '';
+        let employeeLastName = '';
+        let subcontractorName = '';
+        let medicalTreatmentReceived = null; // null by default, not false
+
+        // Extract employee ID
+        const idMatch = textFull.match(/תעודה\s*מזהה\s*([A-Z0-9]+)/);
+        if (idMatch) employeeId = idMatch[1].trim();
+
+        // Extract first name
+        const firstNameMatch = textFull.match(/שם\s*פרטי\s*([a-zA-Z]+)/);
+        if (firstNameMatch) employeeFirstName = firstNameMatch[1].trim();
+
+        // Extract last name
+        const lastNameMatch = textFull.match(/שם\s*משפחה\s*([a-zA-Z]+)/);
+        if (lastNameMatch) employeeLastName = lastNameMatch[1].trim();
+
+        // Extract subcontractor name
+        const contractorMatch = textFull.match(/קבלן\s*([^|\n]+?)(?=\s*\||\s*$)/);
+        if (contractorMatch) subcontractorName = contractorMatch[1].trim();
+
+        // Extract medical treatment status
+        const medicalMatch = textFull.match(/האם\s*בוצע\s*פינוי\s*(כן|לא)/);
+        if (medicalMatch) {
+            medicalTreatmentReceived = medicalMatch[1] === 'כן';
+        }
+
         return {
             siteName,
             eventDate,
@@ -1033,6 +1068,11 @@ class SafetyMonitorService {
             summary,
             severity,
             eventLocation,
+            employeeId,
+            employeeFirstName,
+            employeeLastName,
+            subcontractorName,
+            medicalTreatmentReceived,
             rawText: textFull
         };
     }
@@ -1120,6 +1160,69 @@ class SafetyMonitorService {
             console.warn('⚠️ Error generating PDF thumbnail:', e.message);
         }
 
+        // Create injured employee if we have employee details
+        let injuredEmployees = [];
+        if (incident.employeeId || incident.employeeFirstName || incident.employeeLastName) {
+            const fullName = [incident.employeeFirstName, incident.employeeLastName].filter(Boolean).join(' ');
+            injuredEmployees = [{
+                fullName: fullName || '',
+                idNumber: incident.employeeId || '',
+                birthDate: '',
+                address: '',
+                jobTitle: '',
+                employmentType: incident.subcontractorName ? 'subcontractor' : 'direct',
+                subcontractorName: incident.subcontractorName || '',
+                subcontractorAgreement: '',
+                directManager: {
+                    fullName: '',
+                    phone: '',
+                    email: '',
+                    position: ''
+                },
+                startDate: '',
+                returnToWorkDate: '',
+                lastSalary: 0,
+                injuryDescription: incident.description || '',
+                medicalTreatment: {
+                    received: incident.medicalTreatmentReceived, // null by default, not false
+                    medicalDocuments: []
+                },
+                nationalInsuranceReport: {
+                    reported: null, // null by default, not false
+                    reportDate: '',
+                    reportFile: '',
+                    reportFileThumbnail: ''
+                },
+                laborMinistryReport: {
+                    reported: null, // null by default, not false
+                    reportDate: '',
+                    reportFile: '',
+                    reportFileThumbnail: ''
+                },
+                policeReport: {
+                    reported: null, // null by default, not false
+                    reportDate: '',
+                    stationName: '',
+                    reportFile: '',
+                    reportFileThumbnail: ''
+                },
+                insuranceCompanyReport: {
+                    reported: null, // null by default, not false
+                    reportDate: '',
+                    policyNumber: '',
+                    claimNumber: ''
+                },
+                attachedDocuments: [],
+                representative: {
+                    represented: null, // null by default, not false
+                    name: '',
+                    address: '',
+                    phone: '',
+                    email: ''
+                }
+            }];
+        }
+
         // Create new claim document
         const claimDoc = {
             projectId: projectId,
@@ -1132,12 +1235,14 @@ class SafetyMonitorService {
             propertyDamageInsured: null,
             propertyDamageThirdParty: null,
             bodilyInjuryThirdParty: null,
-            bodilyInjuryEmployee: null,
+            bodilyInjuryEmployee: injuredEmployees.length > 0 ? true : null, // Set to true if we have injured employees
             hasWitnesses: false,
             witnesses: [],
             hasAdditionalResponsible: false,
             additionalResponsible: [],
             insuredNegligence: null,
+            injuredEmployees: injuredEmployees,
+            thirdPartyVictims: [],
             generalAttachments: [
                 {
                     id: incident.gmailMessageId || String(Date.now()),
