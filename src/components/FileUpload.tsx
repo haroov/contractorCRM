@@ -30,6 +30,8 @@ interface FileUploadProps {
     // Auto-save functionality
     autoSave?: boolean;
     onAutoSave?: () => Promise<void>;
+    // Hide delete button for auto-generated files
+    hideDeleteButton?: boolean;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -46,7 +48,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     projectId,
     aiIcon,
     autoSave = true,
-    onAutoSave
+    onAutoSave,
+    hideDeleteButton = false
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -258,14 +261,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     sx={{
                         width: 56,
                         height: 56,
-                        backgroundColor: '#6b47c1',
                         borderRadius: 1,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
                         cursor: 'pointer',
-                        border: '1px solid #d0d0d0'
+                        border: '1px solid #d0d0d0',
+                        overflow: 'hidden'
                     }}
                     onClick={() => hasFile && window.open(fileUrlForOpen!, '_blank')}
                     title={label}
@@ -278,14 +281,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
+                                // Show PDF icon as fallback
+                                const parent = target.parentElement;
+                                if (parent) {
+                                    parent.innerHTML = '<svg style="font-size: 32px; color: #d32f2f;" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                }
                             }}
                         />
                     ) : (
-                        <PdfIcon sx={{ fontSize: 32, color: 'white' }} />
+                        <PdfIcon sx={{ fontSize: 32, color: '#d32f2f' }} />
                     )}
 
                     {/* Delete X in top-right */}
-                    {!disabled && (
+                    {!disabled && !hideDeleteButton && (
                         <IconButton
                             onClick={(e) => {
                                 e.stopPropagation();

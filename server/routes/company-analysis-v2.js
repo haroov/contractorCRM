@@ -229,7 +229,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
                         const { fetchWithHeadless } = require('../services/headlessFetcher');
                         const h = await fetchWithHeadless(target);
                         if (stripTags(h.html).length > 0) return { url: target, html: h.html };
-                    } catch (_) {}
+                    } catch (_) { }
                 }
                 const text = await fetchViaTextProxy(target);
                 return { url: target, html: text ? `<div>${text}</div>` : '' };

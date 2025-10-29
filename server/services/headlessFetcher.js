@@ -80,9 +80,9 @@ module.exports.fetchWithHeadless = async function fetchWithHeadless(url) {
         // Try within iframes as well
         try {
             for (const frame of page.frames()) {
-                try { await clickCookieBanners(frame); } catch (_) {}
+                try { await clickCookieBanners(frame); } catch (_) { }
             }
-        } catch (_) {}
+        } catch (_) { }
         // Let page settle a bit
         await page.waitForTimeout(1200);
         // Try again (some banners re-render)
@@ -94,7 +94,7 @@ module.exports.fetchWithHeadless = async function fetchWithHeadless(url) {
                     let y = 0; const i = setInterval(() => { y += 600; window.scrollTo(0, y); if (y > document.body.scrollHeight) { clearInterval(i); r(); } }, 120);
                 });
             });
-        } catch (_) {}
+        } catch (_) { }
         // Wait for network idle or max 3s
         try { await page.waitForLoadState('networkidle', { timeout: 3000 }); } catch (_) { }
         const html = await page.content();
