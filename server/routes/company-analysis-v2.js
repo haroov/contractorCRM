@@ -207,7 +207,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
                 if (!res.ok || looksLikeCookieOrJsWall(html, status)) {
                     console.warn('⚠️ Detected cookie/JS wall, retrying via text proxy:', target, status);
                     // Try headless first (if enabled)
-                    if (process.env.ENABLE_HEADLESS_FETCH !== 'false') {
+                    if (process.env.ENABLE_HEADLESS_FETCH === 'true') {
                         try {
                             const { fetchWithHeadless } = require('../services/headlessFetcher');
                             const h = await fetchWithHeadless(target);
@@ -224,7 +224,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
             } catch (e) {
                 console.warn('⚠️ Failed to fetch page', target, e.message);
                 // Try headless as well on thrown errors
-                if (process.env.ENABLE_HEADLESS_FETCH !== 'false') {
+                if (process.env.ENABLE_HEADLESS_FETCH === 'true') {
                     try {
                         const { fetchWithHeadless } = require('../services/headlessFetcher');
                         const h = await fetchWithHeadless(target);

@@ -7,7 +7,7 @@ try {
     chromium = null;
 }
 
-const MAX_CONCURRENT = Math.max(1, parseInt(process.env.HEADLESS_MAX_CONCURRENCY || '2', 10));
+const MAX_CONCURRENT = Math.max(1, parseInt(process.env.HEADLESS_MAX_CONCURRENCY || '1', 10));
 let running = 0;
 const queue = [];
 
