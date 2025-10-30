@@ -13,6 +13,7 @@ async function callOpenAIChatWithWebSearch({ systemPrompt, userPrompt }) {
         throw new Error('Missing OPENAI_API_KEY environment variable');
     }
 
+    // Use the web_search tool via the correct API format
     const payload = {
         model: OPENAI_MODEL,
         messages: [
@@ -20,21 +21,7 @@ async function callOpenAIChatWithWebSearch({ systemPrompt, userPrompt }) {
             { role: 'user', content: userPrompt }
         ],
         tools: [{ 
-            type: 'function',
-            function: {
-                name: 'web_search',
-                description: 'Search the web for current information about a company',
-                parameters: {
-                    type: 'object',
-                    properties: {
-                        query: {
-                            type: 'string',
-                            description: 'The search query to find information about the company'
-                        }
-                    },
-                    required: ['query']
-                }
-            }
+            type: 'web_search'
         }],
         temperature: 0.2,
         max_tokens: 8000
@@ -126,7 +113,8 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     const systemPrompt = `אתה אנליסט מומחה בחברות בניה ונדל"ן בישראל. 
 חשוב מאוד: עליך להשתמש בכלי web_search כדי לחפש מידע עדכני ומפורט על החברה מהאתר ${hostname}.
 אל תסתמך על הידע הקיים שלך - חפש מידע חדש ומעודכן מהאינטרנט.
-התמקד במיוחד במידע על בטיחות, הסמכות, תקנים ופרויקטים.`;
+התמקד במיוחד במידע על בטיחות, הסמכות, תקנים ופרויקטים.
+כתוב תקציר מפורט באורך 1000 מילים בדיוק.`;
 
     const userPrompt = `אנא חפש מידע מפורט על החברה "${displayName}" (${hostname}) באמצעות web_search.
 חפש מידע על:
@@ -140,15 +128,16 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
 החזר את המידע בפורמט JSON הבא:
 {
   "companyName": "שם החברה המדויק",
-  "about": "תיאור מפורט של החברה באורך עמוד A4 (800-1200 מילים) הכולל היסטוריה, תחומי פעילות, ניסיון, ערכים וחזון",
-  "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (400-600 מילים)",
-  "projects": ["פרויקט 1 עם תיאור", "פרויקט 2 עם תיאור", "פרויקט 3 עם תיאור"],
+  "about": "תיאור מפורט של החברה באורך 1000 מילים בדיוק הכולל היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות",
+  "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (500-700 מילים)",
+  "projects": ["פרויקט 1 עם תיאור מפורט", "פרויקט 2 עם תיאור מפורט", "פרויקט 3 עם תיאור מפורט"],
   "logoUrl": "URL של הלוגו או null"
 }
 
 חשוב: 
-- about צריך להיות באורך עמוד A4 (800-1200 מילים)
-- safety צריך להיות מפורט עם דגשי בטיחות ספציפיים
+- about צריך להיות בדיוק 1000 מילים
+- safety צריך להיות מפורט עם דגשי בטיחות ספציפיים (500-700 מילים)
+- projects צריך לכלול תיאורים מפורטים
 - החזר רק JSON תקין ללא טקסט נוסף.`;
 
     let rawResponse;
@@ -163,7 +152,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
             const r = await fetch(proxyUrl, { headers: { 'User-Agent': 'ContractorCRM/1.0' }, timeout: 10000 });
             if (r.ok) siteText = (await r.text()).slice(0, 12000);
         } catch (_) { }
-        const fallbackSystem = 'אתה מנתח אתרי חברות בניה ונדל"ן. הסתמך רק על הטקסט שסופק וכתוב תקציר מפורט באורך עמוד A4.';
+        const fallbackSystem = 'אתה מנתח אתרי חברות בניה ונדל"ן. הסתמך רק על הטקסט שסופק וכתוב תקציר מפורט באורך 1000 מילים בדיוק.';
         const fallbackUser = `נתח את החברה מהדומיין ${hostname} לפי הטקסט הבא:
 
 ${siteText}
@@ -171,15 +160,16 @@ ${siteText}
 החזר JSON בלבד במבנה:
 {
   "companyName": "שם החברה",
-  "about": "תיאור מפורט באורך עמוד A4 (800-1200 מילים) הכולל היסטוריה, תחומי פעילות, ניסיון, ערכים וחזון",
-  "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (400-600 מילים)",
-  "projects": ["פרויקט 1 עם תיאור", "פרויקט 2 עם תיאור"],
+  "about": "תיאור מפורט של החברה באורך 1000 מילים בדיוק הכולל היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות",
+  "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (500-700 מילים)",
+  "projects": ["פרויקט 1 עם תיאור מפורט", "פרויקט 2 עם תיאור מפורט"],
   "logoUrl": null
 }
 
 חשוב: 
-- about צריך להיות באורך עמוד A4 (800-1200 מילים)
-- safety צריך להיות מפורט עם דגשי בטיחות ספציפיים`;
+- about צריך להיות בדיוק 1000 מילים
+- safety צריך להיות מפורט עם דגשי בטיחות ספציפיים (500-700 מילים)
+- projects צריך לכלול תיאורים מפורטים`;
         rawResponse = await callOpenAIChatSimple({ systemPrompt: fallbackSystem, userPrompt: fallbackUser });
     }
 
