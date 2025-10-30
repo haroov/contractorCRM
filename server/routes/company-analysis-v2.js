@@ -1,271 +1,157 @@
-const { Router } = require("express");
-const cheerio = require('cheerio');
-
-console.log("🚀 🚀 🚀 Loading company-analysis-v2.js route - UPDATED v0.0.8 - FORCE DEPLOY");
+const { Router } = require('express');
+const fetch = require('node-fetch');
 
 const router = Router();
 
-console.log("✅ Company analysis router created successfully");
-console.log("🔍 🔍 🔍 RENDER REDEPLOY FORCE - v0.0.8 - OpenAI debugging enabled");
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
-// Initialize OpenAI client - support both SDK v4 and v3 (legacy)
-let openai;
-let openaiClientVersion = 'unknown';
-try {
-    console.log("🔍 Attempting to require OpenAI module...");
-    const OpenAI = require('openai');
-    console.log("✅ OpenAI module required successfully");
-    console.log("🔍 OpenAI constructor type:", typeof OpenAI);
-    console.log("🔍 OpenAI API key available:", !!process.env.OPENAI_API_KEY);
+console.log('🚀 Loading company-analysis route (web-search version)');
 
-    // Try SDK v3 style first (since we have v3.3.0 installed)
-    if (OpenAI && (OpenAI.Configuration || OpenAI.OpenAIApi)) {
-        // SDK v3 style: { Configuration, OpenAIApi }
-        const { Configuration, OpenAIApi } = OpenAI;
-        const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
-        openai = new OpenAIApi(configuration);
-        openaiClientVersion = 'v3-api';
-        console.log("✅ Initialized OpenAI v3 API");
-    } else if (typeof OpenAI === 'function') {
-        // SDK v4 style (class constructor)
-        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        openaiClientVersion = 'v4-class';
-        console.log("✅ Initialized OpenAI v4 class");
-    } else if (OpenAI && OpenAI.default && typeof OpenAI.default === 'function') {
-        openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
-        openaiClientVersion = 'v4-default-class';
-        console.log("✅ Initialized OpenAI v4 default class");
-    } else {
-        console.log("⚠️ OpenAI module shape not recognized; skipping initialization");
-        console.log("📦 OpenAI module structure:", {
-            type: typeof OpenAI,
-            keys: OpenAI ? Object.keys(OpenAI) : [],
-            hasDefault: !!(OpenAI && OpenAI.default),
-            hasConfiguration: !!(OpenAI && OpenAI.Configuration),
-            hasOpenAIApi: !!(OpenAI && OpenAI.OpenAIApi)
-        });
-        openai = null;
+async function callOpenAIChatWithWebSearch({ systemPrompt, userPrompt }) {
+    if (!OPENAI_API_KEY) {
+        throw new Error('Missing OPENAI_API_KEY environment variable');
     }
 
-    if (openai) {
-        console.log("✅ OpenAI client initialized successfully (", openaiClientVersion, ")");
-    }
-} catch (error) {
-    console.error("❌ Error initializing OpenAI:", error);
-    console.error("❌ Error details:", error.message);
-    console.error("❌ Error stack:", error.stack);
-    openai = null;
-}
+    const payload = {
+        model: OPENAI_MODEL,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        tools: [{ type: 'web_search' }],
+        temperature: 0.2,
+        max_tokens: 4000
+    };
 
-// Real AI function using ChatGPT API
-async function analyzeCompanyWebsite(websiteUrl) {
-    console.log("🔍 Analyzing company website with ChatGPT API:", websiteUrl);
-
-    // Check if OpenAI is available
-    if (!openai) {
-        console.error("❌ OpenAI client not available");
-        return {
-            companyName: "חברה לא זוהתה",
-            about: `שגיאה בטעינת מערכת ה-AI. אנא נסה שוב מאוחר יותר.`,
-            safety: "מידע על בטיחות לא זמין",
-            projects: "מידע על פרויקטים לא זמין",
-            logoUrl: null
-        };
-    }
-
-    // Overall timeout for the entire analysis (45 seconds)
-    const overallTimeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Analysis timeout after 45 seconds')), 45000);
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
     });
 
-    try {
-        return await Promise.race([
-            analyzeCompanyWebsiteInternal(websiteUrl),
-            overallTimeout
-        ]);
-    } catch (error) {
-        console.error("❌ Error in AI analysis:", error);
-        return {
-            companyName: "חברה לא זוהתה",
-            about: `לא ניתן לנתח את האתר ${websiteUrl} כרגע: ${error.message}. אנא נסה שוב מאוחר יותר.`,
-            safety: "מידע על בטיחות לא זמין",
-            projects: "מידע על פרויקטים לא זמין",
-            logoUrl: null
-        };
+    const data = await response.json();
+    if (!response.ok) {
+        const message = data?.error?.message || `OpenAI API error (${response.status})`;
+        throw new Error(message);
     }
+
+    const text = data?.choices?.[0]?.message?.content || '';
+
+    if (!text) {
+        throw new Error('OpenAI API returned empty content');
+    }
+
+    return text;
 }
 
-async function analyzeCompanyWebsiteInternal(websiteUrl) {
-    try {
-        // Simplified: Use ChatGPT API directly - ask it to analyze the website using its knowledge
-        console.log('🌐 Using ChatGPT API for direct analysis');
-        
-        // Normalize URL
-        const normalizedUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
-        
-        // Fetch website content first
-        const fetch = require('node-fetch');
-        const baseUrl = new URL(normalizedUrl);
-        
-        console.log('📥 Fetching content from website...');
-        const fetchPage = async (path) => {
-            const target = new URL(path, baseUrl.origin).href;
-            try {
-                const res = await fetch(target, {
-                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-                    timeout: 8000
-                });
-                if (!res.ok) return '';
-                return await res.text();
-            } catch (e) {
-                return '';
-            }
-        };
-        
-        const homeHtml = await fetchPage('/');
-        let aboutHtml = await fetchPage('/about');
-        if (!aboutHtml) aboutHtml = await fetchPage('/אודות');
-        if (!aboutHtml) aboutHtml = '';
-        
-        // Extract text content
-        const extractText = (html) => {
-            if (!html) return '';
-            const $ = cheerio.load(html);
-            $('script, style, nav, footer, header').remove();
-            return $('body').text().replace(/\s+/g, ' ').trim().slice(0, 8000);
-        };
-        
-        let homeText = extractText(homeHtml);
-        let aboutText = extractText(aboutHtml);
-        
-        // If content is too short (possible cookie wall), try proxy fallback
-        if (!homeText || homeText.length < 500) {
-            console.log('⚠️ Homepage content too short, trying text proxy...');
-            try {
-                const proxyUrl = `https://r.jina.ai/http://${baseUrl.host}${baseUrl.pathname}`;
-                const proxyRes = await fetch(proxyUrl, {
-                    headers: { 'User-Agent': 'Mozilla/5.0 ContractorCRM/1.0' },
-                    timeout: 10000
-                });
-                if (proxyRes.ok) {
-                    const proxyText = await proxyRes.text();
-                    homeText = proxyText.slice(0, 8000);
-                    console.log('✅ Got content via proxy');
+function normalizeProjects(projectsValue) {
+    if (Array.isArray(projectsValue)) {
+        return projectsValue
+            .map((item) => {
+                if (typeof item === 'string') return item.trim();
+                if (item && typeof item === 'object') {
+                    const name = item.name || item.title || item.project || '';
+                    const desc = item.description || item.details || '';
+                    return [name, desc].filter(Boolean).join(' – ');
                 }
-            } catch (e) {
-                console.warn('⚠️ Proxy also failed:', e.message);
-            }
-        }
-        
-        const combinedText = [homeText, aboutText].filter(Boolean).join('\n\n');
-        
-        if (!combinedText || combinedText.length < 100) {
-            throw new Error('Failed to fetch meaningful content from website');
-        }
-        
-        console.log(`✅ Fetched ${combinedText.length} characters from website`);
-        
-        const systemPrompt = `אתה מנתח אתרי חברות בניה/נדל"ן. הסתמך רק על הטקסט שסופק.`;
-        const userPrompt = `נתח את החברה מהתוכן הבא ששוחזר מהאתר ${normalizedUrl}:
-
-${combinedText}
-
-החזר JSON בלבד:
-{"companyName":"","about":"","safety":"","projects":[],"logoUrl":null}
-
-כללים:
-- companyName: שם החברה (אם נמצא)
-- about: תיאור מפורט (~1000 מילים) על החברה מהתוכן
-- safety: מידע על בטיחות/תקנים מהתוכן
-- projects: מערך של פרויקטים מהתוכן
-- logoUrl: null (לא מחפשים לוגו)`;
-
-        console.log('🤖 Analyzing fetched content with ChatGPT API (auto client selection)');
-
-        const responseText = await Promise.race([
-            callOpenAIChat([
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-            ]),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 25000))
-        ]);
-
-        console.log('📄 Response text length:', responseText?.length || 0);
-
-        if (!responseText) {
-            throw new Error('ChatGPT API returned empty response');
-        }
-
-        let cleaned = responseText.trim();
-        if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-        if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
-
-        try {
-            const parsed = JSON.parse(cleaned);
-            console.log('✅ Parsed ChatGPT analysis successfully');
-            return parsed;
-        } catch (parseErr) {
-            console.error('❌ Failed to parse JSON from response:', parseErr.message);
-            console.error('📄 Cleaned text:', cleaned.substring(0, 1000));
-            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                try {
-                    const parsed = JSON.parse(jsonMatch[0]);
-                    console.log('✅ Extracted and parsed JSON from response');
-                    return parsed;
-                } catch (_) {}
-            }
-            throw new Error(`Failed to parse JSON from ChatGPT response: ${parseErr.message}`);
-        }
-    } catch (error) {
-        console.error("❌ Error in AI analysis internal:", error);
-        throw error; // Re-throw to be handled by wrapper
+                return String(item || '').trim();
+            })
+            .filter(Boolean)
+            .join('\n');
     }
+    if (typeof projectsValue === 'string') {
+        return projectsValue.trim();
+    }
+    return '';
 }
 
-// Simplified: Using only ChatGPT API direct calls - no web_search tools, no page fetching
+async function analyzeCompanyWebsite(websiteUrl, companyName) {
+    console.log('🔍 Starting company analysis for:', websiteUrl, 'name hint:', companyName || '(none provided)');
 
-/**
- * POST /analyze-company - Analyze company website
- */
-router.post("/analyze-company", async (req, res) => {
-    console.log("🎯 🎯 🎯 POST /analyze-company route hit - UPDATED");
+    const normalizedUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
+    const { hostname } = new URL(normalizedUrl);
+    const displayName = (companyName || '').trim() || hostname;
+
+    const systemPrompt = `אתה אנליסט מומחה בחברות בניה ונדל"ן בישראל. 
+חשוב מאוד: עליך להשתמש בכלי web_search כדי לחפש מידע עדכני על החברה מהאתר ${hostname}.
+אל תסתמך על הידע הקיים שלך - חפש מידע חדש ומעודכן מהאינטרנט.`;
+
+    const userPrompt = `אנא חפש מידע על החברה "${displayName}" (${hostname}) באמצעות web_search.
+חפש מידע על:
+1. שם החברה המדויק
+2. תיאור החברה ופעילותה
+3. פרויקטים שביצעה או מבצעת
+4. מידע על בטיחות והסמכות
+5. לוגו החברה (אם קיים)
+
+החזר את המידע בפורמט JSON הבא:
+{
+  "companyName": "שם החברה המדויק",
+  "about": "תיאור מפורט של החברה (3-5 משפטים בעברית)",
+  "safety": "מידע על בטיחות, הסמכות ותקנים",
+  "projects": ["פרויקט 1", "פרויקט 2", "פרויקט 3"],
+  "logoUrl": "URL של הלוגו או null"
+}
+
+חשוב: החזר רק JSON תקין ללא טקסט נוסף.`;
+
+    const rawResponse = await callOpenAIChatWithWebSearch({ systemPrompt, userPrompt });
+    console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
+
+    let cleaned = rawResponse.trim();
+    if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+    let parsed;
     try {
-        const { website } = req.body;
+        parsed = JSON.parse(cleaned);
+    } catch (err) {
+        console.error('❌ Failed to parse JSON from OpenAI response:', err.message);
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        if (match) {
+            parsed = JSON.parse(match[0]);
+        } else {
+            throw err;
+        }
+    }
+
+    const result = {
+        companyName: parsed?.companyName || displayName,
+        about: parsed?.about || '',
+        safety: parsed?.safety || '',
+        projects: normalizeProjects(parsed?.projects),
+        logoUrl: parsed?.logoUrl || null
+    };
+
+    console.log('✅ Parsed analysis result:', result);
+    return result;
+}
+
+router.post('/analyze-company', async (req, res) => {
+    console.log('🎯 POST /analyze-company invoked with body:', req.body);
+    try {
+        const { website, companyName } = req.body || {};
 
         if (!website) {
-            console.log("❌ No website URL provided");
-            return res.status(400).json({
-                success: false,
-                error: "Website URL is required"
-            });
+            return res.status(400).json({ success: false, error: 'Website URL is required' });
         }
 
-        // Skip domain mismatch check for Hebrew company names as they don't match domain names
-        // This check was causing issues with legitimate Hebrew company names
-        console.log('🔎 Skipping domain mismatch check for Hebrew company names');
+        if (!OPENAI_API_KEY) {
+            return res.status(500).json({ success: false, error: 'OPENAI_API_KEY is not configured on the server' });
+        }
 
-        console.log("🌐 Analyzing company website:", website);
-        console.log("🔑 OpenAI API Key available:", !!process.env.OPENAI_API_KEY);
+        const analysisResult = await analyzeCompanyWebsite(website, companyName);
 
-        const analysisResult = await analyzeCompanyWebsite(website);
-
-        console.log("📊 Analysis completed, returning result:", {
-            companyName: analysisResult.companyName,
-            aboutLength: analysisResult.about?.length || 0,
-            hasLogo: !!analysisResult.logoUrl
-        });
-
-        res.json({
-            success: true,
-            data: analysisResult
-        });
-
+        res.json({ success: true, data: analysisResult });
     } catch (error) {
-        console.error("❌ Error in company analysis:", error);
+        console.error('❌ analyze-company failed:', error);
         res.status(500).json({
             success: false,
-            error: error.message || "Failed to analyze company website"
+            error: error.message || 'Failed to analyze company website'
         });
     }
 });
