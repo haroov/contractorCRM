@@ -12591,7 +12591,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {/* עמודה שנייה - שדות מותנים */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -12619,6 +12619,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.employerLiability.deductible', numericValue || '');
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                            {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="ביטוח לאומי (₪)"
+                                                    value={project?.insuranceSpecification?.employerLiability?.nationalInsurance ? parseInt(project.insuranceSpecification.employerLiability.nationalInsurance.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.employerLiability.nationalInsurance', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
