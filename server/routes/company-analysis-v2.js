@@ -86,106 +86,41 @@ async function analyzeCompanyWebsite(websiteUrl) {
 
 async function analyzeCompanyWebsiteInternal(websiteUrl) {
     try {
-        // Use ChatGPT API with web_search directly - simpler and faster approach
-        console.log('🌐 Using ChatGPT API with web_search for direct analysis');
+        // Simplified: Use ChatGPT API directly - ask it to analyze the website using its knowledge
+        console.log('🌐 Using ChatGPT API for direct analysis');
         
-        const systemPrompt = `אתה מנתח אתרי אינטרנט של חברות בניה/ndl"ן. השתמש ב-web_search כדי למצוא מידע עדכני מהאתר ${websiteUrl}.`;
-        const userPrompt = `נתח את החברה מהאתר ${websiteUrl} וכלול:
+        // Normalize URL
+        const normalizedUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
+        
+        const systemPrompt = `אתה ChatGPT. אתה מנתח חברות בניה/נדל"ן בישראל. השתמש בידע שלך ובמידע מהאינטרנט לנתח את החברה.`;
+        const userPrompt = `נתח את החברה מהאתר ${normalizedUrl} וכלול:
 1. שם החברה
 2. אודות החברה - תיאור מפורט (~1000 מילים) על החברה, ההיסטוריה שלה, תחומי הפעילות, ניסיון, פרויקטים בולטים
 3. מידע על בטיחות - תקנים, תעודות, מדיניות בטיחות
-4. פרויקטים - רשימת פרויקטים/תכניות שהחברה ביצעה או מבצעת
-5. לוגו - URL של הלוגו של החברה (אם נמצא)
+4. פרויקטים - רשימת פרויקטים/תכניות שהחברה ביצעה או מבצעת (מערך)
+5. לוגו - URL של הלוגו של החברה אם אתה יודע אותו
 
-החזר רק JSON תקין עם המפתחות: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}
-כל מידע חייב להיות רק מהאתר ${websiteUrl}.`;
+החזר רק JSON תקין ללא טקסט נוסף, עם המבנה: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}`;
 
-        // Try Responses API first (faster)
-        if (openai && openai.responses && typeof openai.responses.create === 'function') {
-            console.log('🌐 Trying OpenAI web_search tool via Responses API');
-            const systemPromptSearch = `אתה מנתח אתרי אינטרנט של חברות בניה/נדל"ן. בצע web_search וחפש אך ורק מידע מהדומיין הבא: ${websiteUrl}. אם המידע אינו מהדומיין הזה, אל תשתמש בו. החזר JSON בלבד.`;
-            const userPromptSearch = `נתח את האתר ${websiteUrl} עם דגש על עמודי אודות/פרויקטים/בטיחות. החזר JSON עם {companyName, about (~1000 מילים), safety, projects (מערך), logoUrl (מאותו דומיין בלבד)}.`;
-
-            try {
-                const resp = await Promise.race([
-                    openai.responses.create({
-                        model: 'gpt-4o-mini',
-                        input: [
-                            { role: 'system', content: systemPromptSearch },
-                            { role: 'user', content: userPromptSearch }
-                        ],
-                        tools: [{ type: 'web_search' }],
-                        temperature: 0.0,
-                    }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI web_search timeout')), 25000))
-                ]);
-
-                // Attempt to unify content extraction from Responses API
-                const responseText = resp?.output_text || resp?.content?.[0]?.text || resp?.choices?.[0]?.message?.content;
-                console.log('📄 Responses API text length:', responseText?.length || 0);
-                
-                if (responseText) {
-                    let cleaned = responseText.trim();
-                    if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                    if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
-                    
-                    try {
-                        const parsed = JSON.parse(cleaned);
-                        // Sanitize logo to same domain
-                        try {
-                            const base = new URL(/^https?:\/\//i.test(websiteUrl) ? websiteUrl : `https://${websiteUrl}`);
-                            const safe = parsed?.logoUrl ? new URL(parsed.logoUrl, base.origin).href : null;
-                            parsed.logoUrl = safe && new URL(safe).origin === base.origin ? safe : null;
-                        } catch (_) { }
-                        console.log('✅ Using web_search-based analysis via Responses API');
-                        return parsed;
-                    } catch (parseErr) {
-                        console.error('❌ Failed to parse JSON from Responses API:', parseErr.message);
-                        // Try to extract JSON from the response
-                        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            try {
-                                const parsed = JSON.parse(jsonMatch[0]);
-                                console.log('✅ Extracted and parsed JSON from Responses API');
-                                return parsed;
-                            } catch (_) {}
-                        }
-                        throw new Error(`Failed to parse JSON from Responses API: ${parseErr.message}`);
-                    }
-                } else {
-                    console.warn('⚠️ Responses API returned empty response');
-                }
-            } catch (err) {
-                console.warn('⚠️ web_search via Responses API failed, falling back to on-site crawl:', err?.message || err);
-            }
-        }
-
-        // Try OpenAI chat completions with web_search tool (primary method if Responses API fails)
-        // Note: web_search might require a specific model or different approach
+        // Use chat completions API directly (no web_search tools)
         if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
-            console.log('🌐 Trying OpenAI chat completions with web_search tool');
+            console.log('🌐 Using OpenAI chat completions API');
             try {
-                // Try with explicit web_search instruction first
-                const webSearchPrompt = `${userPrompt}\n\nחשוב: השתמש ב-web_search של ChatGPT כדי לחפש מידע מהאתר ${websiteUrl}.`;
-                
                 const response = await Promise.race([
                     openai.chat.completions.create({
                         model: 'gpt-4o-mini',
                         messages: [
                             { role: 'system', content: systemPrompt },
-                            { role: 'user', content: webSearchPrompt }
+                            { role: 'user', content: userPrompt }
                         ],
                         temperature: 0.0,
-                        max_tokens: 4000,
-                        // Some models support web_search via tools, but try without first if it fails
-                        tools: [{ type: 'web_search' }]
+                        max_tokens: 4000
                     }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI web_search timeout')), 30000))
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 30000))
                 ]);
 
                 const responseText = response.choices?.[0]?.message?.content;
-                console.log('📄 Raw response text length:', responseText?.length || 0);
-                console.log('📄 First 500 chars:', responseText?.substring(0, 500) || 'empty');
+                console.log('📄 Response text length:', responseText?.length || 0);
                 
                 if (responseText) {
                     let cleaned = responseText.trim();
@@ -194,7 +129,7 @@ async function analyzeCompanyWebsiteInternal(websiteUrl) {
                     
                     try {
                         const parsed = JSON.parse(cleaned);
-                        console.log('✅ Using web_search-based analysis via chat completions');
+                        console.log('✅ Using ChatGPT API analysis');
                         return parsed;
                     } catch (parseErr) {
                         console.error('❌ Failed to parse JSON from response:', parseErr.message);
@@ -214,58 +149,19 @@ async function analyzeCompanyWebsiteInternal(websiteUrl) {
                     throw new Error('ChatGPT API returned empty response');
                 }
             } catch (err) {
-                console.warn('⚠️ web_search via chat completions with tools failed, trying without tools:', err?.message || err);
-                
-                // Fallback: try without tools array - let ChatGPT use its built-in web search capabilities
-                try {
-                    const fallbackPrompt = `אתה ChatGPT עם יכולת חיפוש באינטרנט. חפש מידע על החברה מהאתר ${websiteUrl} ונתח:
-- שם החברה
-- אודות החברה (תיאור מפורט ~1000 מילים)
-- מידע על בטיחות
-- פרויקטים
-- לוגו (URL אם נמצא)
-
-החזר JSON עם המבנה: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}`;
-                    
-                    const fallbackResponse = await Promise.race([
-                        openai.chat.completions.create({
-                            model: 'gpt-4o-mini',
-                            messages: [
-                                { role: 'system', content: 'אתה ChatGPT עם גישה לחיפוש באינטרנט. חפש מידע מהאתר שצוין.' },
-                                { role: 'user', content: fallbackPrompt }
-                            ],
-                            temperature: 0.0,
-                            max_tokens: 4000
-                        }),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 35000))
-                    ]);
-                    
-                    const fallbackText = fallbackResponse.choices?.[0]?.message?.content;
-                    if (fallbackText) {
-                        let cleaned = fallbackText.trim();
-                        if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                        if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
-                        const parsed = JSON.parse(cleaned);
-                        console.log('✅ Using fallback analysis without tools');
-                        return parsed;
-                    }
-                } catch (fallbackErr) {
-                    console.warn('⚠️ Fallback also failed:', fallbackErr?.message || fallbackErr);
-                    throw err; // Throw original error
-                }
+                console.error('❌ ChatGPT API call failed:', err?.message || err);
+                throw err;
             }
+        } else {
+            throw new Error('OpenAI chat completions API not available');
         }
-
-        // If we reach here, neither method worked
-        throw new Error('ChatGPT API analysis failed - all methods exhausted');
     } catch (error) {
         console.error("❌ Error in AI analysis internal:", error);
         throw error; // Re-throw to be handled by wrapper
     }
 }
 
-// Removed: All the complex page fetching, sitemap crawling, and fallback logic
-// Now using only ChatGPT API web_search which is faster and more reliable
+// Simplified: Using only ChatGPT API direct calls - no web_search tools, no page fetching
 
 /**
  * POST /analyze-company - Analyze company website
