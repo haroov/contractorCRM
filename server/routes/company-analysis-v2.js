@@ -18,21 +18,32 @@ try {
     console.log("🔍 OpenAI constructor type:", typeof OpenAI);
     console.log("🔍 OpenAI API key available:", !!process.env.OPENAI_API_KEY);
 
-    // Prefer SDK v4 style (class constructor)
-    if (typeof OpenAI === 'function') {
-        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        openaiClientVersion = 'v4-class';
-    } else if (OpenAI && OpenAI.default && typeof OpenAI.default === 'function') {
-        openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
-        openaiClientVersion = 'v4-default-class';
-    } else if (OpenAI && (OpenAI.Configuration || OpenAI.OpenAIApi)) {
+    // Try SDK v3 style first (since we have v3.3.0 installed)
+    if (OpenAI && (OpenAI.Configuration || OpenAI.OpenAIApi)) {
         // SDK v3 style: { Configuration, OpenAIApi }
         const { Configuration, OpenAIApi } = OpenAI;
         const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
         openai = new OpenAIApi(configuration);
         openaiClientVersion = 'v3-api';
+        console.log("✅ Initialized OpenAI v3 API");
+    } else if (typeof OpenAI === 'function') {
+        // SDK v4 style (class constructor)
+        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        openaiClientVersion = 'v4-class';
+        console.log("✅ Initialized OpenAI v4 class");
+    } else if (OpenAI && OpenAI.default && typeof OpenAI.default === 'function') {
+        openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
+        openaiClientVersion = 'v4-default-class';
+        console.log("✅ Initialized OpenAI v4 default class");
     } else {
         console.log("⚠️ OpenAI module shape not recognized; skipping initialization");
+        console.log("📦 OpenAI module structure:", {
+            type: typeof OpenAI,
+            keys: OpenAI ? Object.keys(OpenAI) : [],
+            hasDefault: !!(OpenAI && OpenAI.default),
+            hasConfiguration: !!(OpenAI && OpenAI.Configuration),
+            hasOpenAIApi: !!(OpenAI && OpenAI.OpenAIApi)
+        });
         openai = null;
     }
 
@@ -159,8 +170,8 @@ async function analyzeCompanyWebsiteInternal(websiteUrl) {
 
 ${combinedText}
 
-חזור עם JSON בלבד:
-{"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}
+החזר JSON בלבד:
+{"companyName":"","about":"","safety":"","projects":[],"logoUrl":null}
 
 כללים:
 - companyName: שם החברה (אם נמצא)
@@ -169,58 +180,42 @@ ${combinedText}
 - projects: מערך של פרויקטים מהתוכן
 - logoUrl: null (לא מחפשים לוגו)`;
 
-        // Use chat completions API to analyze the fetched content
-        if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
-            console.log('🤖 Analyzing fetched content with ChatGPT API');
-            try {
-                const response = await Promise.race([
-                    openai.chat.completions.create({
-                        model: 'gpt-4o-mini',
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: userPrompt }
-                        ],
-                        temperature: 0.0,
-                        max_tokens: 4000
-                    }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 25000))
-                ]);
+        console.log('🤖 Analyzing fetched content with ChatGPT API (auto client selection)');
 
-                const responseText = response.choices?.[0]?.message?.content;
-                console.log('📄 Response text length:', responseText?.length || 0);
-                
-                if (responseText) {
-                    let cleaned = responseText.trim();
-                    if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                    if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
-                    
-                    try {
-                        const parsed = JSON.parse(cleaned);
-                        console.log('✅ Using ChatGPT API analysis');
-                        return parsed;
-                    } catch (parseErr) {
-                        console.error('❌ Failed to parse JSON from response:', parseErr.message);
-                        console.error('📄 Cleaned text:', cleaned.substring(0, 1000));
-                        // Try to extract JSON from the response
-                        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            try {
-                                const parsed = JSON.parse(jsonMatch[0]);
-                                console.log('✅ Extracted and parsed JSON from response');
-                                return parsed;
-                            } catch (_) {}
-                        }
-                        throw new Error(`Failed to parse JSON from ChatGPT response: ${parseErr.message}`);
-                    }
-                } else {
-                    throw new Error('ChatGPT API returned empty response');
-                }
-            } catch (err) {
-                console.error('❌ ChatGPT API call failed:', err?.message || err);
-                throw err;
+        const responseText = await Promise.race([
+            callOpenAIChat([
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ]),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 25000))
+        ]);
+
+        console.log('📄 Response text length:', responseText?.length || 0);
+
+        if (!responseText) {
+            throw new Error('ChatGPT API returned empty response');
+        }
+
+        let cleaned = responseText.trim();
+        if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+        try {
+            const parsed = JSON.parse(cleaned);
+            console.log('✅ Parsed ChatGPT analysis successfully');
+            return parsed;
+        } catch (parseErr) {
+            console.error('❌ Failed to parse JSON from response:', parseErr.message);
+            console.error('📄 Cleaned text:', cleaned.substring(0, 1000));
+            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                try {
+                    const parsed = JSON.parse(jsonMatch[0]);
+                    console.log('✅ Extracted and parsed JSON from response');
+                    return parsed;
+                } catch (_) {}
             }
-        } else {
-            throw new Error('OpenAI chat completions API not available');
+            throw new Error(`Failed to parse JSON from ChatGPT response: ${parseErr.message}`);
         }
     } catch (error) {
         console.error("❌ Error in AI analysis internal:", error);
