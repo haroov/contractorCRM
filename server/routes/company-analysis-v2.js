@@ -92,19 +92,86 @@ async function analyzeCompanyWebsiteInternal(websiteUrl) {
         // Normalize URL
         const normalizedUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
         
-        const systemPrompt = `אתה ChatGPT. אתה מנתח חברות בניה/נדל"ן בישראל. השתמש בידע שלך ובמידע מהאינטרנט לנתח את החברה.`;
-        const userPrompt = `נתח את החברה מהאתר ${normalizedUrl} וכלול:
-1. שם החברה
-2. אודות החברה - תיאור מפורט (~1000 מילים) על החברה, ההיסטוריה שלה, תחומי הפעילות, ניסיון, פרויקטים בולטים
-3. מידע על בטיחות - תקנים, תעודות, מדיניות בטיחות
-4. פרויקטים - רשימת פרויקטים/תכניות שהחברה ביצעה או מבצעת (מערך)
-5. לוגו - URL של הלוגו של החברה אם אתה יודע אותו
+        // Fetch website content first
+        const fetch = require('node-fetch');
+        const baseUrl = new URL(normalizedUrl);
+        
+        console.log('📥 Fetching content from website...');
+        const fetchPage = async (path) => {
+            const target = new URL(path, baseUrl.origin).href;
+            try {
+                const res = await fetch(target, {
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+                    timeout: 8000
+                });
+                if (!res.ok) return '';
+                return await res.text();
+            } catch (e) {
+                return '';
+            }
+        };
+        
+        const homeHtml = await fetchPage('/');
+        let aboutHtml = await fetchPage('/about');
+        if (!aboutHtml) aboutHtml = await fetchPage('/אודות');
+        if (!aboutHtml) aboutHtml = '';
+        
+        // Extract text content
+        const extractText = (html) => {
+            if (!html) return '';
+            const $ = cheerio.load(html);
+            $('script, style, nav, footer, header').remove();
+            return $('body').text().replace(/\s+/g, ' ').trim().slice(0, 8000);
+        };
+        
+        let homeText = extractText(homeHtml);
+        let aboutText = extractText(aboutHtml);
+        
+        // If content is too short (possible cookie wall), try proxy fallback
+        if (!homeText || homeText.length < 500) {
+            console.log('⚠️ Homepage content too short, trying text proxy...');
+            try {
+                const proxyUrl = `https://r.jina.ai/http://${baseUrl.host}${baseUrl.pathname}`;
+                const proxyRes = await fetch(proxyUrl, {
+                    headers: { 'User-Agent': 'Mozilla/5.0 ContractorCRM/1.0' },
+                    timeout: 10000
+                });
+                if (proxyRes.ok) {
+                    const proxyText = await proxyRes.text();
+                    homeText = proxyText.slice(0, 8000);
+                    console.log('✅ Got content via proxy');
+                }
+            } catch (e) {
+                console.warn('⚠️ Proxy also failed:', e.message);
+            }
+        }
+        
+        const combinedText = [homeText, aboutText].filter(Boolean).join('\n\n');
+        
+        if (!combinedText || combinedText.length < 100) {
+            throw new Error('Failed to fetch meaningful content from website');
+        }
+        
+        console.log(`✅ Fetched ${combinedText.length} characters from website`);
+        
+        const systemPrompt = `אתה מנתח אתרי חברות בניה/נדל"ן. הסתמך רק על הטקסט שסופק.`;
+        const userPrompt = `נתח את החברה מהתוכן הבא ששוחזר מהאתר ${normalizedUrl}:
 
-החזר רק JSON תקין ללא טקסט נוסף, עם המבנה: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}`;
+${combinedText}
 
-        // Use chat completions API directly (no web_search tools)
+חזור עם JSON בלבד:
+{"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}
+
+כללים:
+- companyName: שם החברה (אם נמצא)
+- about: תיאור מפורט (~1000 מילים) על החברה מהתוכן
+- safety: מידע על בטיחות/תקנים מהתוכן
+- projects: מערך של פרויקטים מהתוכן
+- logoUrl: null (לא מחפשים לוגו)`;
+
+        // Use chat completions API to analyze the fetched content
         if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
-            console.log('🌐 Using OpenAI chat completions API');
+            console.log('🤖 Analyzing fetched content with ChatGPT API');
             try {
                 const response = await Promise.race([
                     openai.chat.completions.create({
@@ -116,7 +183,7 @@ async function analyzeCompanyWebsiteInternal(websiteUrl) {
                         temperature: 0.0,
                         max_tokens: 4000
                     }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 30000))
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 25000))
                 ]);
 
                 const responseText = response.choices?.[0]?.message?.content;
