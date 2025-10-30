@@ -66,6 +66,9 @@ async function domainWebSearchCollectText(hostname, companyName) {
         `site:${baseHost} about`,
         `site:${baseHost} פרויקטים`,
         `site:${baseHost} projects`,
+        `site:${baseHost} בטיחות`,
+        `site:${baseHost} תקנים`,
+        `site:${baseHost} ISO`,
         `${companyName || baseHost} חברה בניה`,
     ];
     const foundUrls = new Set();
@@ -167,20 +170,29 @@ function getWordCount(text) {
     return words.filter(Boolean).length;
 }
 
-async function enforceExactAboutLength(aboutText, targetWords, extraContext) {
-    const system = 'אתה עורך תוכן בעברית. קבל טקסט קיים וכתוב אותו מחדש כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות וסגנון מקצועי. החזר טקסט בלבד ללא הקדמות, ללא כותרות וללא JSON.';
+async function enforceExactWordLength(baseText, targetWords, extraContext) {
+    const system = 'אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON.';
     const user = `מספר מילים נדרש: ${targetWords}.
-טקסט קיים לשכתוב:
+אם הטקסט הבא קצר מדי או ריק – כתוב טקסט חדש באורך המבוקש תוך הסתמכות על המידע הנוסף:
+
+[טקסט קיים]
 """
-${aboutText}
+${baseText || ''}
 """
 
-מידע נוסף להרחבה (לא חובה להשתמש בכל המידע):
+[מידע נוסף מהאינטרנט]
 """
-${(extraContext || '').slice(0, 4000)}
+${(extraContext || '').slice(0, 5000)}
 """`;
     const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user });
     return rewritten.trim();
+}
+
+async function enforceRangeWordLength(baseText, minWords, maxWords, preferred, extraContext) {
+    const count = getWordCount(baseText);
+    if (count >= minWords && count <= maxWords) return baseText;
+    const target = preferred || Math.round((minWords + maxWords) / 2);
+    return await enforceExactWordLength(baseText, target, extraContext);
 }
 
 function normalizeProjects(projectsValue) {
@@ -264,22 +276,31 @@ ${collectedText}
         logoUrl = await searchGoogleForLogo(displayName, hostname);
     }
 
-    // Enforce exact 1000-word requirement for 'about' if the model under-delivered
+    // Enforce exact 1000-word requirement for 'about' (even if empty/short)
     let aboutText = parsed?.about || '';
-    const aboutWordCount = getWordCount(aboutText);
-    if (aboutWordCount !== 1000 && aboutWordCount > 0) {
+    let aboutWordCount = getWordCount(aboutText);
+    if (aboutWordCount !== 1000) {
         console.log(`ℹ️ about word count=${aboutWordCount}. Rewriting to exactly 1000 words...`);
         try {
-            aboutText = await enforceExactAboutLength(aboutText, 1000, collectedText);
+            aboutText = await enforceExactWordLength(aboutText, 1000, collectedText);
+            aboutWordCount = getWordCount(aboutText);
         } catch (e) {
             console.warn('⚠️ Failed to enforce exact 1000 words, keeping original about:', e.message);
         }
     }
 
+    // Enforce safety length to 500–700 words (target ~600)
+    let safetyText = parsed?.safety || '';
+    try {
+        safetyText = await enforceRangeWordLength(safetyText, 500, 700, 600, collectedText);
+    } catch (e) {
+        console.warn('⚠️ Failed to enforce safety length, keeping original safety:', e.message);
+    }
+
     const result = {
         companyName: parsed?.companyName || displayName,
         about: aboutText,
-        safety: parsed?.safety || '',
+        safety: safetyText,
         projects: normalizeProjects(parsed?.projects),
         logoUrl: logoUrl
     };
