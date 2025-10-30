@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import gisService from '../services/gisService';
+import { projectsAPI } from '../services/api';
+import { authenticatedFetch } from '../config/api';
+import ContractorService from '../services/contractorService';
 import SafetyDashboard from './SafetyDashboard';
 import UserMenu from './UserMenu';
 import {
@@ -63,7 +66,6 @@ import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
 import GoogleMap from './GoogleMap';
 import EmergencyStationsMap from './EmergencyStationsMap';
-import { authenticatedFetch } from '../config/api';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -618,7 +620,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 loadContractorName - loading contractor:', contractorId);
 
         try {
-            const { default: ContractorService } = await import('../services/contractorService');
+            // ContractorService is now imported statically
             console.log('🔍 loadContractorName - calling ContractorService.getById with:', contractorId);
             const contractor = await ContractorService.getById(contractorId);
             console.log('🔍 loadContractorName - contractor data:', contractor);
@@ -824,7 +826,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 const loadProjectFromServer = async () => {
                     try {
                         console.log('Loading project from server:', projectId);
-                        const { projectsAPI } = await import('../services/api');
+                        // projectsAPI is now imported statically
                         const projectData = await projectsAPI.getById(projectId);
                         console.log('🔍 Raw project data from server:', projectData);
                         console.log('🔍 Raw insuranceSpecification from server:', projectData.insuranceSpecification);
@@ -1920,7 +1922,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 if (isValidObjectId) {
                     try {
                         console.log('🔄 Loading contractor details for entrepreneur...');
-                        const { default: ContractorService } = await import('../services/contractorService');
+                        // ContractorService is now imported statically
                         const contractor = await ContractorService.getById(contractorId);
                         console.log('✅ Contractor loaded:', contractor);
                         console.log('🔍 Contractor companyId:', contractor?.companyId);
@@ -2468,7 +2470,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             // First, try to find contractor in MongoDB Atlas
             try {
                 console.log('🔍 Searching for contractor in MongoDB with companyId:', companyId);
-                const { authenticatedFetch } = await import('../config/api');
+                // authenticatedFetch is now imported statically
                 const response = await authenticatedFetch(`/api/contractors/search?companyId=${companyId}`);
                 console.log('📡 MongoDB search response status:', response.status);
 
@@ -2641,7 +2643,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             // Handle risk assessment report analysis
             if (documentType === 'risk-assessment') {
                 console.log('🎯 Processing risk assessment report');
-                const { analyzeReportByUrl, mapRiskAnalysisToProject } = await import('../services/riskAnalysisService');
+                // analyzeReportByUrl and mapRiskAnalysisToProject are now imported statically
                 console.log('📦 Services imported successfully');
 
                 console.log('📞 Calling analyzeReportByUrl with:', fileUrl);
@@ -2813,7 +2815,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             setSaving(true);
 
             // Use projectsAPI to save the project
-            const { projectsAPI } = await import('../services/api');
+            // projectsAPI is now imported statically
 
             if (mode === 'new') {
                 // Create new project - move key fields to root level
@@ -2913,7 +2915,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 let updatedProject;
                 if (isContactUser) {
                     console.log('🔧 Using contact API endpoint for update');
-                    const { authenticatedFetch } = await import('../config/api');
+                    // authenticatedFetch is now imported statically
                     const response = await authenticatedFetch(`/api/contact/projects/${projectId}`, {
                         method: 'PUT',
                         headers: {
@@ -4481,7 +4483,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             if (project?._id || project?.id) {
                                                                 try {
                                                                     console.log('💾 Saving garmoshka file data to database immediately...');
-                                                                    const { projectsAPI } = await import('../services/api');
+                                                                    // projectsAPI is now imported statically
 
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
@@ -4531,7 +4533,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             if (project?._id || project?.id) {
                                                                 try {
                                                                     console.log('💾 Saving garmoshka creation date to database immediately...');
-                                                                    const { projectsAPI } = await import('../services/api');
+                                                                    // projectsAPI is now imported statically
 
                                                                     const updateData = {
                                                                         'garmoshka.fileCreationDate': date
@@ -4588,7 +4590,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 // 2. THEN: Delete from blob storage if URLs exist
                                                                 if (currentFileUrl || currentThumbnailUrl) {
                                                                     console.log('🗑️ Deleting garmoshka files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                                    const { authenticatedFetch } = await import('../config/api');
+                                                                    // authenticatedFetch is now imported statically
                                                                     const response = await authenticatedFetch('/api/delete-project-file', {
                                                                         method: 'DELETE',
                                                                         headers: {
@@ -4612,7 +4614,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 // 3. FINALLY: Update database and auto-save
                                                                 if (project?._id || project?.id) {
                                                                     console.log('🗑️ Updating database to clear garmoshka file data');
-                                                                    const { projectsAPI } = await import('../services/api');
+                                                                    // projectsAPI is now imported statically
                                                                     const projectId = project._id || project.id;
 
                                                                     const updateData = {
@@ -5586,7 +5588,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         if (project?._id || project?.id) {
                                                             try {
                                                                 console.log('💾 Saving buildingPermit creation date to database immediately...');
-                                                                const { projectsAPI } = await import('../services/api');
+                                                                // projectsAPI is now imported statically
 
                                                                 const updateData = {
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': date
@@ -5649,7 +5651,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // 2. THEN: Delete from blob storage if URLs exist
                                                             if (currentFileUrl || currentThumbnailUrl) {
                                                                 console.log('🗑️ Deleting buildingPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                                const { authenticatedFetch } = await import('../config/api');
+                                                                // authenticatedFetch is now imported statically
                                                                 const response = await authenticatedFetch('/api/delete-project-file', {
                                                                     method: 'DELETE',
                                                                     headers: {
@@ -5673,7 +5675,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // 3. FINALLY: Update database and auto-save
                                                             if (project?._id || project?.id) {
                                                                 console.log('🗑️ Updating database to clear buildingPermit file data');
-                                                                const { projectsAPI } = await import('../services/api');
+                                                                // projectsAPI is now imported statically
                                                                 const projectId = project._id || project.id;
 
                                                                 const updateData = {
@@ -5812,7 +5814,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                             try {
                                                                 console.log('💾 Saving excavationPermit file data to database immediately...');
-                                                                const { projectsAPI } = await import('../services/api');
+                                                                // projectsAPI is now imported statically
                                                                 console.log('🔍 DEBUG: projectsAPI imported successfully');
 
                                                                 const updateData: any = {
@@ -5920,7 +5922,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // 2. THEN: Delete from blob storage if URLs exist
                                                             if (currentFileUrl || currentThumbnailUrl) {
                                                                 console.log('🗑️ Deleting excavationPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                                const { authenticatedFetch } = await import('../config/api');
+                                                                // authenticatedFetch is now imported statically
                                                                 const response = await authenticatedFetch('/api/delete-project-file', {
                                                                     method: 'DELETE',
                                                                     headers: {
@@ -5944,7 +5946,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // 3. FINALLY: Update database and auto-save
                                                             if (project?._id || project?.id) {
                                                                 console.log('🗑️ Updating database to clear excavationPermit file data');
-                                                                const { projectsAPI } = await import('../services/api');
+                                                                // projectsAPI is now imported statically
                                                                 const projectId = project._id || project.id;
 
                                                                 const updateData = {
@@ -6028,7 +6030,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         if (project?._id || project?.id) {
                                                             try {
                                                                 console.log('💾 Saving excavationPermit creation date to database immediately...');
-                                                                const { projectsAPI } = await import('../services/api');
+                                                                // projectsAPI is now imported statically
 
                                                                 const updateData = {
                                                                     'engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate': date
@@ -8572,7 +8574,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (project?._id || project?.id) {
                                                 try {
                                                     console.log('💾 Saving file data to database immediately...');
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
 
                                                     const updateData = {
                                                         'siteOrganizationPlan.file': url,
@@ -8641,7 +8643,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 // 2. THEN: Delete from blob storage if URLs exist
                                                 if (currentFileUrl || currentThumbnailUrl) {
                                                     console.log('🗑️ Deleting files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                    const { authenticatedFetch } = await import('../config/api');
+                                                    // authenticatedFetch is now imported statically
                                                     const response = await authenticatedFetch('/api/delete-project-file', {
                                                         method: 'DELETE',
                                                         headers: {
@@ -8665,7 +8667,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 // 3. FINALLY: Update database and auto-save
                                                 if (project?._id || project?.id) {
                                                     console.log('🗑️ Updating database to clear file data');
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const projectId = project._id || project.id;
 
                                                     const updateData = {
@@ -8728,7 +8730,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (project?._id || project?.id) {
                                                 try {
                                                     console.log('💾 Saving creation date to database immediately...');
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
 
                                                     const updateData = {
                                                         'siteOrganizationPlan.fileCreationDate': date
@@ -8784,7 +8786,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 if (project?._id || project?.id) {
                                                     try {
                                                         console.log('💾 Saving file data to database immediately...');
-                                                        const { projectsAPI } = await import('../services/api');
+                                                        // projectsAPI is now imported statically
 
                                                         const updateData = {
                                                             'siteSecurityPlan.file': url,
@@ -8853,7 +8855,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     // 2. THEN: Delete from blob storage if URLs exist
                                                     if (currentFileUrl || currentThumbnailUrl) {
                                                         console.log('🗑️ Deleting files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                        const { authenticatedFetch } = await import('../config/api');
+                                                        // authenticatedFetch is now imported statically
                                                         const response = await authenticatedFetch('/api/delete-project-file', {
                                                             method: 'DELETE',
                                                             headers: {
@@ -8877,7 +8879,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     // 3. FINALLY: Update database and auto-save
                                                     if (project?._id || project?.id) {
                                                         console.log('🗑️ Updating database to clear file data');
-                                                        const { projectsAPI } = await import('../services/api');
+                                                        // projectsAPI is now imported statically
                                                         const projectId = project._id || project.id;
 
                                                         const updateData = {
@@ -8940,7 +8942,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 if (project?._id || project?.id) {
                                                     try {
                                                         console.log('💾 Saving creation date to database immediately...');
-                                                        const { projectsAPI } = await import('../services/api');
+                                                        // projectsAPI is now imported statically
 
                                                         const updateData = {
                                                             'siteSecurityPlan.fileCreationDate': date
@@ -9358,7 +9360,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                             if (project?._id || project?.id) {
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'reportFS.file': url,
                                                         'reportFS.thumbnailUrl': thumbnailUrl || ''
@@ -9401,7 +9403,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 handleNestedFieldChange('reportFS.fileCreationDate', '');
 
                                                 if (currentFileUrl || currentThumbnailUrl) {
-                                                    const { authenticatedFetch } = await import('../config/api');
+                                                    // authenticatedFetch is now imported statically
                                                     const response = await authenticatedFetch('/api/delete-project-file', {
                                                         method: 'DELETE',
                                                         headers: {
@@ -9420,7 +9422,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
 
                                                 if (project?._id || project?.id) {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const projectId = project._id || project.id;
                                                     const updateData = {
                                                         'reportFS.file': '',
@@ -9454,7 +9456,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                             if (project?._id || project?.id) {
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'reportFS.fileCreationDate': date
                                                     };
@@ -10044,7 +10046,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document documentType to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10080,7 +10082,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document documentType to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10135,7 +10137,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (url && (project?._id || project?.id)) {
                                                                             console.log('🔍 Saving policy document to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
 
@@ -10185,7 +10187,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         // Delete from database
                                                                         if (project?._id || project?.id) {
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
 
@@ -10259,7 +10261,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document validUntil to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10306,7 +10308,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document policyNumber to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10352,7 +10354,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document insurer to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10388,7 +10390,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         if (project?._id || project?.id) {
                                                                             console.log('🔍 Saving policy document insurer to database...');
                                                                             try {
-                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                // projectsAPI is now imported statically
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
                                                                                 updatedDocuments[index] = {
@@ -10517,7 +10519,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (url && (project?._id || project?.id)) {
                                                 console.log('🔍 Saving insurance specification to database...');
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'insuranceSpecification.file': url,
                                                         'insuranceSpecification.thumbnailUrl': thumbnailUrl || '',
@@ -10559,7 +10561,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             // Delete from database
                                             if (project?._id || project?.id) {
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'insuranceSpecification.file': null,
                                                         'insuranceSpecification.thumbnailUrl': null,
@@ -10628,7 +10630,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (url && (project?._id || project?.id)) {
                                                 console.log('🔍 Saving insurance contract clause to database...');
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'insuranceContractClause.file': url,
                                                         'insuranceContractClause.thumbnailUrl': thumbnailUrl || '',
@@ -10670,7 +10672,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             // Delete from database
                                             if (project?._id || project?.id) {
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'insuranceContractClause.file': null,
                                                         'insuranceContractClause.thumbnailUrl': null,
@@ -10739,7 +10741,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (url && (project?._id || project?.id)) {
                                                 console.log('🔍 Saving proposal form to database...');
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'proposalForm.file': url,
                                                         'proposalForm.thumbnailUrl': thumbnailUrl || '',
@@ -10781,7 +10783,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             // Delete from database
                                             if (project?._id || project?.id) {
                                                 try {
-                                                    const { projectsAPI } = await import('../services/api');
+                                                    // projectsAPI is now imported statically
                                                     const updateData = {
                                                         'proposalForm.file': null,
                                                         'proposalForm.thumbnailUrl': null,
