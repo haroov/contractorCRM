@@ -1,10 +1,15 @@
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 ContractorCRM/1.0';
 
-let chromium;
-try {
-    chromium = require('playwright').chromium;
-} catch (e) {
-    chromium = null;
+let chromium = null;
+
+// Only load Playwright if headless is enabled
+if (process.env.ENABLE_HEADLESS_FETCH === 'true') {
+    try {
+        chromium = require('playwright').chromium;
+    } catch (e) {
+        console.warn('⚠️ Playwright not available:', e?.message || e);
+        chromium = null;
+    }
 }
 
 const MAX_CONCURRENT = Math.max(1, parseInt(process.env.HEADLESS_MAX_CONCURRENCY || '1', 10));
@@ -62,7 +67,7 @@ async function clickCookieBanners(page) {
 }
 
 module.exports.fetchWithHeadless = async function fetchWithHeadless(url) {
-    if (!chromium) throw new Error('Playwright chromium not available');
+    if (!chromium) throw new Error('Headless fetch disabled or Playwright not available');
     await acquire();
     const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     try {
