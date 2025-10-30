@@ -62,6 +62,29 @@ async function analyzeCompanyWebsite(websiteUrl) {
         };
     }
 
+    // Overall timeout for the entire analysis (45 seconds)
+    const overallTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Analysis timeout after 45 seconds')), 45000);
+    });
+
+    try {
+        return await Promise.race([
+            analyzeCompanyWebsiteInternal(websiteUrl),
+            overallTimeout
+        ]);
+    } catch (error) {
+        console.error("❌ Error in AI analysis:", error);
+        return {
+            companyName: "חברה לא זוהתה",
+            about: `לא ניתן לנתח את האתר ${websiteUrl} כרגע: ${error.message}. אנא נסה שוב מאוחר יותר.`,
+            safety: "מידע על בטיחות לא זמין",
+            projects: "מידע על פרויקטים לא זמין",
+            logoUrl: null
+        };
+    }
+}
+
+async function analyzeCompanyWebsiteInternal(websiteUrl) {
     try {
         // Try OpenAI web_search tool first (SDK v4 Responses API)
         if (openai && openai.responses && typeof openai.responses.create === 'function') {
@@ -70,15 +93,18 @@ async function analyzeCompanyWebsite(websiteUrl) {
             const userPromptSearch = `נתח את האתר ${websiteUrl} עם דגש על עמודי אודות/פרויקטים/בטיחות. החזר JSON עם {companyName, about (~1000 מילים), safety, projects (מערך), logoUrl (מאותו דומיין בלבד)}.`;
 
             try {
-                const resp = await openai.responses.create({
-                    model: 'gpt-4o-mini',
-                    input: [
-                        { role: 'system', content: systemPromptSearch },
-                        { role: 'user', content: userPromptSearch }
-                    ],
-                    tools: [{ type: 'web_search' }],
-                    temperature: 0.0,
-                });
+                const resp = await Promise.race([
+                    openai.responses.create({
+                        model: 'gpt-4o-mini',
+                        input: [
+                            { role: 'system', content: systemPromptSearch },
+                            { role: 'user', content: userPromptSearch }
+                        ],
+                        tools: [{ type: 'web_search' }],
+                        temperature: 0.0,
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI web_search timeout')), 25000))
+                ]);
 
                 // Attempt to unify content extraction from Responses API
                 const responseText = resp?.output_text || resp?.content?.[0]?.text || resp?.choices?.[0]?.message?.content;
@@ -108,16 +134,19 @@ async function analyzeCompanyWebsite(websiteUrl) {
             const userPromptSearch = `נתח את האתר ${websiteUrl} עם דגש על עמודי אודות/פרויקטים/בטיחות. החזר JSON עם {companyName, about (~1000 מילים), safety, projects (מערך), logoUrl}.`;
 
             try {
-                const response = await openai.chat.completions.create({
-                    model: 'gpt-4o-mini',
-                    messages: [
-                        { role: 'system', content: systemPromptSearch },
-                        { role: 'user', content: userPromptSearch }
-                    ],
-                    tools: [{ type: 'web_search' }],
-                    temperature: 0.0,
-                    max_tokens: 4000
-                });
+                const response = await Promise.race([
+                    openai.chat.completions.create({
+                        model: 'gpt-4o-mini',
+                        messages: [
+                            { role: 'system', content: systemPromptSearch },
+                            { role: 'user', content: userPromptSearch }
+                        ],
+                        tools: [{ type: 'web_search' }],
+                        temperature: 0.0,
+                        max_tokens: 4000
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI web_search timeout')), 25000))
+                ]);
 
                 const responseText = response.choices?.[0]?.message?.content;
                 if (responseText) {
@@ -200,7 +229,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
                         'Upgrade-Insecure-Requests': '1'
                     },
                     redirect: 'follow',
-                    timeout: 20000
+                    timeout: 15000 // Reduced from 20s to 15s
                 });
                 const status = res.status;
                 const html = await res.text();
@@ -392,21 +421,27 @@ async function analyzeCompanyWebsite(websiteUrl) {
 
         let aiResponse;
         if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o-mini",
-                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
-                temperature: 0.0,
-                max_tokens: 4000
-            });
+            const response = await Promise.race([
+                openai.chat.completions.create({
+                    model: "gpt-4o-mini",
+                    messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+                    temperature: 0.0,
+                    max_tokens: 4000
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 20000))
+            ]);
             console.log("✅ Received response from OpenAI (v4)");
             aiResponse = response.choices?.[0]?.message?.content;
         } else if (openai && typeof openai.createChatCompletion === 'function') {
-            const response = await openai.createChatCompletion({
-                model: "gpt-4o-mini",
-                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
-                temperature: 0.0,
-                max_tokens: 4000
-            });
+            const response = await Promise.race([
+                openai.createChatCompletion({
+                    model: "gpt-4o-mini",
+                    messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+                    temperature: 0.0,
+                    max_tokens: 4000
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('OpenAI API timeout')), 20000))
+            ]);
             console.log("✅ Received response from OpenAI (v3)");
             aiResponse = response.data?.choices?.[0]?.message?.content || response.data?.choices?.[0]?.text;
         } else {
@@ -445,18 +480,9 @@ async function analyzeCompanyWebsite(websiteUrl) {
         });
 
         return analysisResult;
-
     } catch (error) {
-        console.error("❌ Error in AI analysis:", error);
-
-        // Fallback to basic analysis
-        return {
-            companyName: "חברה לא זוהתה",
-            about: `לא ניתן לנתח את האתר ${websiteUrl} כרגע. אנא נסה שוב מאוחר יותר או בדוק שהכתובת נכונה.`,
-            safety: "מידע על בטיחות לא זמין",
-            projects: "מידע על פרויקטים לא זמין",
-            logoUrl: null
-        };
+        console.error("❌ Error in AI analysis internal:", error);
+        throw error; // Re-throw to be handled by wrapper
     }
 }
 
