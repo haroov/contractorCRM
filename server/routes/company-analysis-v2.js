@@ -48,6 +48,37 @@ async function callOpenAIChatWithWebSearch({ systemPrompt, userPrompt }) {
     return text;
 }
 
+async function callOpenAIChatSimple({ systemPrompt, userPrompt }) {
+    if (!OPENAI_API_KEY) {
+        throw new Error('Missing OPENAI_API_KEY environment variable');
+    }
+    const payload = {
+        model: OPENAI_MODEL,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.2,
+        max_tokens: 4000
+    };
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        const message = data?.error?.message || `OpenAI API error (${response.status})`;
+        throw new Error(message);
+    }
+    const text = data?.choices?.[0]?.message?.content || '';
+    if (!text) throw new Error('OpenAI API returned empty content');
+    return text;
+}
+
 function normalizeProjects(projectsValue) {
     if (Array.isArray(projectsValue)) {
         return projectsValue
@@ -99,7 +130,28 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
 
 חשוב: החזר רק JSON תקין ללא טקסט נוסף.`;
 
-    const rawResponse = await callOpenAIChatWithWebSearch({ systemPrompt, userPrompt });
+    let rawResponse;
+    try {
+        rawResponse = await callOpenAIChatWithWebSearch({ systemPrompt, userPrompt });
+    } catch (err) {
+        console.warn('⚠️ web_search call failed, falling back to simple content analysis:', err.message);
+        // Fallback: fetch readable text via proxy and analyze without tools
+        const proxyUrl = `https://r.jina.ai/http://${hostname}`;
+        let siteText = '';
+        try {
+            const r = await fetch(proxyUrl, { headers: { 'User-Agent': 'ContractorCRM/1.0' }, timeout: 10000 });
+            if (r.ok) siteText = (await r.text()).slice(0, 12000);
+        } catch (_) {}
+        const fallbackSystem = 'אתה מנתח אתרי חברות. הסתמך רק על הטקסט שסופק.';
+        const fallbackUser = `נתח את החברה מהדומיין ${hostname} לפי הטקסט הבא:
+
+${siteText}
+
+החזר JSON בלבד במבנה:
+{"companyName":"","about":"","safety":"","projects":[],"logoUrl":null}`;
+        rawResponse = await callOpenAIChatSimple({ systemPrompt: fallbackSystem, userPrompt: fallbackUser });
+    }
+
     console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
 
     let cleaned = rawResponse.trim();
