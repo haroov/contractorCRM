@@ -51,6 +51,46 @@ async function callOpenAIChatWithWebSearch({ systemPrompt, userPrompt }) {
     return text;
 }
 
+async function searchGoogleForLogo(companyName, website) {
+    try {
+        console.log('🔍 Searching Google for logo:', companyName, website);
+        const searchQuery = `${companyName} logo site:${website}`;
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
+        
+        const response = await fetch(searchUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
+            timeout: 10000
+        });
+        
+        if (!response.ok) {
+            console.warn('⚠️ Google search failed:', response.status);
+            return null;
+        }
+        
+        const html = await response.text();
+        
+        // Extract first image URL from Google Images results
+        const imgMatch = html.match(/<img[^>]+src="([^"]+)"[^>]*>/i);
+        if (imgMatch && imgMatch[1]) {
+            let imgUrl = imgMatch[1];
+            // Clean up Google's proxied URLs
+            if (imgUrl.startsWith('/images?q=')) {
+                imgUrl = 'https://www.google.com' + imgUrl;
+            }
+            console.log('✅ Found logo URL:', imgUrl);
+            return imgUrl;
+        }
+        
+        console.log('❌ No logo found in Google search results');
+        return null;
+    } catch (error) {
+        console.warn('⚠️ Google logo search failed:', error.message);
+        return null;
+    }
+}
+
 async function callOpenAIChatSimple({ systemPrompt, userPrompt }) {
     if (!OPENAI_API_KEY) {
         throw new Error('Missing OPENAI_API_KEY environment variable');
@@ -114,7 +154,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
 חשוב מאוד: עליך להשתמש בכלי web_search כדי לחפש מידע עדכני ומפורט על החברה מהאתר ${hostname}.
 אל תסתמך על הידע הקיים שלך - חפש מידע חדש ומעודכן מהאינטרנט.
 התמקד במיוחד במידע על בטיחות, הסמכות, תקנים ופרויקטים.
-כתוב תקציר מפורט באורך 1000 מילים בדיוק.`;
+כתוב תקציר מפורט באורך 1000 מילים בדיוק - לא פחות ולא יותר!`;
 
     const userPrompt = `אנא חפש מידע מפורט על החברה "${displayName}" (${hostname}) באמצעות web_search.
 חפש מידע על:
@@ -134,11 +174,12 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
   "logoUrl": "URL של הלוגו או null"
 }
 
-חשוב: 
-- about צריך להיות בדיוק 1000 מילים
+חשוב מאוד: 
+- about צריך להיות בדיוק 1000 מילים - לא פחות ולא יותר!
 - safety צריך להיות מפורט עם דגשי בטיחות ספציפיים (500-700 מילים)
 - projects צריך לכלול תיאורים מפורטים
-- החזר רק JSON תקין ללא טקסט נוסף.`;
+- החזר רק JSON תקין ללא טקסט נוסף
+- אם אין מספיק מידע, הרחב את התיאור עם פרטים כלליים על החברה`;
 
     let rawResponse;
     try {
@@ -152,7 +193,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
             const r = await fetch(proxyUrl, { headers: { 'User-Agent': 'ContractorCRM/1.0' }, timeout: 10000 });
             if (r.ok) siteText = (await r.text()).slice(0, 12000);
         } catch (_) { }
-        const fallbackSystem = 'אתה מנתח אתרי חברות בניה ונדל"ן. הסתמך רק על הטקסט שסופק וכתוב תקציר מפורט באורך 1000 מילים בדיוק.';
+        const fallbackSystem = 'אתה מנתח אתרי חברות בניה ונדל"ן. הסתמך רק על הטקסט שסופק וכתוב תקציר מפורט באורך 1000 מילים בדיוק - לא פחות ולא יותר!';
         const fallbackUser = `נתח את החברה מהדומיין ${hostname} לפי הטקסט הבא:
 
 ${siteText}
@@ -166,10 +207,11 @@ ${siteText}
   "logoUrl": null
 }
 
-חשוב: 
-- about צריך להיות בדיוק 1000 מילים
+חשוב מאוד: 
+- about צריך להיות בדיוק 1000 מילים - לא פחות ולא יותר!
 - safety צריך להיות מפורט עם דגשי בטיחות ספציפיים (500-700 מילים)
-- projects צריך לכלול תיאורים מפורטים`;
+- projects צריך לכלול תיאורים מפורטים
+- אם אין מספיק מידע, הרחב את התיאור עם פרטים כלליים על החברה`;
         rawResponse = await callOpenAIChatSimple({ systemPrompt: fallbackSystem, userPrompt: fallbackUser });
     }
 
@@ -192,12 +234,19 @@ ${siteText}
         }
     }
 
+    // Search for logo if not found in AI response
+    let logoUrl = parsed?.logoUrl || null;
+    if (!logoUrl) {
+        console.log('🔍 No logo found in AI response, searching Google...');
+        logoUrl = await searchGoogleForLogo(displayName, hostname);
+    }
+
     const result = {
         companyName: parsed?.companyName || displayName,
         about: parsed?.about || '',
         safety: parsed?.safety || '',
         projects: normalizeProjects(parsed?.projects),
-        logoUrl: parsed?.logoUrl || null
+        logoUrl: logoUrl
     };
 
     console.log('✅ Parsed analysis result:', result);
