@@ -302,29 +302,48 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
 
-            // Debug name similarity: compare DB name to AI-detected company name (if any)
+            // Check name match using AI (semantic check instead of statistical)
             try {
                 const aiName = (analysisResult?.companyName || '').toString().trim();
                 const dbNameHe = contractor?.name || localName || '';
                 const dbNameEn = contractor?.nameEnglish || localNameEnglish || '';
 
                 if (!aiName) {
-                    console.log('ℹ️ Skipping name similarity check (missing aiName)');
+                    console.log('ℹ️ Skipping name match check (missing aiName)');
                 } else {
                     const compareTo = containsHebrew(aiName) ? dbNameHe : (dbNameEn || dbNameHe);
                     if (!compareTo) {
-                        console.log('ℹ️ Skipping name similarity check (no appropriate DB name)', { aiName });
+                        console.log('ℹ️ Skipping name match check (no appropriate DB name)', { aiName });
                     } else {
-                        const similarity = computeStringSimilarity(compareTo, aiName);
-                        if (similarity < 0.95) {
-                            console.warn('⚠️ Company name mismatch (language-aware)', { db: compareTo, ai: aiName, similarity });
-                        } else {
-                            console.log('✅ Company name similarity OK (>=95%)', { db: compareTo, ai: aiName, similarity });
+                        // Use AI-based semantic matching instead of statistical
+                        try {
+                            const checkResponse = await fetch('/api/company-analysis/check-name-match', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ dbName: compareTo, aiName })
+                            });
+                            if (checkResponse.ok) {
+                                const { matches } = await checkResponse.json();
+                                if (matches) {
+                                    console.log('✅ Company names match (AI semantic check)', { db: compareTo, ai: aiName });
+                                } else {
+                                    console.warn('⚠️ Company name mismatch (AI semantic check)', { db: compareTo, ai: aiName });
+                                }
+                            }
+                        } catch (apiErr) {
+                            console.warn('⚠️ AI name match API call failed, using fallback statistical check:', apiErr);
+                            // Fallback to statistical check if AI API fails
+                            const similarity = computeStringSimilarity(compareTo, aiName);
+                            if (similarity < 0.95) {
+                                console.warn('⚠️ Company name mismatch (statistical fallback)', { db: compareTo, ai: aiName, similarity });
+                            } else {
+                                console.log('✅ Company name similarity OK (statistical fallback, >=95%)', { db: compareTo, ai: aiName, similarity });
+                            }
                         }
                     }
                 }
             } catch (e) {
-                console.warn('⚠️ Name similarity check failed:', e);
+                console.warn('⚠️ Name match check failed:', e);
             }
 
             // Update the contractor state with the analyzed data

@@ -95,10 +95,10 @@ async function domainWebSearchCollectText(hostname, companyName) {
 
 async function tryClearbit(hostname) {
     try {
-        const url = `https://logo.clearbit.com/${hostname.replace(/^www\./,'')}`;
+        const url = `https://logo.clearbit.com/${hostname.replace(/^www\./, '')}`;
         const r = await fetch(url, { timeout: 8000 });
         if (r.ok) return url; // clearbit serves the image directly
-    } catch(_) {}
+    } catch (_) { }
     return null;
 }
 
@@ -143,28 +143,58 @@ async function searchGoogleForLogo(companyName, website) {
 }
 
 async function tryFavicon(hostname) {
-    const url = `https://${hostname.replace(/^www\./,'')}/favicon.ico`;
+    const url = `https://${hostname.replace(/^www\./, '')}/favicon.ico`;
     try {
         const r = await fetch(url, { timeout: 8000 });
         if (r.ok) return url;
-    } catch(_) {}
+    } catch (_) { }
     return null;
 }
 
 async function findLogoUrl(companyName, hostname) {
-    // 1) Clearbit
+    // 1) Try common logo paths on the site
+    const commonPaths = ['/logo.png', '/logo.svg', '/images/logo.png', '/images/logo.svg', '/wp-content/uploads/logo.png', '/assets/logo.png'];
+    for (const path of commonPaths) {
+        try {
+            const testUrl = `https://${hostname.replace(/^www\./, '')}${path}`;
+            const r = await fetch(testUrl, { timeout: 5000 });
+            if (r.ok && r.headers.get('content-type')?.startsWith('image/')) {
+                console.log('✅ Found logo at:', testUrl);
+                return testUrl;
+            }
+        } catch (_) {}
+    }
+    // 2) Clearbit
     let url = await tryClearbit(hostname);
     if (url) return url;
-    // 2) Google Images
+    // 3) Google Images
     url = await searchGoogleForLogo(companyName, hostname);
     if (url) return url;
-    // 3) Site favicon
+    // 4) Site favicon
     url = await tryFavicon(hostname);
     if (url) return url;
     return null;
 }
 
-async function callOpenAIChatSimple({ systemPrompt, userPrompt }) {
+async function checkNameMatchWithAI(dbName, aiName) {
+    if (!dbName || !aiName) return false;
+    if (!OPENAI_API_KEY) return false;
+    try {
+        const system = 'אתה עוזר שבודק אם שני שמות חברות מתייחסים לאותה חברה. החזר רק "כן" או "לא".';
+        const user = `שם 1: "${dbName}"
+שם 2: "${aiName}"
+
+האם שני השמות מתייחסים לאותה חברה? לדוגמה: "קבוצת תדהר" כוללת "תדהר בניה בע"מ", "יונילבר" כוללת "יונילבר ישראל בע"מ". החזר רק "כן" או "לא".`;
+        const response = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user });
+        const answer = response.trim().toLowerCase();
+        return answer.includes('כן') || answer.includes('yes');
+    } catch (e) {
+        console.warn('⚠️ AI name match check failed:', e.message);
+        return false;
+    }
+}
+
+async function callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens = 8000 }) {
     if (!OPENAI_API_KEY) {
         throw new Error('Missing OPENAI_API_KEY environment variable');
     }
@@ -175,7 +205,7 @@ async function callOpenAIChatSimple({ systemPrompt, userPrompt }) {
             { role: 'user', content: userPrompt }
         ],
         temperature: 0.2,
-        max_tokens: 8000
+        max_tokens: maxTokens
     };
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -202,21 +232,43 @@ function getWordCount(text) {
 }
 
 async function enforceExactWordLength(baseText, targetWords, extraContext) {
-    const system = 'אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON.';
-    const user = `מספר מילים נדרש: ${targetWords}.
-אם הטקסט הבא קצר מדי או ריק – כתוב טקסט חדש באורך המבוקש תוך הסתמכות על המידע הנוסף:
+    const system = 'אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON. חשוב מאוד: הטקסט חייב להכיל בדיוק ' + targetWords + ' מילים!';
+    const user = `מספר מילים נדרש: ${targetWords} מילים בדיוק.
 
 [טקסט קיים]
 """
 ${baseText || ''}
 """
 
-[מידע נוסף מהאינטרנט]
+[מידע נוסף מהאינטרנט להרחבה]
 """
-${(extraContext || '').slice(0, 5000)}
-"""`;
-    const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user });
-    return rewritten.trim();
+${(extraContext || '').slice(0, 8000)}
+"""
+
+כתוב טקסט מפורט באורך ${targetWords} מילים בדיוק. אם הטקסט הקיים קצר, הרחב אותו עם המידע הנוסף. אם הוא ארוך, צמצם אותו. התוצאה חייבת להכיל בדיוק ${targetWords} מילים.`;
+    const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 12000 });
+    const final = rewritten.trim();
+    const count = getWordCount(final);
+    // If still not exact, retry once more with stronger instruction
+    if (count !== targetWords && count > 0) {
+        console.log(`⚠️ First rewrite: ${count} words (target: ${targetWords}), retrying...`);
+        const retryUser = `הטקסט הבא צריך להיות בדיוק ${targetWords} מילים. אם הוא קצר - הרחב אותו. אם הוא ארוך - קוצר אותו. התוצאה חייבת להכיל בדיוק ${targetWords} מילים, לא פחות ולא יותר!
+
+טקסט נוכחי (${count} מילים):
+"""
+${final}
+"""
+
+מידע נוסף להרחבה (אם צריך):
+"""
+${(extraContext || '').slice(0, 4000)}
+"""
+
+כתוב טקסט באורך ${targetWords} מילים בדיוק!`;
+        const retryResult = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: retryUser, maxTokens: 12000 });
+        return retryResult.trim();
+    }
+    return final;
 }
 
 async function enforceRangeWordLength(baseText, minWords, maxWords, preferred, extraContext) {
@@ -279,7 +331,7 @@ WEB_RESULTS (סיכומי דפי האתר והקישורים הרלוונטיי�
 ${collectedText}
 """`;
 
-    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt });
+    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 12000 });
 
     console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
 
@@ -361,6 +413,23 @@ router.post('/analyze-company', async (req, res) => {
         res.status(500).json({
             success: false,
             error: error.message || 'Failed to analyze company website'
+        });
+    }
+});
+
+router.post('/check-name-match', async (req, res) => {
+    try {
+        const { dbName, aiName } = req.body || {};
+        if (!dbName || !aiName) {
+            return res.status(400).json({ success: false, error: 'Both dbName and aiName are required' });
+        }
+        const matches = await checkNameMatchWithAI(dbName, aiName);
+        res.json({ success: true, matches });
+    } catch (error) {
+        console.error('❌ check-name-match failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to check name match'
         });
     }
 });
