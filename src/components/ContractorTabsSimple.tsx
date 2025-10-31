@@ -281,6 +281,8 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         return 1 - dist / maxLen;
     };
 
+    const containsHebrew = (s: string): boolean => /[\u0590-\u05FF]/.test(s || '');
+
     // Function to analyze company website using AI
     const analyzeCompanyWebsite = async (websiteUrl: string) => {
         if (!websiteUrl) return;
@@ -302,17 +304,24 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
             // Debug name similarity: compare DB name to AI-detected company name (if any)
             try {
-                const dbName = contractor?.name || localName || '';
-                const aiName = (analysisResult?.companyName || '').toString();
-                if (aiName && dbName) {
-                    const similarity = computeStringSimilarity(dbName, aiName);
-                    if (similarity < 0.95) {
-                        console.warn('⚠️ Company name mismatch (similarity < 95%)', { dbName, aiName, similarity });
-                    } else {
-                        console.log('✅ Company name similarity OK (>=95%)', { dbName, aiName, similarity });
-                    }
+                const aiName = (analysisResult?.companyName || '').toString().trim();
+                const dbNameHe = contractor?.name || localName || '';
+                const dbNameEn = contractor?.nameEnglish || localNameEnglish || '';
+
+                if (!aiName) {
+                    console.log('ℹ️ Skipping name similarity check (missing aiName)');
                 } else {
-                    console.log('ℹ️ Skipping name similarity check (missing dbName or aiName)', { dbName, aiName });
+                    const compareTo = containsHebrew(aiName) ? dbNameHe : (dbNameEn || dbNameHe);
+                    if (!compareTo) {
+                        console.log('ℹ️ Skipping name similarity check (no appropriate DB name)', { aiName });
+                    } else {
+                        const similarity = computeStringSimilarity(compareTo, aiName);
+                        if (similarity < 0.95) {
+                            console.warn('⚠️ Company name mismatch (language-aware)', { db: compareTo, ai: aiName, similarity });
+                        } else {
+                            console.log('✅ Company name similarity OK (>=95%)', { db: compareTo, ai: aiName, similarity });
+                        }
+                    }
                 }
             } catch (e) {
                 console.warn('⚠️ Name similarity check failed:', e);

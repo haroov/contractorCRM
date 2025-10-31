@@ -93,6 +93,15 @@ async function domainWebSearchCollectText(hostname, companyName) {
     return combined;
 }
 
+async function tryClearbit(hostname) {
+    try {
+        const url = `https://logo.clearbit.com/${hostname.replace(/^www\./,'')}`;
+        const r = await fetch(url, { timeout: 8000 });
+        if (r.ok) return url; // clearbit serves the image directly
+    } catch(_) {}
+    return null;
+}
+
 async function searchGoogleForLogo(companyName, website) {
     try {
         console.log('🔍 Searching Google for logo:', companyName, website);
@@ -131,6 +140,28 @@ async function searchGoogleForLogo(companyName, website) {
         console.warn('⚠️ Google logo search failed:', error.message);
         return null;
     }
+}
+
+async function tryFavicon(hostname) {
+    const url = `https://${hostname.replace(/^www\./,'')}/favicon.ico`;
+    try {
+        const r = await fetch(url, { timeout: 8000 });
+        if (r.ok) return url;
+    } catch(_) {}
+    return null;
+}
+
+async function findLogoUrl(companyName, hostname) {
+    // 1) Clearbit
+    let url = await tryClearbit(hostname);
+    if (url) return url;
+    // 2) Google Images
+    url = await searchGoogleForLogo(companyName, hostname);
+    if (url) return url;
+    // 3) Site favicon
+    url = await tryFavicon(hostname);
+    if (url) return url;
+    return null;
 }
 
 async function callOpenAIChatSimple({ systemPrompt, userPrompt }) {
@@ -272,8 +303,8 @@ ${collectedText}
     // Search for logo if not found in AI response
     let logoUrl = parsed?.logoUrl || null;
     if (!logoUrl) {
-        console.log('🔍 No logo found in AI response, searching Google...');
-        logoUrl = await searchGoogleForLogo(displayName, hostname);
+        console.log('🔍 No logo found in AI response, searching logo providers...');
+        logoUrl = await findLogoUrl(displayName, hostname);
     }
 
     // Enforce exact 1000-word requirement for 'about' (even if empty/short)
