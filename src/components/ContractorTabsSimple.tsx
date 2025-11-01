@@ -287,6 +287,18 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 setCompanyLogo(mappedData.logoUrl);
             } else {
                 console.warn('⚠️ No logo URL in mapped data');
+                // Client-side final fallback: Google S2 favicon for current website domain
+                try {
+                    const sourceUrl = websiteUrl || localWebsite || '';
+                    const url = sourceUrl.startsWith('http') ? sourceUrl : `https://${sourceUrl}`;
+                    const { hostname } = new URL(url);
+                    if (hostname) {
+                        const base = hostname.replace(/^www\./, '');
+                        const s2 = `https://www.google.com/s2/favicons?domain=${base}&sz=256`;
+                        console.log('🖼️ Using client-side S2 favicon as logo:', s2);
+                        setCompanyLogo(s2);
+                    }
+                } catch (_) { }
             }
             // Note: Not updating company name as it comes from company registry
 
