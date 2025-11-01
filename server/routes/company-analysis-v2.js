@@ -408,23 +408,23 @@ function getWordCount(text) {
 // Generator for a rich "about" section - always ensures long, detailed text
 async function generateRichAbout(collectedText, displayName, hostname) {
     const system = `אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל.
-המשימה שלך היא לכתוב טקסט מקיף, ארוך מאוד ומפורט - לפחות 1500 מילים, ועדיף 2000-3000 מילים.
-הטקסט חייב להיות ארוך מאוד, מפורט, מקצועי ורהוט.
-כלול: היסטוריה מפורטת של החברה, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים ספציפיים, שנות ניסיון ותק, צוות מקצועי ומנוסה, טכנולוגיות מתקדמות בשימוש, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות מקצועיות, חדשנות ופיתוח, אחריות חברתית וסביבתית, חזון ומטרות ארוכות טווח, שיטות עבודה, גישה ללקוח, ערכים ועקרונות, פרסים והכרות, שותפויות, התפתחות החברה לאורך השנים.
-חשוב מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 1500 מילים! הרחב כל נושא, הוסף פרטים, תאר באופן מעמיק.`;
+המשימה שלך היא לכתוב טקסט מקיף, ארוך מאוד מאוד ומפורט - לפחות 2000 מילים, ועדיף 2500-3500 מילים.
+הטקסט חייב להיות ארוך מאוד מאוד, מפורט מאוד, מקצועי ורהוט.
+כלול בהרחבה: היסטוריה מפורטת מאוד של החברה מראשיתה, תחומי פעילות רחבים ומגוונים, פרויקטים בולטים עם פרטים ספציפיים מאוד, שנות ניסיון ותק עם דוגמאות, צוות מקצועי ומנוסה, טכנולוגיות מתקדמות בשימוש, שירותים מלאים ומגוונים, לקוחות ופרויקטים קודמים עם סיפורי הצלחה, תעודות והסמכות מקצועיות, חדשנות ופיתוח, אחריות חברתית וסביבתית, חזון ומטרות ארוכות טווח, שיטות עבודה ייחודיות, גישה ללקוח, ערכים ועקרונות, פרסים והכרות, שותפויות אסטרטגיות, התפתחות החברה לאורך השנים, אתגרים והצלחות, תרומה לקהילה.
+חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 2000 מילים! הרחב כל נושא מאוד מאוד, הוסף פרטים רבים, תאר באופן מעמיק ומפורט, כתוב פסקאות ארוכות מאוד.`;
 
-    const user = `כתוב טקסט "אודות החברה" ארוך מאוד, מפורט ומקיף (לפחות 1500 מילים, עדיף 2000-3000 מילים) עבור "${displayName}" (${hostname}).
-השתמש רק במידע מטקסטים שנאספו מהאתר (WEB_RESULTS) - אל תמציא עובדות, אבל הרחב ותאר בצורה מפורטת את מה שיש.
-אם יש מעט מידע, הרחב כל נקודה עם פרטים מפורטים.
-כלול כל מה שאפשר על: היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון.
-חשוב מאוד: הטקסט חייב להיות ארוך מאוד ומפורט - לפחות 1500 מילים! כתוב פסקאות ארוכות, הרחב כל נושא, תאר באופן מעמיק ומפורט.
+    const user = `כתוב טקסט "אודות החברה" ארוך מאוד מאוד, מפורט ומקיף מאוד (לפחות 2000 מילים, עדיף 2500-3500 מילים) עבור "${displayName}" (${hostname}).
+השתמש רק במידע מטקסטים שנאספו מהאתר (WEB_RESULTS) - אל תמציא עובדות, אבל הרחב ותאר בצורה מאוד מפורטת את מה שיש.
+אם יש מעט מידע, הרחב כל נקודה מאוד מאוד עם פרטים מפורטים רבים.
+כלול כל מה שאפשר על: היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון, שיטות עבודה, גישה ללקוח, ערכים, פרסים, שותפויות, התפתחות.
+חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד מאוד ומפורט - לפחות 2000 מילים! כתוב פסקאות ארוכות מאוד, הרחב כל נושא מאוד מאוד, תאר באופן מעמיק ומפורט מאוד מאוד. כל פסקה צריכה להיות ארוכה ומפורטת.
 
 מידע שנאסף מהאתר:
 """
-${(collectedText || '').slice(0, 48000)}
+${(collectedText || '').slice(0, 50000)}
 """`;
     try {
-        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 25000 });
+        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 30000 });
         return (about || '').trim();
     } catch (e) {
         console.warn('⚠️ generateRichAbout failed:', e.message);
@@ -433,7 +433,13 @@ ${(collectedText || '').slice(0, 48000)}
 }
 
 async function enforceExactWordLength(baseText, targetWords, extraContext) {
-    const system = 'אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON. חשוב מאוד: הטקסט חייב להכיל בדיוק ' + targetWords + ' מילים!';
+    const system = `אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש.
+שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON.
+חשוב מאוד: הטקסט חייב להכיל בדיוק ${targetWords} מילים! אם הטקסט קצר - הרחב אותו מאוד. אם הוא ארוך - צמצם אותו.
+הרחב כל נושא, הוסף פרטים, תאר באופן מעמיק ומפורט.`;
+    
+    // Use more context for longer texts
+    const contextLimit = targetWords >= 1500 ? 30000 : 15000;
     const user = `מספר מילים נדרש: ${targetWords} מילים בדיוק.
 
 [טקסט קיים]
@@ -443,30 +449,36 @@ ${baseText || ''}
 
 [מידע נוסף מהאינטרנט להרחבה]
 """
-${(extraContext || '').slice(0, 8000)}
+${(extraContext || '').slice(0, contextLimit)}
 """
 
-כתוב טקסט מפורט באורך ${targetWords} מילים בדיוק. אם הטקסט הקיים קצר, הרחב אותו עם המידע הנוסף. אם הוא ארוך, צמצם אותו. התוצאה חייבת להכיל בדיוק ${targetWords} מילים.`;
-    const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 12000 });
+כתוב טקסט מפורט באורך ${targetWords} מילים בדיוק. אם הטקסט הקיים קצר, הרחב אותו מאוד עם המידע הנוסף. אם הוא ארוך, צמצם אותו.
+התוצאה חייבת להכיל בדיוק ${targetWords} מילים. כתוב פסקאות ארוכות ומפורטות!`;
+    
+    const maxTokensForLength = Math.max(18000, targetWords * 12); // ~12 tokens per word
+    const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: maxTokensForLength });
     const final = rewritten.trim();
     const count = getWordCount(final);
-    // If still not exact, retry once more with stronger instruction
-    if (count !== targetWords && count > 0) {
-        console.log(`⚠️ First rewrite: ${count} words (target: ${targetWords}), retrying...`);
-        const retryUser = `הטקסט הבא צריך להיות בדיוק ${targetWords} מילים. אם הוא קצר - הרחב אותו. אם הוא ארוך - קוצר אותו. התוצאה חייבת להכיל בדיוק ${targetWords} מילים, לא פחות ולא יותר!
+    
+    // If still not long enough, retry with even stronger instruction
+    if (count < targetWords * 0.9) { // Allow 10% tolerance, but enforce if too short
+        console.log(`⚠️ First rewrite: ${count} words (target: ${targetWords}), retrying with more context...`);
+        const retryUser = `הטקסט הבא צריך להיות לפחות ${targetWords} מילים! אם הוא קצר - הרחב אותו מאוד. התוצאה חייבת להכיל לפחות ${targetWords} מילים!
 
-טקסט נוכחי (${count} מילים):
+טקסט נוכחי (${count} מילים - קצר מדי!):
 """
 ${final}
 """
 
-מידע נוסף להרחבה (אם צריך):
+מידע נוסף להרחבה:
 """
-${(extraContext || '').slice(0, 4000)}
+${(extraContext || '').slice(0, 40000)}
 """
 
-כתוב טקסט באורך ${targetWords} מילים בדיוק!`;
-        const retryResult = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: retryUser, maxTokens: 12000 });
+כתוב טקסט ארוך מאוד ומפורט באורך לפחות ${targetWords} מילים! הרחב כל נושא, הוסף פרטים רבים, תאר באופן מעמיק.`;
+        const retryResult = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: retryUser, maxTokens: maxTokensForLength });
+        const retryCount = getWordCount(retryResult.trim());
+        console.log(`✅ After retry: ${retryCount} words (target: ${targetWords})`);
         return retryResult.trim();
     }
     return final;
@@ -511,34 +523,58 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     console.log('🌐 Performing domain web search and collection for:', hostname);
     const collectedText = await domainWebSearchCollectText(hostname, displayName);
 
-    // 2) Always use generateRichAbout to ensure long, detailed text (minimum 1500 words)
-    console.log('🤖 Generating rich about text (1500+ words)...');
+    // 2) Always generate and enforce long, detailed text (minimum 2000 words)
+    console.log('🤖 Generating rich about text (2000+ words)...');
     let aboutText = '';
+    const TARGET_WORDS = 2000; // Increased target to 2000 words
+    
     try {
         // First try to generate rich about text
         aboutText = await generateRichAbout(collectedText, displayName, hostname);
         const wordCount = getWordCount(aboutText);
         console.log(`✅ Initial rich about text: ${aboutText.length} characters, ${wordCount} words`);
 
-        // Always enforce minimum of 1500 words
-        if (wordCount < 1500) {
-            console.log(`⚠️ About text too short (${wordCount} words), enforcing 1500 words minimum...`);
-            aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1500, collectedText);
+        // Always enforce minimum - even if close, ensure it's truly long
+        if (wordCount < TARGET_WORDS) {
+            console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
+            aboutText = await enforceExactWordLength(
+                aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
+                TARGET_WORDS,
+                collectedText
+            );
             const finalWordCount = getWordCount(aboutText);
             console.log(`✅ Final about text: ${aboutText.length} characters, ${finalWordCount} words`);
+            
+            // If still too short after enforcement, try one more time with even more aggressive approach
+            if (finalWordCount < TARGET_WORDS * 0.8) {
+                console.log(`⚠️ Still too short (${finalWordCount} words), retrying with more aggressive expansion...`);
+                aboutText = await enforceExactWordLength(aboutText, TARGET_WORDS, collectedText);
+            }
+        } else if (wordCount < TARGET_WORDS * 1.2) {
+            // Even if close to target, expand a bit to ensure it's truly comprehensive
+            console.log(`📝 Expanding text slightly to ensure comprehensive coverage...`);
+            const expanded = await enforceExactWordLength(aboutText, TARGET_WORDS, collectedText);
+            if (getWordCount(expanded) >= wordCount) {
+                aboutText = expanded;
+            }
         }
     } catch (e) {
         console.error('❌ Failed to generate about text:', e.message);
-        // Fallback: try to generate basic text and expand it
+        // Fallback: try to generate basic text and expand it aggressively
         try {
-            const fallbackResponse = await callOpenAIChatSimple({ 
-                systemPrompt: 'אתה כותב תוכן בעברית. כתוב טקסט ארוך ומפורט.', 
-                userPrompt: `כתוב טקסט "אודות החברה" ארוך מאוד (1500 מילים לפחות) עבור "${displayName}". מידע: ${collectedText.slice(0, 20000)}`, 
-                maxTokens: 20000 
+            const fallbackResponse = await callOpenAIChatSimple({
+                systemPrompt: 'אתה כותב תוכן בעברית. כתוב טקסט ארוך מאוד ומפורט.',
+                userPrompt: `כתוב טקסט "אודות החברה" ארוך מאוד (${TARGET_WORDS} מילים לפחות) עבור "${displayName}". מידע: ${collectedText.slice(0, 30000)}`,
+                maxTokens: 25000
             });
             aboutText = (fallbackResponse || '').trim();
-            if (getWordCount(aboutText) < 1500) {
-                aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1500, collectedText);
+            const wordCount = getWordCount(aboutText);
+            if (wordCount < TARGET_WORDS) {
+                aboutText = await enforceExactWordLength(
+                    aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
+                    TARGET_WORDS,
+                    collectedText
+                );
             }
         } catch (fallbackError) {
             console.error('❌ Fallback generation also failed:', fallbackError.message);
