@@ -111,7 +111,7 @@ async function searchGoogleForLogo(companyName, website) {
             `${companyName} logo`,
             `logo ${companyName} ${website}`
         ];
-        
+
         for (const searchQuery of searchQueries) {
             try {
                 const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
@@ -133,7 +133,7 @@ async function searchGoogleForLogo(companyName, website) {
                     /"ou":"([^"]+\.(?:png|svg|jpg|jpeg|webp))"/gi,
                     /\["(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp))"/gi
                 ];
-                
+
                 for (const pattern of patterns) {
                     const matches = html.matchAll(pattern);
                     for (const match of matches) {
@@ -171,10 +171,21 @@ async function tryFavicon(hostname) {
     return null;
 }
 
+// Google S2 favicon service (almost always returns an icon for the domain)
+async function tryGoogleS2Favicon(hostname) {
+    const base = hostname.replace(/^www\./, '');
+    const url = `https://www.google.com/s2/favicons?domain=${base}&sz=256`;
+    try {
+        const r = await fetch(url, { timeout: 8000 });
+        if (r.ok) return url;
+    } catch (_) { }
+    return null;
+}
+
 async function findLogoUrl(companyName, hostname) {
     const baseHost = hostname.replace(/^www\./, '');
     const baseUrl = `https://${baseHost}`;
-    
+
     // 1) Try common logo paths on the site
     const commonPaths = [
         '/logo.png', '/logo.svg', '/logo.jpg', '/logo.jpeg',
@@ -185,12 +196,12 @@ async function findLogoUrl(companyName, hostname) {
         '/public/logo.png', '/public/logo.svg', '/uploads/logo.png',
         '/_next/static/logo.png', '/logo.webp', '/images/logo.webp'
     ];
-    
+
     console.log('🔍 Searching for logo on:', baseUrl);
     for (const path of commonPaths) {
         try {
             const testUrl = `${baseUrl}${path}`;
-            const r = await fetch(testUrl, { 
+            const r = await fetch(testUrl, {
                 timeout: 5000,
                 headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
             });
@@ -205,10 +216,10 @@ async function findLogoUrl(companyName, hostname) {
             // Continue to next path
         }
     }
-    
+
     // 2) Try to find logo in HTML of homepage
     try {
-        const homepageResponse = await fetch(baseUrl, { 
+        const homepageResponse = await fetch(baseUrl, {
             timeout: 8000,
             headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
         });
@@ -234,9 +245,9 @@ async function findLogoUrl(companyName, hostname) {
                         logoUrl = baseUrl + '/' + logoUrl;
                     }
                     try {
-                        const logoResponse = await fetch(logoUrl, { 
+                        const logoResponse = await fetch(logoUrl, {
                             method: 'HEAD',
-                            timeout: 5000 
+                            timeout: 5000
                         });
                         if (logoResponse.ok) {
                             console.log('✅ Found logo in HTML:', logoUrl);
@@ -251,28 +262,34 @@ async function findLogoUrl(companyName, hostname) {
     } catch (e) {
         console.log('⚠️ Could not parse homepage HTML for logo:', e.message);
     }
-    
+
     // 3) Clearbit
     let url = await tryClearbit(hostname);
     if (url) {
         console.log('✅ Found logo via Clearbit:', url);
         return url;
     }
-    
+
     // 4) Google Images
     url = await searchGoogleForLogo(companyName, hostname);
     if (url) {
         console.log('✅ Found logo via Google Images:', url);
         return url;
     }
-    
+
     // 5) Site favicon (as last resort)
     url = await tryFavicon(hostname);
     if (url) {
         console.log('✅ Using favicon as logo:', url);
         return url;
     }
-    
+    // 6) Google S2 favicon (final fallback)
+    url = await tryGoogleS2Favicon(hostname);
+    if (url) {
+        console.log('✅ Using Google S2 favicon as logo:', url);
+        return url;
+    }
+
     console.log('❌ No logo found for:', hostname);
     return null;
 }
@@ -488,7 +505,8 @@ ${collectedText}
 
 חשוב: הטקסט "about" חייב להיות ארוך מאוד - לפחות 2000-3000 מילים! השתמש בכל המידע הזמין כדי ליצור טקסט מקיף ומפורט.`;
 
-    const rawResponse = await callOpenAIWithWebSearch({ systemPrompt, userPrompt, maxTokens: 32000 });
+    // Use standard Chat Completions with our collected web text context
+    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 32000 });
 
     console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
 
@@ -513,7 +531,7 @@ ${collectedText}
     let logoUrl = parsed?.logoUrl || null;
     let logoSearchAttempts = 0;
     const maxLogoAttempts = 3;
-    
+
     while (!logoUrl && logoSearchAttempts < maxLogoAttempts) {
         if (logoSearchAttempts === 0 && parsed?.logoUrl) {
             // First, verify the logo URL from AI response
@@ -531,17 +549,17 @@ ${collectedText}
                 console.log('⚠️ Logo URL from AI is not accessible:', e.message);
             }
         }
-        
+
         logoSearchAttempts++;
         console.log(`🔍 Searching for logo (attempt ${logoSearchAttempts}/${maxLogoAttempts})...`);
         logoUrl = await findLogoUrl(displayName, hostname);
-        
+
         if (logoUrl) {
             console.log('✅ Logo found:', logoUrl);
             break;
         }
     }
-    
+
     if (!logoUrl) {
         console.warn('⚠️ Could not find logo after', maxLogoAttempts, 'attempts');
     }
