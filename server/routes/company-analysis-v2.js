@@ -106,50 +106,71 @@ async function tryClearbit(hostname) {
 async function searchGoogleForLogo(hostname) {
     try {
         console.log('🔍 Searching Google Images for logo:', hostname);
-        // Search: domain + "logo" in Google Images
-        const searchQuery = `site:${hostname} logo`;
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
-
-        const response = await fetch(searchUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-            },
-            timeout: 10000
-        });
-
-        if (!response.ok) {
-            console.warn('⚠️ Google Images search failed:', response.status);
-            return null;
-        }
-
-        const html = await response.text();
-        console.log('📄 Google Images HTML length:', html.length);
-
-        // Try multiple patterns to extract first image URL
-        const patterns = [
-            // Google Images JSON structure (most reliable)
-            /\["(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
-            // Google Images ou field
-            /"ou":"(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
-            // Direct img src
-            /<img[^>]+src="(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
-            // Any image URL in quotes
-            /"(https?:\/\/[^"]*logo[^"]*\.(?:png|svg|jpg|jpeg|webp|ico))"/gi
-        ];
+        const baseHost = hostname.replace(/^www\./, '');
         
-        for (const pattern of patterns) {
-            const matches = html.matchAll(pattern);
-            for (const match of matches) {
-                if (match[1]) {
-                    let imgUrl = match[1];
-                    // Skip data URLs
-                    if (imgUrl.startsWith('data:')) continue;
-                    // Skip very small images (likely icons)
-                    if (imgUrl.includes('/favicon') && !imgUrl.includes('logo')) continue;
-                    
-                    console.log('✅ Found logo URL via Google Images:', imgUrl);
-                    return imgUrl;
+        // Try multiple search queries
+        const searchQueries = [
+            `site:${hostname} logo`,
+            `${baseHost} logo`,
+            `logo ${baseHost}`
+        ];
+
+        for (const searchQuery of searchQueries) {
+            try {
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
+
+                const response = await fetch(searchUrl, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.5'
+                    },
+                    timeout: 10000
+                });
+
+                if (!response.ok) {
+                    console.warn(`⚠️ Google Images search failed for "${searchQuery}":`, response.status);
+                    continue;
                 }
+
+                const html = await response.text();
+                console.log(`📄 Google Images HTML length for "${searchQuery}":`, html.length);
+
+                // Try multiple patterns to extract first image URL
+                const patterns = [
+                    // Google Images JSON structure (most reliable)
+                    /\["(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
+                    // Google Images ou field
+                    /"ou":"(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
+                    // Direct img src
+                    /<img[^>]+src="(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
+                    // Any image URL containing logo
+                    /"(https?:\/\/[^"]*logo[^"]*\.(?:png|svg|jpg|jpeg|webp|ico))"/gi,
+                    // Base64 encoded images (less common)
+                    /<img[^>]+data-src="(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp|ico))"/gi
+                ];
+
+                for (const pattern of patterns) {
+                    const matches = Array.from(html.matchAll(pattern));
+                    for (const match of matches) {
+                        if (match[1]) {
+                            let imgUrl = match[1];
+                            // Skip data URLs
+                            if (imgUrl.startsWith('data:')) continue;
+                            // Skip very small images (likely icons) unless explicitly logo
+                            if (imgUrl.includes('/favicon') && !imgUrl.includes('logo')) continue;
+                            // Prefer URLs containing "logo" or from the same domain
+                            const isLogoUrl = imgUrl.includes('logo') || imgUrl.includes(baseHost);
+                            if (isLogoUrl || matches.indexOf(match) < 3) {
+                                console.log('✅ Found logo URL via Google Images:', imgUrl);
+                                return imgUrl;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn(`⚠️ Error searching Google Images with query "${searchQuery}":`, e.message);
+                continue;
             }
         }
 
@@ -386,10 +407,18 @@ function getWordCount(text) {
 
 // Fallback generator for a rich "about" section when the parsed content is short/empty
 async function generateRichAbout(collectedText, displayName, hostname) {
-    const system = 'אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה. כתוב טקסט קריא, מקצועי ורהוט.';
-    const user = `כתוב טקסט "אודות החברה" ארוך ומפורט (לפחות 1200 מילים) עבור "${displayName}" (${hostname}).\nהשתמש רק במידע מטקסטים שנאספו (WEB_RESULTS) והימנע מהמצאות.\nכלול היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, לקוחות, תעודות והסמכות, חדשנות, אחריות חברתית וחזון.\n\nWEB_RESULTS:\n"""\n${(collectedText || '').slice(0, 48000)}\n"""`;
+    const system = 'אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה. כתוב טקסט קריא, מקצועי, רהוט ומפורט מאוד. הטקסט חייב להיות ארוך מאוד - לפחות 1200 מילים, ועדיף 1500-2500 מילים.';
+    const user = `כתוב טקסט "אודות החברה" ארוך מאוד, מפורט ומקיף (לפחות 1200 מילים, עדיף 1500-2500 מילים) עבור "${displayName}" (${hostname}).
+השתמש רק במידע מטקסטים שנאספו (WEB_RESULTS) והימנע מהמצאות.
+כלול היסטוריה מפורטת, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים, ניסיון ותק, צוות מקצועי, טכנולוגיות מתקדמות, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות, חדשנות, אחריות חברתית, חזון ומטרות.
+הטקסט חייב להיות ארוך מאוד ומפורט!
+
+WEB_RESULTS:
+"""
+${(collectedText || '').slice(0, 48000)}
+"""`;
     try {
-        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 12000 });
+        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 20000 });
         return (about || '').trim();
     } catch (e) {
         console.warn('⚠️ generateRichAbout failed:', e.message);
@@ -479,45 +508,89 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     // 2) Ask ChatGPT to create rich about text using the collected web search results
     // We pass the domain and collected text, asking ChatGPT to synthesize a comprehensive about section
     const systemPrompt = `אתה כותב תוכן מומחה בעברית לעמוד "אודות החברה" עבור חברות בניה ונדל"ן בישראל.
-השתמש במידע שנאסף מהאתר (WEB_RESULTS) כדי ליצור טקסט מקיף, ארוך ומפורט.
-הטקסט חייב להיות לפחות 500 מילים, ועדיף 800-1200 מילים.
-כלול: היסטוריה, תחומי פעילות, פרויקטים בולטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות והסמכות, חדשנות, אחריות חברתית וחזון.
-כתוב בסגנון מקצועי ורהוט, כאילו אתה כותב את דף "אודות" של החברה.`;
+השתמש במידע שנאסף מהאתר (WEB_RESULTS) כדי ליצור טקסט מקיף, ארוך ומפורט מאוד.
+הטקסט חייב להיות לפחות 1200 מילים, ועדיף 1500-2500 מילים.
+כלול: היסטוריה מפורטת, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים, ניסיון ותק, צוות מקצועי, טכנולוגיות מתקדמות, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות, חדשנות, אחריות חברתית, חזון ומטרות.
+כתוב בסגנון מקצועי, רהוט ומפורט מאוד, כאילו אתה כותב את דף "אודות" המקיף של החברה.`;
 
-    const userPrompt = `כתוב טקסט "אודות החברה" ארוך, מפורט ומקיף (לפחות 500 מילים, עדיף 800-1200 מילים) עבור "${displayName}" (${hostname}).
-השתמש במידע שנאסף מהאתר והחזר רק את הטקסט העברי, ללא JSON, ללא כותרות, ללא רשימות - רק טקסט רציף וזורם.
+    const userPrompt = `כתוב טקסט "אודות החברה" ארוך, מפורט ומקיף מאוד (לפחות 1200 מילים, עדיף 1500-2500 מילים) עבור "${displayName}" (${hostname}).
+השתמש במידע שנאסף מהאתר והחזר רק את הטקסט העברי, ללא JSON, ללא כותרות, ללא רשימות - רק טקסט רציף וזורם ומפורט מאוד.
 
 מידע שנאסף מהאתר:
 """
 ${collectedText.slice(0, 45000)}
 """`;
 
-    console.log('🤖 Calling ChatGPT to generate rich about text...');
+    console.log('🤖 Calling ChatGPT to generate rich about text (min 1200 words)...');
     let aboutText = '';
     try {
-        const aboutResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 16000 });
+        const aboutResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 20000 });
         aboutText = (aboutResponse || '').trim();
-        console.log(`✅ Generated about text: ${aboutText.length} characters, ${getWordCount(aboutText)} words`);
-        
-        // If still too short, enforce minimum
-        if (getWordCount(aboutText) < 500) {
-            console.log('⚠️ About text still too short, enforcing 500 words minimum...');
-            aboutText = await enforceExactWordLength(aboutText || 'אודות החברה', 500, collectedText);
+        const wordCount = getWordCount(aboutText);
+        console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
+
+        // If still too short, use generateRichAbout to enforce longer text
+        if (wordCount < 1200) {
+            console.log('⚠️ About text too short, generating rich about (1200+ words)...');
+            aboutText = await generateRichAbout(collectedText, displayName, hostname);
+            const newWordCount = getWordCount(aboutText);
+            if (newWordCount < 1200) {
+                console.log('⚠️ Still too short, enforcing 1200 words exactly...');
+                aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1200, collectedText);
+            }
         }
     } catch (e) {
         console.error('❌ Failed to generate about text:', e.message);
         aboutText = '';
     }
 
-    // 3) Search for logo using Google Images with domain + "logo"
-    console.log('🔍 Searching for logo via Google Images...');
-    let logoUrl = await searchGoogleForLogo(hostname);
+    // 3) Search for logo - try direct site search first, then Google Images
+    console.log('🔍 Searching for logo...');
+    let logoUrl = null;
     
+    // First, try to find logo directly on the website (most reliable)
+    const baseHost = hostname.replace(/^www\./, '');
+    const baseUrl = `https://${baseHost}`;
+    try {
+        const homepageResponse = await fetch(baseUrl, {
+            timeout: 8000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        if (homepageResponse.ok) {
+            const html = await homepageResponse.text();
+            // Look for logo in HTML - prioritize elements with "logo" in class/id/alt
+            const logoPatterns = [
+                /<img[^>]*(?:class|id|alt)=["'][^"']*logo[^"']*["'][^>]*src=["']([^"']+\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                /<img[^>]*src=["']([^"']*logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                /<img[^>]*src=["']([^"']*\/logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i
+            ];
+            for (const pattern of logoPatterns) {
+                const match = html.match(pattern);
+                if (match && match[1]) {
+                    let imgUrl = match[1];
+                    if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+                    else if (imgUrl.startsWith('/')) imgUrl = baseUrl + imgUrl;
+                    else if (!imgUrl.startsWith('http')) imgUrl = baseUrl + '/' + imgUrl;
+                    console.log('✅ Found logo on homepage:', imgUrl);
+                    logoUrl = imgUrl;
+                    break;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('⚠️ Could not search homepage for logo:', e.message);
+    }
+
+    // If not found on homepage, try Google Images
+    if (!logoUrl) {
+        logoUrl = await searchGoogleForLogo(hostname);
+    }
+
     // Fallback chain if Google Images doesn't work
     if (!logoUrl) {
         logoUrl = await findLogoUrl(displayName, hostname);
     }
-    
+
     // Final fallback: S2 favicon
     if (!logoUrl) {
         logoUrl = await tryGoogleS2Favicon(hostname);
