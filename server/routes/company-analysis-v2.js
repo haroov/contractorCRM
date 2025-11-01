@@ -107,7 +107,7 @@ async function searchGoogleForLogo(hostname) {
     try {
         console.log('🔍 Searching Google Images for logo:', hostname);
         const baseHost = hostname.replace(/^www\./, '');
-        
+
         // Try multiple search queries
         const searchQueries = [
             `site:${hostname} logo`,
@@ -405,20 +405,26 @@ function getWordCount(text) {
     return words.filter(Boolean).length;
 }
 
-// Fallback generator for a rich "about" section when the parsed content is short/empty
+// Generator for a rich "about" section - always ensures long, detailed text
 async function generateRichAbout(collectedText, displayName, hostname) {
-    const system = 'אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה. כתוב טקסט קריא, מקצועי, רהוט ומפורט מאוד. הטקסט חייב להיות ארוך מאוד - לפחות 1200 מילים, ועדיף 1500-2500 מילים.';
-    const user = `כתוב טקסט "אודות החברה" ארוך מאוד, מפורט ומקיף (לפחות 1200 מילים, עדיף 1500-2500 מילים) עבור "${displayName}" (${hostname}).
-השתמש רק במידע מטקסטים שנאספו (WEB_RESULTS) והימנע מהמצאות.
-כלול היסטוריה מפורטת, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים, ניסיון ותק, צוות מקצועי, טכנולוגיות מתקדמות, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות, חדשנות, אחריות חברתית, חזון ומטרות.
-הטקסט חייב להיות ארוך מאוד ומפורט!
+    const system = `אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל.
+המשימה שלך היא לכתוב טקסט מקיף, ארוך מאוד ומפורט - לפחות 1500 מילים, ועדיף 2000-3000 מילים.
+הטקסט חייב להיות ארוך מאוד, מפורט, מקצועי ורהוט.
+כלול: היסטוריה מפורטת של החברה, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים ספציפיים, שנות ניסיון ותק, צוות מקצועי ומנוסה, טכנולוגיות מתקדמות בשימוש, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות מקצועיות, חדשנות ופיתוח, אחריות חברתית וסביבתית, חזון ומטרות ארוכות טווח, שיטות עבודה, גישה ללקוח, ערכים ועקרונות, פרסים והכרות, שותפויות, התפתחות החברה לאורך השנים.
+חשוב מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 1500 מילים! הרחב כל נושא, הוסף פרטים, תאר באופן מעמיק.`;
 
-WEB_RESULTS:
+    const user = `כתוב טקסט "אודות החברה" ארוך מאוד, מפורט ומקיף (לפחות 1500 מילים, עדיף 2000-3000 מילים) עבור "${displayName}" (${hostname}).
+השתמש רק במידע מטקסטים שנאספו מהאתר (WEB_RESULTS) - אל תמציא עובדות, אבל הרחב ותאר בצורה מפורטת את מה שיש.
+אם יש מעט מידע, הרחב כל נקודה עם פרטים מפורטים.
+כלול כל מה שאפשר על: היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון.
+חשוב מאוד: הטקסט חייב להיות ארוך מאוד ומפורט - לפחות 1500 מילים! כתוב פסקאות ארוכות, הרחב כל נושא, תאר באופן מעמיק ומפורט.
+
+מידע שנאסף מהאתר:
 """
 ${(collectedText || '').slice(0, 48000)}
 """`;
     try {
-        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 20000 });
+        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 25000 });
         return (about || '').trim();
     } catch (e) {
         console.warn('⚠️ generateRichAbout failed:', e.message);
@@ -505,49 +511,45 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     console.log('🌐 Performing domain web search and collection for:', hostname);
     const collectedText = await domainWebSearchCollectText(hostname, displayName);
 
-    // 2) Ask ChatGPT to create rich about text using the collected web search results
-    // We pass the domain and collected text, asking ChatGPT to synthesize a comprehensive about section
-    const systemPrompt = `אתה כותב תוכן מומחה בעברית לעמוד "אודות החברה" עבור חברות בניה ונדל"ן בישראל.
-השתמש במידע שנאסף מהאתר (WEB_RESULTS) כדי ליצור טקסט מקיף, ארוך ומפורט מאוד.
-הטקסט חייב להיות לפחות 1200 מילים, ועדיף 1500-2500 מילים.
-כלול: היסטוריה מפורטת, תחומי פעילות רחבים, פרויקטים בולטים עם פרטים, ניסיון ותק, צוות מקצועי, טכנולוגיות מתקדמות, שירותים מלאים, לקוחות ופרויקטים קודמים, תעודות והסמכות, חדשנות, אחריות חברתית, חזון ומטרות.
-כתוב בסגנון מקצועי, רהוט ומפורט מאוד, כאילו אתה כותב את דף "אודות" המקיף של החברה.`;
-
-    const userPrompt = `כתוב טקסט "אודות החברה" ארוך, מפורט ומקיף מאוד (לפחות 1200 מילים, עדיף 1500-2500 מילים) עבור "${displayName}" (${hostname}).
-השתמש במידע שנאסף מהאתר והחזר רק את הטקסט העברי, ללא JSON, ללא כותרות, ללא רשימות - רק טקסט רציף וזורם ומפורט מאוד.
-
-מידע שנאסף מהאתר:
-"""
-${collectedText.slice(0, 45000)}
-"""`;
-
-    console.log('🤖 Calling ChatGPT to generate rich about text (min 1200 words)...');
+    // 2) Always use generateRichAbout to ensure long, detailed text (minimum 1500 words)
+    console.log('🤖 Generating rich about text (1500+ words)...');
     let aboutText = '';
     try {
-        const aboutResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 20000 });
-        aboutText = (aboutResponse || '').trim();
+        // First try to generate rich about text
+        aboutText = await generateRichAbout(collectedText, displayName, hostname);
         const wordCount = getWordCount(aboutText);
-        console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
+        console.log(`✅ Initial rich about text: ${aboutText.length} characters, ${wordCount} words`);
 
-        // If still too short, use generateRichAbout to enforce longer text
-        if (wordCount < 1200) {
-            console.log('⚠️ About text too short, generating rich about (1200+ words)...');
-            aboutText = await generateRichAbout(collectedText, displayName, hostname);
-            const newWordCount = getWordCount(aboutText);
-            if (newWordCount < 1200) {
-                console.log('⚠️ Still too short, enforcing 1200 words exactly...');
-                aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1200, collectedText);
-            }
+        // Always enforce minimum of 1500 words
+        if (wordCount < 1500) {
+            console.log(`⚠️ About text too short (${wordCount} words), enforcing 1500 words minimum...`);
+            aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1500, collectedText);
+            const finalWordCount = getWordCount(aboutText);
+            console.log(`✅ Final about text: ${aboutText.length} characters, ${finalWordCount} words`);
         }
     } catch (e) {
         console.error('❌ Failed to generate about text:', e.message);
-        aboutText = '';
+        // Fallback: try to generate basic text and expand it
+        try {
+            const fallbackResponse = await callOpenAIChatSimple({ 
+                systemPrompt: 'אתה כותב תוכן בעברית. כתוב טקסט ארוך ומפורט.', 
+                userPrompt: `כתוב טקסט "אודות החברה" ארוך מאוד (1500 מילים לפחות) עבור "${displayName}". מידע: ${collectedText.slice(0, 20000)}`, 
+                maxTokens: 20000 
+            });
+            aboutText = (fallbackResponse || '').trim();
+            if (getWordCount(aboutText) < 1500) {
+                aboutText = await enforceExactWordLength(aboutText || displayName + ' היא חברה מובילה', 1500, collectedText);
+            }
+        } catch (fallbackError) {
+            console.error('❌ Fallback generation also failed:', fallbackError.message);
+            aboutText = '';
+        }
     }
 
     // 3) Search for logo - try direct site search first, then Google Images
     console.log('🔍 Searching for logo...');
     let logoUrl = null;
-    
+
     // First, try to find logo directly on the website (most reliable)
     const baseHost = hostname.replace(/^www\./, '');
     const baseUrl = `https://${baseHost}`;
