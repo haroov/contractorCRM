@@ -257,32 +257,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         return `https://www.${domain}`;
     };
 
-    // Compute normalized Levenshtein similarity (0..1)
-    const computeStringSimilarity = (a: string, b: string): number => {
-        const s1 = (a || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
-        const s2 = (b || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
-        if (!s1 || !s2) return 0;
-        const n = s1.length, m = s2.length;
-        const dp: number[][] = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
-        for (let i = 0; i <= n; i++) dp[i][0] = i;
-        for (let j = 0; j <= m; j++) dp[0][j] = j;
-        for (let i = 1; i <= n; i++) {
-            for (let j = 1; j <= m; j++) {
-                const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-                dp[i][j] = Math.min(
-                    dp[i - 1][j] + 1,
-                    dp[i][j - 1] + 1,
-                    dp[i - 1][j - 1] + cost
-                );
-            }
-        }
-        const dist = dp[n][m];
-        const maxLen = Math.max(n, m) || 1;
-        return 1 - dist / maxLen;
-    };
-
-    const containsHebrew = (s: string): boolean => /[\u0590-\u05FF]/.test(s || '');
-
     // Function to analyze company website using AI
     const analyzeCompanyWebsite = async (websiteUrl: string) => {
         if (!websiteUrl) return;
@@ -301,50 +275,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
-
-            // Check name match using AI (semantic check instead of statistical)
-            try {
-                const aiName = (analysisResult?.companyName || '').toString().trim();
-                const dbNameHe = contractor?.name || localName || '';
-                const dbNameEn = contractor?.nameEnglish || localNameEnglish || '';
-
-                if (!aiName) {
-                    console.log('ℹ️ Skipping name match check (missing aiName)');
-                } else {
-                    const compareTo = containsHebrew(aiName) ? dbNameHe : (dbNameEn || dbNameHe);
-                    if (!compareTo) {
-                        console.log('ℹ️ Skipping name match check (no appropriate DB name)', { aiName });
-                    } else {
-                        // Use AI-based semantic matching instead of statistical
-                        try {
-                            const checkResponse = await fetch('/api/company-analysis/check-name-match', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ dbName: compareTo, aiName })
-                            });
-                            if (checkResponse.ok) {
-                                const { matches } = await checkResponse.json();
-                                if (matches) {
-                                    console.log('✅ Company names match (AI semantic check)', { db: compareTo, ai: aiName });
-                                } else {
-                                    console.warn('⚠️ Company name mismatch (AI semantic check)', { db: compareTo, ai: aiName });
-                                }
-                            }
-                        } catch (apiErr) {
-                            console.warn('⚠️ AI name match API call failed, using fallback statistical check:', apiErr);
-                            // Fallback to statistical check if AI API fails
-                            const similarity = computeStringSimilarity(compareTo, aiName);
-                            if (similarity < 0.95) {
-                                console.warn('⚠️ Company name mismatch (statistical fallback)', { db: compareTo, ai: aiName, similarity });
-                            } else {
-                                console.log('✅ Company name similarity OK (statistical fallback, >=95%)', { db: compareTo, ai: aiName, similarity });
-                            }
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('⚠️ Name match check failed:', e);
-            }
 
             // Update the contractor state with the analyzed data
             if (mappedData.about) {
