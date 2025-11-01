@@ -368,7 +368,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
     if (!OPENAI_API_KEY) {
         throw new Error('Missing OPENAI_API_KEY environment variable');
     }
-    
+
     const systemPrompt = `אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל.
 השתמש ב-web_search כדי לאסוף מידע מקיף על החברה.
 כתוב טקסט מקיף, ארוך מאוד מאוד ומפורט - לפחות 2000 מילים, ועדיף 2500-3500 מילים.
@@ -389,6 +389,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
 }`;
 
     try {
+        // Try gpt-4o-search-preview first, but fallback to regular model if not available
         const payload = {
             model: 'gpt-4o-search-preview',
             messages: [
@@ -406,6 +407,8 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             temperature: 0.2,
             max_tokens: maxTokens
         };
+        
+        console.log('🔍 Attempting ChatGPT web_search with model: gpt-4o-search-preview');
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -417,13 +420,26 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
         });
 
         if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`OpenAI API error (${response.status}): ${err}`);
+            const errText = await response.text();
+            const errData = JSON.parse(errText).error || {};
+            console.error('❌ OpenAI API error:', {
+                status: response.status,
+                code: errData.code,
+                message: errData.message,
+                type: errData.type
+            });
+            
+            // If model not found, try without web_search tool
+            if (errData.code === 'model_not_found' || errData.message?.includes('gpt-4o-search-preview')) {
+                console.warn('⚠️ gpt-4o-search-preview not available, will fallback to traditional method');
+            }
+            
+            throw new Error(`OpenAI API error (${response.status}): ${errText}`);
         }
 
         const data = await response.json();
         const reply = data?.choices?.[0]?.message?.content || '';
-        
+
         if (!reply) {
             throw new Error('No content from OpenAI');
         }
@@ -433,15 +449,28 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             // Extract JSON if wrapped in markdown code blocks
             const jsonMatch = reply.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || reply.match(/(\{[\s\S]*\})/);
             if (jsonMatch) {
-                return JSON.parse(jsonMatch[1]);
+                const parsed = JSON.parse(jsonMatch[1]);
+                console.log('✅ Successfully parsed JSON from reply');
+                return parsed;
             }
-            return JSON.parse(reply);
+            const parsed = JSON.parse(reply);
+            console.log('✅ Successfully parsed JSON from reply (direct)');
+            return parsed;
         } catch (parseError) {
             // If not JSON, return the text as about
-            console.warn('⚠️ Could not parse JSON from reply, using as plain text');
+            console.warn('⚠️ Could not parse JSON from reply, using as plain text. Reply length:', reply.length);
+            console.warn('⚠️ Parse error:', parseError.message);
+            console.warn('⚠️ First 500 chars of reply:', reply.substring(0, 500));
+            
+            // Try to extract "about" and "logo_url" from text if present
+            const aboutMatch = reply.match(/["']about["']\s*:\s*["']([^"']+)["']/i) || 
+                             reply.match(/about[":]\s*["']?([^"']{50,})["']?/i);
+            const logoMatch = reply.match(/["']logo_url["']\s*:\s*["']([^"']+)["']/i) ||
+                             reply.match(/logo[":]\s*["']?([^"']+\.(?:png|svg|jpg|jpeg|webp))["']?/i);
+            
             return {
-                about: reply,
-                logo_url: null
+                about: aboutMatch ? aboutMatch[1] : (reply.length > 100 ? reply : ''),
+                logo_url: logoMatch ? logoMatch[1] : null
             };
         }
     } catch (error) {
@@ -575,7 +604,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     let aboutText = '';
     let logoUrl = null;
     const TARGET_WORDS = 2000;
-    
+
     try {
         const webSearchResult = await callChatGPTWithWebSearch({
             domain: hostname,
@@ -583,17 +612,17 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
             displayName,
             maxTokens: 30000
         });
-        
+
         aboutText = (webSearchResult.about || '').trim();
         logoUrl = webSearchResult.logo_url || null;
-        
+
         const wordCount = getWordCount(aboutText);
         console.log(`✅ ChatGPT web_search result: ${aboutText.length} characters, ${wordCount} words`);
-        
+
         if (logoUrl) {
             console.log('✅ Logo URL found via web_search:', logoUrl);
         }
-        
+
         // Enforce minimum word count if too short
         if (wordCount < TARGET_WORDS) {
             console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
@@ -609,30 +638,48 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         }
     } catch (webSearchError) {
         console.warn('⚠️ ChatGPT web_search failed, falling back to traditional method:', webSearchError.message);
-        
+        console.warn('⚠️ Error details:', webSearchError);
+
         // Fallback: Use traditional method
         console.log('🌐 Performing domain web search and collection for:', hostname);
         const collectedText = await domainWebSearchCollectText(hostname, displayName);
-        
+        console.log(`📝 Collected text length: ${collectedText.length} characters`);
+
         try {
             // Generate rich about text
             aboutText = await generateRichAbout(collectedText, displayName, hostname);
             const wordCount = getWordCount(aboutText);
             console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
-            
-            // Enforce minimum
+
+            // Always enforce minimum - even if generation succeeded
             if (wordCount < TARGET_WORDS) {
                 console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
                 aboutText = await enforceExactWordLength(
-                    aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
+                    aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל. החברה מתמחה בפרויקטים מגוונים בתחום הבנייה והנדל"ן.`,
                     TARGET_WORDS,
                     collectedText
                 );
+                const finalWordCount = getWordCount(aboutText);
+                console.log(`✅ After enforcement: ${aboutText.length} characters, ${finalWordCount} words`);
+            }
+            
+            // Ensure we always have some text
+            if (!aboutText || aboutText.trim().length === 0) {
+                console.error('❌ About text is empty after all attempts, using minimal fallback');
+                aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
             }
         } catch (fallbackError) {
             console.error('❌ Fallback generation also failed:', fallbackError.message);
-            aboutText = '';
+            console.error('❌ Fallback error details:', fallbackError);
+            // Last resort: minimal text
+            aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
         }
+    }
+    
+    // Final check - ensure aboutText is never empty
+    if (!aboutText || aboutText.trim().length === 0) {
+        console.error('❌ CRITICAL: About text is empty after all processing! Using emergency fallback.');
+        aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
     }
 
     // 3) Search for logo if not already found via web_search
