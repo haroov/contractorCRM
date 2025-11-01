@@ -152,27 +152,108 @@ async function tryFavicon(hostname) {
 }
 
 async function findLogoUrl(companyName, hostname) {
+    const baseHost = hostname.replace(/^www\./, '');
+    const baseUrl = `https://${baseHost}`;
+    
     // 1) Try common logo paths on the site
-    const commonPaths = ['/logo.png', '/logo.svg', '/images/logo.png', '/images/logo.svg', '/wp-content/uploads/logo.png', '/assets/logo.png'];
+    const commonPaths = [
+        '/logo.png', '/logo.svg', '/logo.jpg', '/logo.jpeg',
+        '/images/logo.png', '/images/logo.svg', '/images/logo.jpg',
+        '/wp-content/uploads/logo.png', '/wp-content/uploads/logo.svg',
+        '/assets/logo.png', '/assets/logo.svg', '/assets/images/logo.png',
+        '/static/logo.png', '/static/logo.svg', '/img/logo.png',
+        '/public/logo.png', '/public/logo.svg', '/uploads/logo.png',
+        '/_next/static/logo.png', '/logo.webp', '/images/logo.webp'
+    ];
+    
+    console.log('🔍 Searching for logo on:', baseUrl);
     for (const path of commonPaths) {
         try {
-            const testUrl = `https://${hostname.replace(/^www\./, '')}${path}`;
-            const r = await fetch(testUrl, { timeout: 5000 });
-            if (r.ok && r.headers.get('content-type')?.startsWith('image/')) {
-                console.log('✅ Found logo at:', testUrl);
-                return testUrl;
+            const testUrl = `${baseUrl}${path}`;
+            const r = await fetch(testUrl, { 
+                timeout: 5000,
+                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+            });
+            if (r.ok) {
+                const contentType = r.headers.get('content-type');
+                if (contentType && contentType.startsWith('image/')) {
+                    console.log('✅ Found logo at:', testUrl);
+                    return testUrl;
+                }
             }
-        } catch (_) {}
+        } catch (e) {
+            // Continue to next path
+        }
     }
-    // 2) Clearbit
+    
+    // 2) Try to find logo in HTML of homepage
+    try {
+        const homepageResponse = await fetch(baseUrl, { 
+            timeout: 8000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        if (homepageResponse.ok) {
+            const html = await homepageResponse.text();
+            // Look for common logo patterns in HTML
+            const logoPatterns = [
+                /<img[^>]+src=["']([^"']*logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                /<img[^>]+src=["']([^"']*\/logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                /logo["'][^>]*src=["']([^"']+)["']/i,
+                /<img[^>]+alt=["']logo["'][^>]+src=["']([^"']+)["']/i
+            ];
+            for (const pattern of logoPatterns) {
+                const match = html.match(pattern);
+                if (match && match[1]) {
+                    let logoUrl = match[1];
+                    // Handle relative URLs
+                    if (logoUrl.startsWith('//')) {
+                        logoUrl = 'https:' + logoUrl;
+                    } else if (logoUrl.startsWith('/')) {
+                        logoUrl = baseUrl + logoUrl;
+                    } else if (!logoUrl.startsWith('http')) {
+                        logoUrl = baseUrl + '/' + logoUrl;
+                    }
+                    try {
+                        const logoResponse = await fetch(logoUrl, { 
+                            method: 'HEAD',
+                            timeout: 5000 
+                        });
+                        if (logoResponse.ok) {
+                            console.log('✅ Found logo in HTML:', logoUrl);
+                            return logoUrl;
+                        }
+                    } catch (e) {
+                        // Continue searching
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.log('⚠️ Could not parse homepage HTML for logo:', e.message);
+    }
+    
+    // 3) Clearbit
     let url = await tryClearbit(hostname);
-    if (url) return url;
-    // 3) Google Images
+    if (url) {
+        console.log('✅ Found logo via Clearbit:', url);
+        return url;
+    }
+    
+    // 4) Google Images
     url = await searchGoogleForLogo(companyName, hostname);
-    if (url) return url;
-    // 4) Site favicon
+    if (url) {
+        console.log('✅ Found logo via Google Images:', url);
+        return url;
+    }
+    
+    // 5) Site favicon (as last resort)
     url = await tryFavicon(hostname);
-    if (url) return url;
+    if (url) {
+        console.log('✅ Using favicon as logo:', url);
+        return url;
+    }
+    
+    console.log('❌ No logo found for:', hostname);
     return null;
 }
 
@@ -312,15 +393,16 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
 
     // 2) Ask OpenAI to produce the structured JSON based on the collected text
     const systemPrompt = `אתה אנליסט מומחה בחברות בניה ונדל"ן בישראל.
-התבסס אך ורק על תוצאות החיפוש והטקסטים המצורפים (WEB_RESULTS) כדי להפיק תקציר מקיף בעברית.
+התבסס אך ורק על תוצאות החיפוש והטקסטים המצורפים (WEB_RESULTS) כדי להפיק תקציר מקיף, עשיר ומפורט בעברית.
 התמקד במיוחד במידע על בטיחות, הסמכות, תקנים ופרויקטים.
-כתבו "about" באורך 1000 מילים בדיוק (לא פחות ולא יותר) ו"safety" באורך 500-700 מילים.`;
+כתוב טקסט "about" ארוך, מפורט ועשיר ככל האפשר - ללא הגבלת אורך. כלול את כל המידע הרלוונטי מהאתר: היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות, פרסים, שותפויות, חדשנות, אחריות חברתית ועוד.
+כתוב "safety" באורך 500-700 מילים.`;
 
     const userPrompt = `חברה: "${displayName}" (${hostname}).
 החזר JSON תקין בלבד במבנה הבא:
 {
   "companyName": "שם החברה המדויק",
-  "about": "תיאור מפורט של החברה באורך 1000 מילים בדיוק הכולל היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות",
+  "about": "תיאור מפורט, ארוך ועשיר ככל האפשר של החברה. כלול את כל המידע הרלוונטי מהאתר: היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות, פרסים, שותפויות, חדשנות, אחריות חברתית וכל מידע נוסף רלוונטי. הטקסט צריך להיות ארוך ומפורט ככל האפשר.",
   "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (500-700 מילים)",
   "projects": ["פרויקט 1 עם תיאור מפורט", "פרויקט 2 עם תיאור מפורט", "פרויקט 3 עם תיאור מפורט"],
   "logoUrl": null
@@ -331,7 +413,7 @@ WEB_RESULTS (סיכומי דפי האתר והקישורים הרלוונטיי�
 ${collectedText}
 """`;
 
-    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 12000 });
+    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 32000 });
 
     console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
 
@@ -352,25 +434,28 @@ ${collectedText}
         }
     }
 
-    // Search for logo if not found in AI response
+    // Always search for logo to ensure we find it
     let logoUrl = parsed?.logoUrl || null;
     if (!logoUrl) {
         console.log('🔍 No logo found in AI response, searching logo providers...');
         logoUrl = await findLogoUrl(displayName, hostname);
-    }
-
-    // Enforce exact 1000-word requirement for 'about' (even if empty/short)
-    let aboutText = parsed?.about || '';
-    let aboutWordCount = getWordCount(aboutText);
-    if (aboutWordCount !== 1000) {
-        console.log(`ℹ️ about word count=${aboutWordCount}. Rewriting to exactly 1000 words...`);
+    } else {
+        // Verify the logo URL is accessible
         try {
-            aboutText = await enforceExactWordLength(aboutText, 1000, collectedText);
-            aboutWordCount = getWordCount(aboutText);
+            const testResponse = await fetch(logoUrl, { method: 'HEAD', timeout: 5000 });
+            if (!testResponse.ok) {
+                console.log('🔍 Logo URL from AI is not accessible, searching alternatives...');
+                logoUrl = await findLogoUrl(displayName, hostname);
+            }
         } catch (e) {
-            console.warn('⚠️ Failed to enforce exact 1000 words, keeping original about:', e.message);
+            console.log('🔍 Logo URL from AI failed validation, searching alternatives...');
+            logoUrl = await findLogoUrl(displayName, hostname);
         }
     }
+
+    // Use the about text as-is without word count enforcement - allow it to be as long and rich as possible
+    let aboutText = parsed?.about || '';
+    console.log(`ℹ️ about text length: ${aboutText.length} characters, ${getWordCount(aboutText)} words`);
 
     // Enforce safety length to 500–700 words (target ~600)
     let safetyText = parsed?.safety || '';
