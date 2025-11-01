@@ -275,13 +275,18 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
+            console.log('🖼️ Logo URL from analysis:', analysisResult.logoUrl);
+            console.log('🖼️ Logo URL from mapped data:', mappedData.logoUrl);
 
             // Update the contractor state with the analyzed data
             if (mappedData.about) {
                 setCompanyAbout(mappedData.about);
             }
             if (mappedData.logoUrl) {
+                console.log('✅ Setting company logo to:', mappedData.logoUrl);
                 setCompanyLogo(mappedData.logoUrl);
+            } else {
+                console.warn('⚠️ No logo URL in mapped data');
             }
             // Note: Not updating company name as it comes from company registry
 
@@ -2104,13 +2109,12 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                 אודות החברה
                             </Typography>
 
-                            {/* שדה אודות החברה - כל אורך העמוד, 8 שורות */}
+                            {/* שדה אודות החברה - ללא מגבלת אורך */}
                             <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', mb: 3 }}>
                                 <TextField
                                     fullWidth
                                     multiline
-                                    rows={8}
-                                    maxRows={8}
+                                    rows={20}
                                     label="אודות החברה"
                                     value={companyAbout}
                                     disabled={!canEdit}
@@ -2173,6 +2177,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 maxWidth: '100%',
                                                 maxHeight: '100%',
                                                 objectFit: 'contain'
+                                            }}
+                                            onError={(e) => {
+                                                console.error('❌ Failed to load logo image:', companyLogo);
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                            }}
+                                            onLoad={() => {
+                                                console.log('✅ Logo image loaded successfully:', companyLogo);
                                             }}
                                         />
                                     ) : (
