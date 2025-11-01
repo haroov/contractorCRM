@@ -363,40 +363,91 @@ async function callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens = 8000
     return text;
 }
 
-// Use OpenAI Responses API with web_search tool to allow direct browsing
-async function callOpenAIWithWebSearch({ systemPrompt, userPrompt, maxTokens = 12000 }) {
+// Use OpenAI Chat Completions API with gpt-4o-search-preview and web_search tool
+async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxTokens = 30000 }) {
     if (!OPENAI_API_KEY) {
         throw new Error('Missing OPENAI_API_KEY environment variable');
     }
-    const model = /4\.1/.test(String(OPENAI_MODEL)) ? OPENAI_MODEL : 'gpt-4.1-mini';
-    const payload = {
-        model,
-        input: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-        ],
-        tools: [{ type: 'web_search' }],
-        max_output_tokens: maxTokens
-    };
-    const response = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-    const data = await response.json();
-    if (!response.ok) {
-        const message = data?.error?.message || `OpenAI Responses API error (${response.status})`;
-        throw new Error(message);
+    
+    const systemPrompt = `אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל.
+השתמש ב-web_search כדי לאסוף מידע מקיף על החברה.
+כתוב טקסט מקיף, ארוך מאוד מאוד ומפורט - לפחות 2000 מילים, ועדיף 2500-3500 מילים.
+כלול בהרחבה: היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון, שיטות עבודה, גישה ללקוח, ערכים, פרסים, שותפויות, התפתחות החברה.
+חשוב מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 2000 מילים!`;
+
+    const userPrompt = `סכם את המידע המרכזי על החברה שמחזיקה בדומיין ${domain} (${displayName}).
+
+כתוב טקסט "אודות החברה" ארוך מאוד מאוד, מפורט ומקיף מאוד (לפחות 2000 מילים, עדיף 2500-3500 מילים).
+כלול: רקע החברה, תחומי פעילות, חוזקות, סיכונים, דגש על ניהול ובטיחות (אם רלוונטי), היסטוריה מפורטת, פרויקטים בולטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון.
+
+בנוסף, מצא קישור ללוגו החברה (URL של קובץ תמונה) והחזר אותו בנפרד.
+
+החזר תשובה בפורמט JSON:
+{
+  "about": "טקסט ארוך ומפורט מאוד...",
+  "logo_url": "https://..."
+}`;
+
+    try {
+        const payload = {
+            model: 'gpt-4o-search-preview',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+            ],
+            tools: [
+                {
+                    type: 'web_search',
+                    query: domain,
+                    size: 'large',
+                    user_location: { country: 'IL' }
+                }
+            ],
+            temperature: 0.2,
+            max_tokens: maxTokens
+        };
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(`OpenAI API error (${response.status}): ${err}`);
+        }
+
+        const data = await response.json();
+        const reply = data?.choices?.[0]?.message?.content || '';
+        
+        if (!reply) {
+            throw new Error('No content from OpenAI');
+        }
+
+        // Try to parse JSON from reply
+        try {
+            // Extract JSON if wrapped in markdown code blocks
+            const jsonMatch = reply.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || reply.match(/(\{[\s\S]*\})/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[1]);
+            }
+            return JSON.parse(reply);
+        } catch (parseError) {
+            // If not JSON, return the text as about
+            console.warn('⚠️ Could not parse JSON from reply, using as plain text');
+            return {
+                about: reply,
+                logo_url: null
+            };
+        }
+    } catch (error) {
+        console.error('❌ callChatGPTWithWebSearch failed:', error.message);
+        throw error;
     }
-    const text = data?.output_text
-        || data?.choices?.[0]?.message?.content
-        || (Array.isArray(data?.output) ? data.output.map(o => (o?.content?.[0]?.text || '')).join('\n') : '')
-        || '';
-    if (!text) throw new Error('OpenAI Responses API returned empty content');
-    return text;
 }
 
 function getWordCount(text) {
@@ -437,7 +488,7 @@ async function enforceExactWordLength(baseText, targetWords, extraContext) {
 שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON.
 חשוב מאוד: הטקסט חייב להכיל בדיוק ${targetWords} מילים! אם הטקסט קצר - הרחב אותו מאוד. אם הוא ארוך - צמצם אותו.
 הרחב כל נושא, הוסף פרטים, תאר באופן מעמיק ומפורט.`;
-    
+
     // Use more context for longer texts
     const contextLimit = targetWords >= 1500 ? 30000 : 15000;
     const user = `מספר מילים נדרש: ${targetWords} מילים בדיוק.
@@ -454,12 +505,12 @@ ${(extraContext || '').slice(0, contextLimit)}
 
 כתוב טקסט מפורט באורך ${targetWords} מילים בדיוק. אם הטקסט הקיים קצר, הרחב אותו מאוד עם המידע הנוסף. אם הוא ארוך, צמצם אותו.
 התוצאה חייבת להכיל בדיוק ${targetWords} מילים. כתוב פסקאות ארוכות ומפורטות!`;
-    
+
     const maxTokensForLength = Math.max(18000, targetWords * 12); // ~12 tokens per word
     const rewritten = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: maxTokensForLength });
     const final = rewritten.trim();
     const count = getWordCount(final);
-    
+
     // If still not long enough, retry with even stronger instruction
     if (count < targetWords * 0.9) { // Allow 10% tolerance, but enforce if too short
         console.log(`⚠️ First rewrite: ${count} words (target: ${targetWords}), retrying with more context...`);
@@ -519,57 +570,59 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     const { hostname } = new URL(normalizedUrl);
     const displayName = (companyName || '').trim() || hostname;
 
-    // 1) Perform domain-focused web search and collect readable text
-    console.log('🌐 Performing domain web search and collection for:', hostname);
-    const collectedText = await domainWebSearchCollectText(hostname, displayName);
-
-    // 2) Always generate and enforce long, detailed text (minimum 2000 words)
-    console.log('🤖 Generating rich about text (2000+ words)...');
+    // 1) Try ChatGPT with web_search first (preferred method)
+    console.log('🌐 Attempting ChatGPT with web_search for:', hostname);
     let aboutText = '';
-    const TARGET_WORDS = 2000; // Increased target to 2000 words
+    let logoUrl = null;
+    const TARGET_WORDS = 2000;
     
     try {
-        // First try to generate rich about text
-        aboutText = await generateRichAbout(collectedText, displayName, hostname);
+        const webSearchResult = await callChatGPTWithWebSearch({
+            domain: hostname,
+            hostname,
+            displayName,
+            maxTokens: 30000
+        });
+        
+        aboutText = (webSearchResult.about || '').trim();
+        logoUrl = webSearchResult.logo_url || null;
+        
         const wordCount = getWordCount(aboutText);
-        console.log(`✅ Initial rich about text: ${aboutText.length} characters, ${wordCount} words`);
-
-        // Always enforce minimum - even if close, ensure it's truly long
+        console.log(`✅ ChatGPT web_search result: ${aboutText.length} characters, ${wordCount} words`);
+        
+        if (logoUrl) {
+            console.log('✅ Logo URL found via web_search:', logoUrl);
+        }
+        
+        // Enforce minimum word count if too short
         if (wordCount < TARGET_WORDS) {
             console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
+            // Fallback to old method for expansion
+            const collectedText = await domainWebSearchCollectText(hostname, displayName);
             aboutText = await enforceExactWordLength(
                 aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
                 TARGET_WORDS,
                 collectedText
             );
             const finalWordCount = getWordCount(aboutText);
-            console.log(`✅ Final about text: ${aboutText.length} characters, ${finalWordCount} words`);
-            
-            // If still too short after enforcement, try one more time with even more aggressive approach
-            if (finalWordCount < TARGET_WORDS * 0.8) {
-                console.log(`⚠️ Still too short (${finalWordCount} words), retrying with more aggressive expansion...`);
-                aboutText = await enforceExactWordLength(aboutText, TARGET_WORDS, collectedText);
-            }
-        } else if (wordCount < TARGET_WORDS * 1.2) {
-            // Even if close to target, expand a bit to ensure it's truly comprehensive
-            console.log(`📝 Expanding text slightly to ensure comprehensive coverage...`);
-            const expanded = await enforceExactWordLength(aboutText, TARGET_WORDS, collectedText);
-            if (getWordCount(expanded) >= wordCount) {
-                aboutText = expanded;
-            }
+            console.log(`✅ Final about text after expansion: ${aboutText.length} characters, ${finalWordCount} words`);
         }
-    } catch (e) {
-        console.error('❌ Failed to generate about text:', e.message);
-        // Fallback: try to generate basic text and expand it aggressively
+    } catch (webSearchError) {
+        console.warn('⚠️ ChatGPT web_search failed, falling back to traditional method:', webSearchError.message);
+        
+        // Fallback: Use traditional method
+        console.log('🌐 Performing domain web search and collection for:', hostname);
+        const collectedText = await domainWebSearchCollectText(hostname, displayName);
+        
         try {
-            const fallbackResponse = await callOpenAIChatSimple({
-                systemPrompt: 'אתה כותב תוכן בעברית. כתוב טקסט ארוך מאוד ומפורט.',
-                userPrompt: `כתוב טקסט "אודות החברה" ארוך מאוד (${TARGET_WORDS} מילים לפחות) עבור "${displayName}". מידע: ${collectedText.slice(0, 30000)}`,
-                maxTokens: 25000
-            });
-            aboutText = (fallbackResponse || '').trim();
+            // Generate rich about text
+            aboutText = await generateRichAbout(collectedText, displayName, hostname);
             const wordCount = getWordCount(aboutText);
+            console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
+            
+            // Enforce minimum
             if (wordCount < TARGET_WORDS) {
+                console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
                 aboutText = await enforceExactWordLength(
                     aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
                     TARGET_WORDS,
@@ -582,58 +635,59 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         }
     }
 
-    // 3) Search for logo - try direct site search first, then Google Images
-    console.log('🔍 Searching for logo...');
-    let logoUrl = null;
+    // 3) Search for logo if not already found via web_search
+    if (!logoUrl) {
+        console.log('🔍 Searching for logo...');
 
-    // First, try to find logo directly on the website (most reliable)
-    const baseHost = hostname.replace(/^www\./, '');
-    const baseUrl = `https://${baseHost}`;
-    try {
-        const homepageResponse = await fetch(baseUrl, {
-            timeout: 8000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-        });
-        if (homepageResponse.ok) {
-            const html = await homepageResponse.text();
-            // Look for logo in HTML - prioritize elements with "logo" in class/id/alt
-            const logoPatterns = [
-                /<img[^>]*(?:class|id|alt)=["'][^"']*logo[^"']*["'][^>]*src=["']([^"']+\.(?:png|svg|jpg|jpeg|webp))["']/i,
-                /<img[^>]*src=["']([^"']*logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i,
-                /<img[^>]*src=["']([^"']*\/logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i
-            ];
-            for (const pattern of logoPatterns) {
-                const match = html.match(pattern);
-                if (match && match[1]) {
-                    let imgUrl = match[1];
-                    if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-                    else if (imgUrl.startsWith('/')) imgUrl = baseUrl + imgUrl;
-                    else if (!imgUrl.startsWith('http')) imgUrl = baseUrl + '/' + imgUrl;
-                    console.log('✅ Found logo on homepage:', imgUrl);
-                    logoUrl = imgUrl;
-                    break;
+        // First, try to find logo directly on the website (most reliable)
+        const baseHost = hostname.replace(/^www\./, '');
+        const baseUrl = `https://${baseHost}`;
+        try {
+            const homepageResponse = await fetch(baseUrl, {
+                timeout: 8000,
+                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+            });
+            if (homepageResponse.ok) {
+                const html = await homepageResponse.text();
+                // Look for logo in HTML - prioritize elements with "logo" in class/id/alt
+                const logoPatterns = [
+                    /<img[^>]*(?:class|id|alt)=["'][^"']*logo[^"']*["'][^>]*src=["']([^"']+\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                    /<img[^>]*src=["']([^"']*logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i,
+                    /<img[^>]*src=["']([^"']*\/logo[^"']*\.(?:png|svg|jpg|jpeg|webp))["']/i
+                ];
+                for (const pattern of logoPatterns) {
+                    const match = html.match(pattern);
+                    if (match && match[1]) {
+                        let imgUrl = match[1];
+                        if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+                        else if (imgUrl.startsWith('/')) imgUrl = baseUrl + imgUrl;
+                        else if (!imgUrl.startsWith('http')) imgUrl = baseUrl + '/' + imgUrl;
+                        console.log('✅ Found logo on homepage:', imgUrl);
+                        logoUrl = imgUrl;
+                        break;
+                    }
                 }
             }
+        } catch (e) {
+            console.warn('⚠️ Could not search homepage for logo:', e.message);
         }
-    } catch (e) {
-        console.warn('⚠️ Could not search homepage for logo:', e.message);
-    }
 
-    // If not found on homepage, try Google Images
-    if (!logoUrl) {
-        logoUrl = await searchGoogleForLogo(hostname);
-    }
+        // If not found on homepage, try Google Images
+        if (!logoUrl) {
+            logoUrl = await searchGoogleForLogo(hostname);
+        }
 
-    // Fallback chain if Google Images doesn't work
-    if (!logoUrl) {
-        logoUrl = await findLogoUrl(displayName, hostname);
-    }
+        // Fallback chain if Google Images doesn't work
+        if (!logoUrl) {
+            logoUrl = await findLogoUrl(displayName, hostname);
+        }
 
-    // Final fallback: S2 favicon
-    if (!logoUrl) {
-        logoUrl = await tryGoogleS2Favicon(hostname);
-        if (logoUrl) {
-            console.log('✅ Using Google S2 favicon as logo:', logoUrl);
+        // Final fallback: S2 favicon
+        if (!logoUrl) {
+            logoUrl = await tryGoogleS2Favicon(hostname);
+            if (logoUrl) {
+                console.log('✅ Using Google S2 favicon as logo:', logoUrl);
+            }
         }
     }
 
