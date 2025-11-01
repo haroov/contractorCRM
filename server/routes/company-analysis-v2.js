@@ -385,6 +385,19 @@ function getWordCount(text) {
     return words.filter(Boolean).length;
 }
 
+// Fallback generator for a rich "about" section when the parsed content is short/empty
+async function generateRichAbout(collectedText, displayName, hostname) {
+    const system = 'אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה. כתוב טקסט קריא, מקצועי ורהוט.';
+    const user = `כתוב טקסט "אודות החברה" ארוך ומפורט (לפחות 1200 מילים) עבור "${displayName}" (${hostname}).\nהשתמש רק במידע מטקסטים שנאספו (WEB_RESULTS) והימנע מהמצאות.\nכלול היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, לקוחות, תעודות והסמכות, חדשנות, אחריות חברתית וחזון.\n\nWEB_RESULTS:\n"""\n${(collectedText || '').slice(0, 48000)}\n"""`;
+    try {
+        const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 12000 });
+        return (about || '').trim();
+    } catch (e) {
+        console.warn('⚠️ generateRichAbout failed:', e.message);
+        return '';
+    }
+}
+
 async function enforceExactWordLength(baseText, targetWords, extraContext) {
     const system = 'אתה עורך תוכן בעברית. כתוב או ערוך את הטקסט כך שיכיל בדיוק את מספר המילים המבוקש. שמור על עובדות, בהירות וסגנון מקצועי. החזר טקסט בלבד, ללא כותרות, ללא רשימות וללא JSON. חשוב מאוד: הטקסט חייב להכיל בדיוק ' + targetWords + ' מילים!';
     const user = `מספר מילים נדרש: ${targetWords} מילים בדיוק.
@@ -562,11 +575,28 @@ ${collectedText}
 
     if (!logoUrl) {
         console.warn('⚠️ Could not find logo after', maxLogoAttempts, 'attempts');
+        // Final ensure: S2 favicon as last resort
+        try {
+            const s2 = await tryGoogleS2Favicon(hostname);
+            if (s2) {
+                console.log('✅ Ensured logo via Google S2 favicon:', s2);
+                logoUrl = s2;
+            }
+        } catch (_) {}
     }
 
-    // Use the about text as-is without word count enforcement - allow it to be as long and rich as possible
+    // Use the about text as-is; if short/empty, generate a rich about fallback
     let aboutText = parsed?.about || '';
-    console.log(`ℹ️ about text length: ${aboutText.length} characters, ${getWordCount(aboutText)} words`);
+    let aboutCount = getWordCount(aboutText);
+    console.log(`ℹ️ about text length: ${aboutText.length} characters, ${aboutCount} words`);
+    if (!aboutText || aboutCount < 150) {
+        console.log('ℹ️ About text too short or missing – generating rich about...');
+        const rich = await generateRichAbout(collectedText, displayName, hostname);
+        if (rich && getWordCount(rich) > aboutCount) {
+            aboutText = rich;
+            aboutCount = getWordCount(rich);
+        }
+    }
 
     // Enforce safety length to 500–700 words (target ~600)
     let safetyText = parsed?.safety || '';
