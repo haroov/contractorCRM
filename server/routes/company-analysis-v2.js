@@ -139,28 +139,13 @@ async function searchGoogleForLogo(companyName, website) {
                     for (const match of matches) {
                         if (match[1]) {
                             let imgUrl = match[1];
-                            // Skip data URLs and Google internal URLs
-                            if (imgUrl.startsWith('data:') || imgUrl.includes('googleusercontent.com') || imgUrl.includes('/images?q=')) {
-                                continue;
-                            }
-                            // Clean up Google's proxied URLs
+                            // Skip only data URLs; allow google proxies (gstatic/googleusercontent)
+                            if (imgUrl.startsWith('data:')) continue;
                             if (imgUrl.startsWith('/images?q=')) {
                                 imgUrl = 'https://www.google.com' + imgUrl;
                             }
-                            
-                            // Verify the image is accessible
-                            try {
-                                const testResponse = await fetch(imgUrl, { method: 'HEAD', timeout: 5000 });
-                                if (testResponse.ok) {
-                                    const contentType = testResponse.headers.get('content-type');
-                                    if (contentType && contentType.startsWith('image/')) {
-                                        console.log('✅ Found logo URL via Google:', imgUrl);
-                                        return imgUrl;
-                                    }
-                                }
-                            } catch (e) {
-                                continue;
-                            }
+                            console.log('✅ Found logo URL via Google:', imgUrl);
+                            return imgUrl;
                         }
                     }
                 }
@@ -341,6 +326,42 @@ async function callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens = 8000
     return text;
 }
 
+// Use OpenAI Responses API with web_search tool to allow direct browsing
+async function callOpenAIWithWebSearch({ systemPrompt, userPrompt, maxTokens = 12000 }) {
+    if (!OPENAI_API_KEY) {
+        throw new Error('Missing OPENAI_API_KEY environment variable');
+    }
+    const model = /4\.1/.test(String(OPENAI_MODEL)) ? OPENAI_MODEL : 'gpt-4.1-mini';
+    const payload = {
+        model,
+        input: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        tools: [{ type: 'web_search' }],
+        max_output_tokens: maxTokens
+    };
+    const response = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        const message = data?.error?.message || `OpenAI Responses API error (${response.status})`;
+        throw new Error(message);
+    }
+    const text = data?.output_text
+        || data?.choices?.[0]?.message?.content
+        || (Array.isArray(data?.output) ? data.output.map(o => (o?.content?.[0]?.text || '')).join('\n') : '')
+        || '';
+    if (!text) throw new Error('OpenAI Responses API returned empty content');
+    return text;
+}
+
 function getWordCount(text) {
     if (!text) return 0;
     const words = String(text).trim().split(/\s+/g);
@@ -467,7 +488,7 @@ ${collectedText}
 
 חשוב: הטקסט "about" חייב להיות ארוך מאוד - לפחות 2000-3000 מילים! השתמש בכל המידע הזמין כדי ליצור טקסט מקיף ומפורט.`;
 
-    const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 32000 });
+    const rawResponse = await callOpenAIWithWebSearch({ systemPrompt, userPrompt, maxTokens: 32000 });
 
     console.log('📄 Raw OpenAI response (first 500 chars):', rawResponse.slice(0, 500));
 
