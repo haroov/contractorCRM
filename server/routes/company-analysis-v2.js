@@ -83,13 +83,14 @@ async function domainWebSearchCollectText(hostname, companyName) {
     foundUrls.add(`https://${baseHost}`);
 
     const texts = [];
-    for (const url of Array.from(foundUrls).slice(0, 8)) {
+    for (const url of Array.from(foundUrls).slice(0, 12)) {
         const text = await fetchReadableText(url);
-        if (text && text.length > 400) {
+        if (text && text.length > 300) {
             texts.push(`URL: ${url}\n\n${text}`);
         }
     }
-    const combined = texts.join('\n\n-----------------------------\n\n').slice(0, 18000);
+    // Increase limit to allow more context for rich about text
+    const combined = texts.join('\n\n-----------------------------\n\n').slice(0, 50000);
     return combined;
 }
 
@@ -105,33 +106,67 @@ async function tryClearbit(hostname) {
 async function searchGoogleForLogo(companyName, website) {
     try {
         console.log('🔍 Searching Google for logo:', companyName, website);
-        const searchQuery = `${companyName} logo site:${website}`;
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
+        const searchQueries = [
+            `${companyName} logo site:${website}`,
+            `${companyName} logo`,
+            `logo ${companyName} ${website}`
+        ];
+        
+        for (const searchQuery of searchQueries) {
+            try {
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&tbm=isch`;
 
-        const response = await fetch(searchUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            timeout: 10000
-        });
+                const response = await fetch(searchUrl, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    },
+                    timeout: 10000
+                });
 
-        if (!response.ok) {
-            console.warn('⚠️ Google search failed:', response.status);
-            return null;
-        }
+                if (!response.ok) continue;
 
-        const html = await response.text();
+                const html = await response.text();
 
-        // Extract first image URL from Google Images results
-        const imgMatch = html.match(/<img[^>]+src="([^"]+)"[^>]*>/i);
-        if (imgMatch && imgMatch[1]) {
-            let imgUrl = imgMatch[1];
-            // Clean up Google's proxied URLs
-            if (imgUrl.startsWith('/images?q=')) {
-                imgUrl = 'https://www.google.com' + imgUrl;
+                // Extract image URLs from Google Images results - try multiple patterns
+                const patterns = [
+                    /<img[^>]+src="([^"]+)"[^>]*>/gi,
+                    /"ou":"([^"]+\.(?:png|svg|jpg|jpeg|webp))"/gi,
+                    /\["(https?:\/\/[^"]+\.(?:png|svg|jpg|jpeg|webp))"/gi
+                ];
+                
+                for (const pattern of patterns) {
+                    const matches = html.matchAll(pattern);
+                    for (const match of matches) {
+                        if (match[1]) {
+                            let imgUrl = match[1];
+                            // Skip data URLs and Google internal URLs
+                            if (imgUrl.startsWith('data:') || imgUrl.includes('googleusercontent.com') || imgUrl.includes('/images?q=')) {
+                                continue;
+                            }
+                            // Clean up Google's proxied URLs
+                            if (imgUrl.startsWith('/images?q=')) {
+                                imgUrl = 'https://www.google.com' + imgUrl;
+                            }
+                            
+                            // Verify the image is accessible
+                            try {
+                                const testResponse = await fetch(imgUrl, { method: 'HEAD', timeout: 5000 });
+                                if (testResponse.ok) {
+                                    const contentType = testResponse.headers.get('content-type');
+                                    if (contentType && contentType.startsWith('image/')) {
+                                        console.log('✅ Found logo URL via Google:', imgUrl);
+                                        return imgUrl;
+                                    }
+                                }
+                            } catch (e) {
+                                continue;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                continue;
             }
-            console.log('✅ Found logo URL:', imgUrl);
-            return imgUrl;
         }
 
         console.log('❌ No logo found in Google search results');
@@ -395,23 +430,42 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     const systemPrompt = `אתה אנליסט מומחה בחברות בניה ונדל"ן בישראל.
 התבסס אך ורק על תוצאות החיפוש והטקסטים המצורפים (WEB_RESULTS) כדי להפיק תקציר מקיף, עשיר ומפורט בעברית.
 התמקד במיוחד במידע על בטיחות, הסמכות, תקנים ופרויקטים.
-כתוב טקסט "about" ארוך, מפורט ועשיר ככל האפשר - ללא הגבלת אורך. כלול את כל המידע הרלוונטי מהאתר: היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות, פרסים, שותפויות, חדשנות, אחריות חברתית ועוד.
+
+חשוב מאוד: הטקסט "about" חייב להיות ארוך מאוד, מפורט ועשיר. המטרה היא לפחות 2000-3000 מילים או יותר!
+כלול את כל המידע הרלוונטי מהאתר בפירוט מלא:
+- היסטוריה מלאה של החברה (שנה, מייסדים, צמיחה)
+- תחומי פעילות מפורטים (סוגי פרויקטים, אזורים, שירותים)
+- ניסיון והישגים (שנים בענף, מספר פרויקטים, לקוחות)
+- ערכים וחזון החברה
+- פרויקטים בולטים עם תיאורים מפורטים (מיקומים, גדלים, תאריכים)
+- צוות מקצועי (ניסיון, מומחיות)
+- טכנולוגיות ושיטות בניה מתקדמות
+- שירותים שמציעה החברה
+- לקוחות בולטים ושותפויות
+- תעודות, הסמכות, פרסים והכרות
+- חדשנות ופיתוחים
+- אחריות חברתית וסביבתית
+- כל פרט רלוונטי אחר מהאתר
+
+הטקסט חייב להיות ארוך, מפורט ומקיף - לפחות 2000-3000 מילים!
 כתוב "safety" באורך 500-700 מילים.`;
 
     const userPrompt = `חברה: "${displayName}" (${hostname}).
 החזר JSON תקין בלבד במבנה הבא:
 {
   "companyName": "שם החברה המדויק",
-  "about": "תיאור מפורט, ארוך ועשיר ככל האפשר של החברה. כלול את כל המידע הרלוונטי מהאתר: היסטוריה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים, צוות מקצועי, טכנולוגיות מתקדמות, שירותים, לקוחות, הישגים ותעודות, פרסים, שותפויות, חדשנות, אחריות חברתית וכל מידע נוסף רלוונטי. הטקסט צריך להיות ארוך ומפורט ככל האפשר.",
+  "about": "תיאור מפורט, ארוך מאוד ועשיר של החברה. הטקסט חייב להיות באורך של לפחות 2000-3000 מילים או יותר! כלול את כל המידע מהאתר בפירוט: היסטוריה מלאה, תחומי פעילות, ניסיון, ערכים, חזון, פרויקטים בולטים עם תיאורים, צוות, טכנולוגיות, שירותים, לקוחות, הישגים, תעודות, פרסים, שותפויות, חדשנות, אחריות חברתית וכל מידע נוסף רלוונטי. הטקסט צריך להיות ארוך מאוד ומפורט ככל האפשר - לפחות 2000-3000 מילים!",
   "safety": "מידע מפורט על בטיחות, הסמכות, תקנים, תעודות איכות, מדיניות בטיחות ונהלים (500-700 מילים)",
   "projects": ["פרויקט 1 עם תיאור מפורט", "פרויקט 2 עם תיאור מפורט", "פרויקט 3 עם תיאור מפורט"],
   "logoUrl": null
 }
 
-WEB_RESULTS (סיכומי דפי האתר והקישורים הרלוונטיים):
+WEB_RESULTS (סיכומי דפי האתר והקישורים הרלוונטיים - השתמש בכל המידע הזה כדי ליצור טקסט ארוך ומפורט):
 """
 ${collectedText}
-"""`;
+"""
+
+חשוב: הטקסט "about" חייב להיות ארוך מאוד - לפחות 2000-3000 מילים! השתמש בכל המידע הזמין כדי ליצור טקסט מקיף ומפורט.`;
 
     const rawResponse = await callOpenAIChatSimple({ systemPrompt, userPrompt, maxTokens: 32000 });
 
@@ -434,23 +488,41 @@ ${collectedText}
         }
     }
 
-    // Always search for logo to ensure we find it
+    // Always search for logo to ensure we find it - try multiple times if needed
     let logoUrl = parsed?.logoUrl || null;
-    if (!logoUrl) {
-        console.log('🔍 No logo found in AI response, searching logo providers...');
-        logoUrl = await findLogoUrl(displayName, hostname);
-    } else {
-        // Verify the logo URL is accessible
-        try {
-            const testResponse = await fetch(logoUrl, { method: 'HEAD', timeout: 5000 });
-            if (!testResponse.ok) {
-                console.log('🔍 Logo URL from AI is not accessible, searching alternatives...');
-                logoUrl = await findLogoUrl(displayName, hostname);
+    let logoSearchAttempts = 0;
+    const maxLogoAttempts = 3;
+    
+    while (!logoUrl && logoSearchAttempts < maxLogoAttempts) {
+        if (logoSearchAttempts === 0 && parsed?.logoUrl) {
+            // First, verify the logo URL from AI response
+            try {
+                const testResponse = await fetch(parsed.logoUrl, { method: 'HEAD', timeout: 5000 });
+                if (testResponse.ok) {
+                    const contentType = testResponse.headers.get('content-type');
+                    if (contentType && contentType.startsWith('image/')) {
+                        console.log('✅ Using logo URL from AI response:', parsed.logoUrl);
+                        logoUrl = parsed.logoUrl;
+                        break;
+                    }
+                }
+            } catch (e) {
+                console.log('⚠️ Logo URL from AI is not accessible:', e.message);
             }
-        } catch (e) {
-            console.log('🔍 Logo URL from AI failed validation, searching alternatives...');
-            logoUrl = await findLogoUrl(displayName, hostname);
         }
+        
+        logoSearchAttempts++;
+        console.log(`🔍 Searching for logo (attempt ${logoSearchAttempts}/${maxLogoAttempts})...`);
+        logoUrl = await findLogoUrl(displayName, hostname);
+        
+        if (logoUrl) {
+            console.log('✅ Logo found:', logoUrl);
+            break;
+        }
+    }
+    
+    if (!logoUrl) {
+        console.warn('⚠️ Could not find logo after', maxLogoAttempts, 'attempts');
     }
 
     // Use the about text as-is without word count enforcement - allow it to be as long and rich as possible
