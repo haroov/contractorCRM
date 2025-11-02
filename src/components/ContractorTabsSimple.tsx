@@ -285,6 +285,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             if (mappedData.logoUrl) {
                 console.log('✅ Setting company logo to:', mappedData.logoUrl);
                 setCompanyLogo(mappedData.logoUrl);
+                setIsLogoWhite(false); // Reset when new logo is set
             } else {
                 console.warn('⚠️ No logo URL in mapped data');
                 // Client-side final fallback: Google S2 favicon for current website domain
@@ -297,6 +298,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                         const s2 = `https://www.google.com/s2/favicons?domain=${base}&sz=256`;
                         console.log('🖼️ Using client-side S2 favicon as logo:', s2);
                         setCompanyLogo(s2);
+                        setIsLogoWhite(false); // Reset when new logo is set
                     }
                 } catch (_) { }
             }
