@@ -407,7 +407,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             temperature: 0.2,
             max_tokens: maxTokens
         };
-        
+
         console.log('🔍 Attempting ChatGPT web_search with model: gpt-4o-search-preview');
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -428,12 +428,12 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                 message: errData.message,
                 type: errData.type
             });
-            
+
             // If model not found, try without web_search tool
             if (errData.code === 'model_not_found' || errData.message?.includes('gpt-4o-search-preview')) {
                 console.warn('⚠️ gpt-4o-search-preview not available, will fallback to traditional method');
             }
-            
+
             throw new Error(`OpenAI API error (${response.status}): ${errText}`);
         }
 
@@ -461,13 +461,13 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             console.warn('⚠️ Could not parse JSON from reply, using as plain text. Reply length:', reply.length);
             console.warn('⚠️ Parse error:', parseError.message);
             console.warn('⚠️ First 500 chars of reply:', reply.substring(0, 500));
-            
+
             // Try to extract "about" and "logo_url" from text if present
-            const aboutMatch = reply.match(/["']about["']\s*:\s*["']([^"']+)["']/i) || 
-                             reply.match(/about[":]\s*["']?([^"']{50,})["']?/i);
+            const aboutMatch = reply.match(/["']about["']\s*:\s*["']([^"']+)["']/i) ||
+                reply.match(/about[":]\s*["']?([^"']{50,})["']?/i);
             const logoMatch = reply.match(/["']logo_url["']\s*:\s*["']([^"']+)["']/i) ||
-                             reply.match(/logo[":]\s*["']?([^"']+\.(?:png|svg|jpg|jpeg|webp))["']?/i);
-            
+                reply.match(/logo[":]\s*["']?([^"']+\.(?:png|svg|jpg|jpeg|webp))["']?/i);
+
             return {
                 about: aboutMatch ? aboutMatch[1] : (reply.length > 100 ? reply : ''),
                 logo_url: logoMatch ? logoMatch[1] : null
@@ -488,16 +488,16 @@ function getWordCount(text) {
 // Generator for a rich "about" section - always ensures long, detailed text
 async function generateRichAbout(collectedText, displayName, hostname) {
     const system = `אתה כותב תוכן מומחה בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל.
-המשימה שלך היא לכתוב טקסט מקיף, ארוך מאוד מאוד ומפורט - לפחות 2000 מילים, ועדיף 2500-3500 מילים.
+המשימה שלך היא לכתוב טקסט מקיף, ארוך מאוד מאוד ומפורט - לפחות 3000 מילים, ועדיף 3500-4000 מילים.
 הטקסט חייב להיות ארוך מאוד מאוד, מפורט מאוד, מקצועי ורהוט.
 כלול בהרחבה: היסטוריה מפורטת מאוד של החברה מראשיתה, תחומי פעילות רחבים ומגוונים, פרויקטים בולטים עם פרטים ספציפיים מאוד, שנות ניסיון ותק עם דוגמאות, צוות מקצועי ומנוסה, טכנולוגיות מתקדמות בשימוש, שירותים מלאים ומגוונים, לקוחות ופרויקטים קודמים עם סיפורי הצלחה, תעודות והסמכות מקצועיות, חדשנות ופיתוח, אחריות חברתית וסביבתית, חזון ומטרות ארוכות טווח, שיטות עבודה ייחודיות, גישה ללקוח, ערכים ועקרונות, פרסים והכרות, שותפויות אסטרטגיות, התפתחות החברה לאורך השנים, אתגרים והצלחות, תרומה לקהילה.
-חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 2000 מילים! הרחב כל נושא מאוד מאוד, הוסף פרטים רבים, תאר באופן מעמיק ומפורט, כתוב פסקאות ארוכות מאוד.`;
+חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד - לפחות 3000 מילים! הרחב כל נושא מאוד מאוד, הוסף פרטים רבים, תאר באופן מעמיק ומפורט, כתוב פסקאות ארוכות מאוד.`;
 
-    const user = `כתוב טקסט "אודות החברה" ארוך מאוד מאוד, מפורט ומקיף מאוד (לפחות 2000 מילים, עדיף 2500-3500 מילים) עבור "${displayName}" (${hostname}).
+    const user = `כתוב טקסט "אודות החברה" ארוך מאוד מאוד, מפורט ומקיף מאוד (לפחות 3000 מילים, ועדיף 3500-4000 מילים) עבור "${displayName}" (${hostname}).
 השתמש רק במידע מטקסטים שנאספו מהאתר (WEB_RESULTS) - אל תמציא עובדות, אבל הרחב ותאר בצורה מאוד מפורטת את מה שיש.
 אם יש מעט מידע, הרחב כל נקודה מאוד מאוד עם פרטים מפורטים רבים.
 כלול כל מה שאפשר על: היסטוריה, תחומי פעילות, פרויקטים, ניסיון, צוות, טכנולוגיות, שירותים, לקוחות, תעודות, חדשנות, אחריות חברתית, חזון, שיטות עבודה, גישה ללקוח, ערכים, פרסים, שותפויות, התפתחות.
-חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד מאוד ומפורט - לפחות 2000 מילים! כתוב פסקאות ארוכות מאוד, הרחב כל נושא מאוד מאוד, תאר באופן מעמיק ומפורט מאוד מאוד. כל פסקה צריכה להיות ארוכה ומפורטת.
+חשוב מאוד מאוד: הטקסט חייב להיות ארוך מאוד מאוד ומפורט - לפחות 3000 מילים! כתוב פסקאות ארוכות מאוד, הרחב כל נושא מאוד מאוד, תאר באופן מעמיק ומפורט מאוד מאוד. כל פסקה צריכה להיות ארוכה ומפורטת מאוד.
 
 מידע שנאסף מהאתר:
 """
@@ -603,7 +603,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     console.log('🌐 Attempting ChatGPT with web_search for:', hostname);
     let aboutText = '';
     let logoUrl = null;
-    const TARGET_WORDS = 2000;
+    const TARGET_WORDS = 3000; // Increased to 3000 words for much longer, richer content
 
     try {
         const webSearchResult = await callChatGPTWithWebSearch({
@@ -662,7 +662,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
                 const finalWordCount = getWordCount(aboutText);
                 console.log(`✅ After enforcement: ${aboutText.length} characters, ${finalWordCount} words`);
             }
-            
+
             // Ensure we always have some text
             if (!aboutText || aboutText.trim().length === 0) {
                 console.error('❌ About text is empty after all attempts, using minimal fallback');
@@ -675,7 +675,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
             aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
         }
     }
-    
+
     // Final check - ensure aboutText is never empty
     if (!aboutText || aboutText.trim().length === 0) {
         console.error('❌ CRITICAL: About text is empty after all processing! Using emergency fallback.');

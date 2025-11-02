@@ -21,8 +21,7 @@ export async function analyzeCompanyWebsite(url: string, dbCompanyName?: string)
             headers: {
                 'Content-Type': 'application/json',
             },
-            // Do NOT send dbCompanyName to avoid server-side mismatch pre-checks returning 412
-            body: JSON.stringify({ website: url }),
+            body: JSON.stringify({ website: url, companyName: dbCompanyName || null }),
         });
 
         console.log('📡 companyAnalysisService: Received raw response status:', response.status);

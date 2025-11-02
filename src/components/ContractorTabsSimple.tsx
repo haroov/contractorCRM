@@ -379,9 +379,74 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     // Company about section states
     const [companyAbout, setCompanyAbout] = useState<string>(contractor?.companyAbout || '');
     const [companyLogo, setCompanyLogo] = useState<string>(contractor?.companyLogo || '');
+    const [isLogoWhite, setIsLogoWhite] = useState<boolean>(false);
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Function to check if logo is white/light colored
+    const checkIfLogoIsWhite = (img: HTMLImageElement) => {
+        try {
+            // Check if URL contains "white" in filename (common pattern)
+            const logoUrl = img.src.toLowerCase();
+            if (logoUrl.includes('white') || logoUrl.includes('_w') || logoUrl.includes('-w') || 
+                logoUrl.includes('w_') || logoUrl.includes('w-')) {
+                console.log('🖼️ Detected white logo from URL:', logoUrl);
+                setIsLogoWhite(true);
+                return;
+            }
+
+            // Use canvas to analyze image pixels
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            canvas.width = Math.min(img.width, 100); // Sample smaller size for performance
+            canvas.height = Math.min(img.height, 100);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            let whitePixels = 0;
+            let totalPixels = 0;
+            let avgBrightness = 0;
+
+            // Sample pixels (check every 4th pixel for performance)
+            for (let i = 0; i < pixels.length; i += 16) { // RGBA = 4 bytes, so every 4th pixel = i += 16
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const a = pixels[i + 3];
+
+                if (a > 128) { // Only count non-transparent pixels
+                    totalPixels++;
+                    const brightness = (r + g + b) / 3;
+                    avgBrightness += brightness;
+
+                    // Consider a pixel "white" if it's very light (brightness > 200)
+                    if (brightness > 200) {
+                        whitePixels++;
+                    }
+                }
+            }
+
+            if (totalPixels > 0) {
+                avgBrightness = avgBrightness / totalPixels;
+                const whiteRatio = whitePixels / totalPixels;
+
+                // If average brightness is high (>180) or most pixels are white (>60%), consider it a white logo
+                if (avgBrightness > 180 || whiteRatio > 0.6) {
+                    console.log('🖼️ Detected white/light logo:', { avgBrightness, whiteRatio });
+                    setIsLogoWhite(true);
+                } else {
+                    setIsLogoWhite(false);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Error checking logo color:', error);
+            setIsLogoWhite(false);
+        }
+    };
 
     // Check if user can edit based on contact user permissions
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
@@ -2179,7 +2244,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    backgroundColor: '#fafafa'
+                                    backgroundColor: isLogoWhite ? '#1a1a1a' : '#fafafa' // Dark background if logo is white
                                 }}>
                                     {companyLogo ? (
                                         <img
@@ -2195,8 +2260,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 const target = e.target as HTMLImageElement;
                                                 target.style.display = 'none';
                                             }}
-                                            onLoad={() => {
+                                            onLoad={(e) => {
                                                 console.log('✅ Logo image loaded successfully:', companyLogo);
+                                                // Check if logo is white by analyzing image pixels
+                                                const img = e.target as HTMLImageElement;
+                                                checkIfLogoIsWhite(img);
                                             }}
                                         />
                                     ) : (
