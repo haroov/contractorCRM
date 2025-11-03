@@ -462,7 +462,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                     jsonStr = jsonMatch[1];
                 }
             }
-            
+
             if (jsonStr) {
                 console.log(`📋 Extracted JSON string length: ${jsonStr.length} characters`);
                 // Try to parse, but handle potential issues with very long strings
@@ -477,15 +477,45 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                     return parsed;
                 } catch (parseErr) {
                     console.warn('⚠️ JSON parse failed on extracted string, trying to fix...', parseErr.message);
-                    // Try to fix common JSON issues
-                    // Handle unescaped newlines and quotes in about field
-                    const fixedJson = jsonStr
-                        .replace(/"about"\s*:\s*"([^"]*(?:\n|\\n)[^"]*)"?/gis, (match, content) => {
-                            // Escape newlines and quotes properly
-                            const escaped = content.replace(/\\n/g, '\n').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+                    console.warn('⚠️ Parse error at position:', parseErr.message.match(/position\s+(\d+)/)?.[1]);
+                    
+                    // More aggressive JSON fixing for long texts with special characters
+                    try {
+                        // Find the "about" field and extract its value manually
+                        const aboutMatch = jsonStr.match(/"about"\s*:\s*"((?:[^"\\]|\\.|\\n|\\r)*)"/);
+                        if (aboutMatch) {
+                            let aboutValue = aboutMatch[1];
+                            // Unescape the value
+                            aboutValue = aboutValue.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\\\/g, '\\');
+                            
+                            // Find logo_url if present
+                            const logoMatch = jsonStr.match(/"logo_url"\s*:\s*"([^"]+)"/);
+                            const logoUrl = logoMatch ? logoMatch[1] : null;
+                            
+                            console.log(`✅ Manually extracted about text: ${aboutValue.length} chars`);
+                            return {
+                                about: aboutValue,
+                                logo_url: logoUrl
+                            };
+                        }
+                    } catch (extractErr) {
+                        console.warn('⚠️ Manual extraction also failed:', extractErr.message);
+                    }
+                    
+                    // Last resort: try to fix common JSON issues
+                    try {
+                        // Handle unescaped quotes and newlines in about field
+                        let fixedJson = jsonStr.replace(/"about"\s*:\s*"([^"]*(?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4})|[^"\\])*)"?/g, (match, content) => {
+                            // Properly escape the content
+                            const escaped = content
+                                .replace(/\\/g, '\\\\')
+                                .replace(/"/g, '\\"')
+                                .replace(/\n/g, '\\n')
+                                .replace(/\r/g, '\\r')
+                                .replace(/\t/g, '\\t');
                             return `"about":"${escaped}"`;
                         });
-                    try {
+                        
                         const parsed = JSON.parse(fixedJson);
                         console.log(`✅ Successfully parsed fixed JSON. About length: ${parsed.about ? parsed.about.length : 0} chars`);
                         return parsed;
@@ -495,7 +525,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                     }
                 }
             }
-            
+
             // Try direct parse
             const parsed = JSON.parse(reply);
             console.log('✅ Successfully parsed JSON from reply (direct)');
@@ -510,32 +540,81 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             console.warn('⚠️ First 1000 chars of reply:', reply.substring(0, 1000));
             console.warn('⚠️ Last 500 chars of reply:', reply.substring(Math.max(0, reply.length - 500)));
 
-            // Try to extract "about" and "logo_url" from text if present - improved regex for multi-line content
-            // Look for JSON-like structure even if not valid JSON
-            const aboutPatterns = [
-                // Standard JSON format: "about": "..."
-                /["']about["']\s*:\s*["']([^"']+(?:\\.[^"']*)*)["']/i,
-                // Multi-line JSON: "about": "..." with escaped quotes
-                /["']about["']\s*:\s*["']((?:[^"\\]|\\.)+)["']/is,
-                // Without quotes: about: "..."
-                /about\s*:\s*["']([^"']+)["']/i,
-                // If the entire reply looks like it's mostly about text, use it all
-            ];
+            // Try to extract "about" and "logo_url" from text if present
+            // Use a smarter approach that handles long texts with quotes
             
             let aboutText = '';
-            for (const pattern of aboutPatterns) {
-                const match = reply.match(pattern);
-                if (match && match[1]) {
-                    aboutText = match[1].replace(/\\"/g, '"').replace(/\\n/g, '\n');
-                    console.log(`📝 Extracted about text using pattern, length: ${aboutText.length} chars`);
-                    break;
+            
+            // Strategy 1: Try to find JSON structure manually
+            try {
+                // Find "about": and extract everything until the next field or end
+                const aboutStart = reply.search(/"about"\s*:\s*"/i);
+                if (aboutStart !== -1) {
+                    let startPos = aboutStart + reply.substring(aboutStart).indexOf('"') + 1;
+                    let pos = startPos;
+                    let depth = 0;
+                    let escaped = false;
+                    
+                    // Find the closing quote, handling escaped quotes
+                    while (pos < reply.length) {
+                        if (escaped) {
+                            escaped = false;
+                            pos++;
+                            continue;
+                        }
+                        if (reply[pos] === '\\') {
+                            escaped = true;
+                            pos++;
+                            continue;
+                        }
+                        if (reply[pos] === '"') {
+                            // Found closing quote
+                            aboutText = reply.substring(startPos, pos);
+                            // Unescape the text
+                            aboutText = aboutText
+                                .replace(/\\"/g, '"')
+                                .replace(/\\n/g, '\n')
+                                .replace(/\\r/g, '\r')
+                                .replace(/\\t/g, '\t')
+                                .replace(/\\\\/g, '\\');
+                            console.log(`📝 Extracted about text manually (strategy 1), length: ${aboutText.length} chars`);
+                            break;
+                        }
+                        pos++;
+                    }
                 }
+            } catch (e) {
+                console.warn('⚠️ Manual extraction strategy 1 failed:', e.message);
             }
             
-            // If no structured match, but reply is long, use it as about text
-            if (!aboutText && reply.length > 200) {
-                aboutText = reply.trim();
-                console.log(`📝 Using entire reply as about text, length: ${aboutText.length} chars`);
+            // Strategy 2: Try regex patterns if manual extraction didn't work
+            if (!aboutText || aboutText.length < 50) {
+                const aboutPatterns = [
+                    // Multi-line with escaped quotes: "about": "..." 
+                    /"about"\s*:\s*"((?:[^"\\]|\\.)+)"/is,
+                    // With single quotes
+                    /'about'\s*:\s*'((?:[^'\\]|\\.)+)'/is,
+                    // Without quotes but with colon
+                    /about\s*:\s*["']([^"']{100,})["']/i,
+                ];
+
+                for (const pattern of aboutPatterns) {
+                    const match = reply.match(pattern);
+                    if (match && match[1]) {
+                        aboutText = match[1].replace(/\\"/g, '"').replace(/\\'/g, "'").replace(/\\n/g, '\n').replace(/\\r/g, '\r');
+                        console.log(`📝 Extracted about text using regex pattern, length: ${aboutText.length} chars`);
+                        if (aboutText.length >= 200) break; // Prefer longer matches
+                    }
+                }
+            }
+
+            // Strategy 3: If no structured match, but reply is long, use it as about text
+            if (!aboutText || aboutText.length < 200) {
+                // Check if the entire reply looks like it's about text (not JSON structure)
+                if (reply.length > 200 && !reply.trim().startsWith('{') && !reply.trim().startsWith('[')) {
+                    aboutText = reply.trim();
+                    console.log(`📝 Using entire reply as about text, length: ${aboutText.length} chars`);
+                }
             }
 
             const logoMatch = reply.match(/["']logo_url["']\s*:\s*["']([^"']+)["']/i) ||
@@ -726,17 +805,27 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         }
 
         // Enforce minimum word count if too short
-        if (wordCount < TARGET_WORDS) {
-            console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
+        // If text is very short (less than 500 chars or 100 words), it's likely truncated or failed
+        // Always enforce expansion in such cases
+        if (wordCount < TARGET_WORDS || aboutText.length < 500 || wordCount < 100) {
+            const reason = aboutText.length < 500 ? 'too short (less than 500 chars)' : 
+                          wordCount < 100 ? 'too few words (less than 100)' : 
+                          `below target (${wordCount} < ${TARGET_WORDS} words)`;
+            console.log(`⚠️ About text ${reason}, enforcing ${TARGET_WORDS} words minimum...`);
             // Fallback to old method for expansion
             const collectedText = await domainWebSearchCollectText(hostname, displayName);
+            console.log(`📚 Collected ${collectedText.length} characters of context for expansion`);
             aboutText = await enforceExactWordLength(
                 aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
                 TARGET_WORDS,
                 collectedText
             );
             const finalWordCount = getWordCount(aboutText);
-            console.log(`✅ Final about text after expansion: ${aboutText.length} characters, ${finalWordCount} words`);
+            const finalLength = aboutText.length;
+            console.log(`✅ Final about text after expansion: ${finalLength} characters, ${finalWordCount} words`);
+            if (finalWordCount < TARGET_WORDS * 0.9 || finalLength < 5000) {
+                console.warn(`⚠️ WARNING: Final text still seems short (${finalWordCount} words, ${finalLength} chars). May need manual review.`);
+            }
         }
     } catch (webSearchError) {
         console.warn('⚠️ ChatGPT web_search failed, falling back to traditional method:', webSearchError.message);
