@@ -44,6 +44,17 @@ export async function analyzeCompanyWebsite(url: string, dbCompanyName?: string)
             throw new Error('No data returned from analysis');
         }
 
+        // Log detailed information about the about field
+        if (result.data.about) {
+            const aboutLength = result.data.about.length;
+            const aboutWords = result.data.about.split(/\s+/).filter(Boolean).length;
+            console.log(`📊 companyAnalysisService: About field received - ${aboutLength} chars, ${aboutWords} words`);
+            console.log(`📋 About preview (first 500): ${result.data.about.substring(0, 500)}`);
+            console.log(`📋 About preview (last 200): ${result.data.about.substring(Math.max(0, aboutLength - 200))}`);
+        } else {
+            console.warn('⚠️ companyAnalysisService: No about field in result.data');
+        }
+
         console.log('✅ companyAnalysisService: Analysis successful, returning data:', result.data);
         return result.data;
 
@@ -66,7 +77,11 @@ export function mapCompanyAnalysisToContractor(analysisResult: CompanyAnalysisRe
 
     // Map about information
     if (analysisResult.about) {
+        console.log(`📊 mapCompanyAnalysisToContractor: Mapping about text - ${analysisResult.about.length} chars`);
         mappedData['about'] = analysisResult.about;
+        console.log(`📊 mapCompanyAnalysisToContractor: Mapped about text - ${mappedData['about'].length} chars`);
+    } else {
+        console.warn('⚠️ mapCompanyAnalysisToContractor: No about text in analysisResult');
     }
 
     // Map safety information

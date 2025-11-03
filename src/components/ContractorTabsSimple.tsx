@@ -275,12 +275,21 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
+            console.log('📊 Analysis result about length:', analysisResult.about?.length || 0, 'chars,', 
+                analysisResult.about?.split(/\s+/).filter(Boolean).length || 0, 'words');
+            console.log('📊 Mapped data about length:', mappedData.about?.length || 0, 'chars,', 
+                mappedData.about?.split(/\s+/).filter(Boolean).length || 0, 'words');
+            console.log('📋 About text preview (first 500 chars):', mappedData.about?.substring(0, 500));
+            console.log('📋 About text preview (last 200 chars):', mappedData.about?.substring(Math.max(0, (mappedData.about?.length || 0) - 200)));
             console.log('🖼️ Logo URL from analysis:', analysisResult.logoUrl);
             console.log('🖼️ Logo URL from mapped data:', mappedData.logoUrl);
 
             // Update the contractor state with the analyzed data
             if (mappedData.about) {
+                console.log('✅ Setting companyAbout with length:', mappedData.about.length, 'chars');
                 setCompanyAbout(mappedData.about);
+            } else {
+                console.warn('⚠️ No about text in mappedData!');
             }
             if (mappedData.logoUrl) {
                 console.log('✅ Setting company logo to:', mappedData.logoUrl);
@@ -399,15 +408,35 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             }
 
             // Use canvas to analyze image pixels
+            // Note: This requires CORS headers from the image server
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            if (!ctx) return;
+            if (!ctx) {
+                console.warn('⚠️ Cannot get 2D context for logo analysis');
+                return;
+            }
 
             canvas.width = Math.min(img.width, 100); // Sample smaller size for performance
             canvas.height = Math.min(img.height, 100);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            try {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            } catch (drawError) {
+                console.warn('⚠️ Cannot draw image to canvas (CORS issue?):', drawError);
+                // If we can't draw, we can't analyze - skip pixel analysis
+                return;
+            }
 
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let imageData;
+            try {
+                imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            } catch (corsError) {
+                console.warn('⚠️ Cannot read image data (CORS issue). Logo may be from different origin:', corsError);
+                // CORS error - cannot read pixel data, skip analysis
+                // Default to not white (light background) if we can't analyze
+                setIsLogoWhite(false);
+                return;
+            }
             const pixels = imageData.data;
             let whitePixels = 0;
             let totalPixels = 0;
@@ -2252,6 +2281,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         <img
                                             src={companyLogo}
                                             alt="לוגו החברה"
+                                            crossOrigin="anonymous"
                                             style={{
                                                 maxWidth: '100%',
                                                 maxHeight: '100%',
@@ -2259,7 +2289,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             }}
                                             onError={(e) => {
                                                 console.error('❌ Failed to load logo image:', companyLogo);
+                                                // Try loading without crossOrigin if CORS fails
                                                 const target = e.target as HTMLImageElement;
+                                                if (target.crossOrigin === 'anonymous') {
+                                                    console.log('🔄 Retrying logo load without crossOrigin...');
+                                                    target.crossOrigin = null;
+                                                    target.src = companyLogo;
+                                                    return;
+                                                }
                                                 target.style.display = 'none';
                                             }}
                                             onLoad={(e) => {
