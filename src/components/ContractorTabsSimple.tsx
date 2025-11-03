@@ -285,16 +285,25 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             console.log('🖼️ Logo URL from mapped data:', mappedData.logoUrl);
 
             // Update the contractor state with the analyzed data
-            if (mappedData.about) {
+            if (mappedData.about && mappedData.about.trim().length > 0) {
                 console.log('✅ Setting companyAbout with length:', mappedData.about.length, 'chars');
                 setCompanyAbout(mappedData.about);
             } else {
-                console.warn('⚠️ No about text in mappedData!');
+                console.warn('⚠️ No about text in mappedData! Falling back to error message.');
+                setCompanyAbout('שגיאה בקבלת מידע אודות החברה מהשרת. נא לנסות שוב מאוחר יותר.');
             }
+            
+            // Handle logo with special case for Google favicons (CORS issues)
             if (mappedData.logoUrl) {
-                console.log('✅ Setting company logo to:', mappedData.logoUrl);
+                const isGoogleFavicon = mappedData.logoUrl.includes('google.com/s2/favicons');
+                console.log('✅ Setting company logo to:', mappedData.logoUrl, isGoogleFavicon ? '(Google favicon - CORS limited)' : '');
                 setCompanyLogo(mappedData.logoUrl);
                 setIsLogoWhite(false); // Reset when new logo is set
+                
+                // For Google favicons, don't try to analyze pixels (will fail due to CORS)
+                if (isGoogleFavicon) {
+                    console.log('ℹ️ Skipping pixel analysis for Google favicon (CORS limitation)');
+                }
             } else {
                 console.warn('⚠️ No logo URL in mapped data');
                 // Client-side final fallback: Google S2 favicon for current website domain
@@ -398,8 +407,15 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     // Function to check if logo is white/light colored
     const checkIfLogoIsWhite = (img: HTMLImageElement) => {
         try {
-            // Check if URL contains "white" in filename (common pattern)
+            // Skip analysis for Google favicons (CORS issue)
             const logoUrl = img.src.toLowerCase();
+            if (logoUrl.includes('google.com/s2/favicons')) {
+                console.log('ℹ️ Skipping pixel analysis for Google favicon (CORS limitation)');
+                setIsLogoWhite(false); // Default to light background for favicons
+                return;
+            }
+            
+            // Check if URL contains "white" in filename (common pattern)
             if (logoUrl.includes('white') || logoUrl.includes('_w') || logoUrl.includes('-w') || 
                 logoUrl.includes('w_') || logoUrl.includes('w-')) {
                 console.log('🖼️ Detected white logo from URL:', logoUrl);
@@ -2281,7 +2297,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         <img
                                             src={companyLogo}
                                             alt="לוגו החברה"
-                                            crossOrigin="anonymous"
+                                            crossOrigin={companyLogo.includes('google.com/s2/favicons') ? undefined : 'anonymous'}
                                             style={{
                                                 maxWidth: '100%',
                                                 maxHeight: '100%',
@@ -2297,13 +2313,23 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     target.src = companyLogo;
                                                     return;
                                                 }
+                                                // If it's a Google favicon, just show it without trying again
+                                                if (companyLogo.includes('google.com/s2/favicons')) {
+                                                    console.log('ℹ️ Google favicon failed - this is expected due to CORS');
+                                                    return;
+                                                }
                                                 target.style.display = 'none';
                                             }}
                                             onLoad={(e) => {
                                                 console.log('✅ Logo image loaded successfully:', companyLogo);
                                                 // Check if logo is white by analyzing image pixels
                                                 const img = e.target as HTMLImageElement;
-                                                checkIfLogoIsWhite(img);
+                                                // Skip for Google favicons
+                                                if (!companyLogo.includes('google.com/s2/favicons')) {
+                                                    checkIfLogoIsWhite(img);
+                                                } else {
+                                                    console.log('ℹ️ Google favicon loaded - skipping pixel analysis');
+                                                }
                                             }}
                                         />
                                     ) : (

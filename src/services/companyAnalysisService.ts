@@ -76,12 +76,14 @@ export function mapCompanyAnalysisToContractor(analysisResult: CompanyAnalysisRe
     }
 
     // Map about information
-    if (analysisResult.about) {
+    if (analysisResult.about && typeof analysisResult.about === 'string' && analysisResult.about.trim().length > 0) {
         console.log(`📊 mapCompanyAnalysisToContractor: Mapping about text - ${analysisResult.about.length} chars`);
         mappedData['about'] = analysisResult.about;
         console.log(`📊 mapCompanyAnalysisToContractor: Mapped about text - ${mappedData['about'].length} chars`);
     } else {
         console.warn('⚠️ mapCompanyAnalysisToContractor: No about text in analysisResult');
+        // Don't set empty string - let component handle the fallback
+        // This ensures we show a proper error message to the user
     }
 
     // Map safety information

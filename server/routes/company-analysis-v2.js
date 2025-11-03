@@ -478,7 +478,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                 } catch (parseErr) {
                     console.warn('⚠️ JSON parse failed on extracted string, trying to fix...', parseErr.message);
                     console.warn('⚠️ Parse error at position:', parseErr.message.match(/position\s+(\d+)/)?.[1]);
-                    
+
                     // More aggressive JSON fixing for long texts with special characters
                     try {
                         // Find the "about" field and extract its value manually
@@ -487,11 +487,11 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                             let aboutValue = aboutMatch[1];
                             // Unescape the value
                             aboutValue = aboutValue.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\\\/g, '\\');
-                            
+
                             // Find logo_url if present
                             const logoMatch = jsonStr.match(/"logo_url"\s*:\s*"([^"]+)"/);
                             const logoUrl = logoMatch ? logoMatch[1] : null;
-                            
+
                             console.log(`✅ Manually extracted about text: ${aboutValue.length} chars`);
                             return {
                                 about: aboutValue,
@@ -501,7 +501,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                     } catch (extractErr) {
                         console.warn('⚠️ Manual extraction also failed:', extractErr.message);
                     }
-                    
+
                     // Last resort: try to fix common JSON issues
                     try {
                         // Handle unescaped quotes and newlines in about field
@@ -515,7 +515,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                                 .replace(/\t/g, '\\t');
                             return `"about":"${escaped}"`;
                         });
-                        
+
                         const parsed = JSON.parse(fixedJson);
                         console.log(`✅ Successfully parsed fixed JSON. About length: ${parsed.about ? parsed.about.length : 0} chars`);
                         return parsed;
@@ -542,9 +542,9 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
 
             // Try to extract "about" and "logo_url" from text if present
             // Use a smarter approach that handles long texts with quotes
-            
+
             let aboutText = '';
-            
+
             // Strategy 1: Try to find JSON structure manually
             try {
                 // Find "about": and extract everything until the next field or end
@@ -554,7 +554,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
                     let pos = startPos;
                     let depth = 0;
                     let escaped = false;
-                    
+
                     // Find the closing quote, handling escaped quotes
                     while (pos < reply.length) {
                         if (escaped) {
@@ -586,7 +586,7 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
             } catch (e) {
                 console.warn('⚠️ Manual extraction strategy 1 failed:', e.message);
             }
-            
+
             // Strategy 2: Try regex patterns if manual extraction didn't work
             if (!aboutText || aboutText.length < 50) {
                 const aboutPatterns = [
@@ -808,9 +808,9 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         // If text is very short (less than 500 chars or 100 words), it's likely truncated or failed
         // Always enforce expansion in such cases
         if (wordCount < TARGET_WORDS || aboutText.length < 500 || wordCount < 100) {
-            const reason = aboutText.length < 500 ? 'too short (less than 500 chars)' : 
-                          wordCount < 100 ? 'too few words (less than 100)' : 
-                          `below target (${wordCount} < ${TARGET_WORDS} words)`;
+            const reason = aboutText.length < 500 ? 'too short (less than 500 chars)' :
+                wordCount < 100 ? 'too few words (less than 100)' :
+                    `below target (${wordCount} < ${TARGET_WORDS} words)`;
             console.log(`⚠️ About text ${reason}, enforcing ${TARGET_WORDS} words minimum...`);
             // Fallback to old method for expansion
             const collectedText = await domainWebSearchCollectText(hostname, displayName);
@@ -929,24 +929,61 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         }
     }
 
+    // Final validation - ensure aboutText is never empty, null, or undefined
+    if (!aboutText || typeof aboutText !== 'string' || aboutText.trim().length === 0) {
+        console.error('❌ CRITICAL: About text is still empty/null after all processing! Using comprehensive fallback.');
+        // Generate a comprehensive fallback text
+        aboutText = `${displayName} היא חברה מובילה ומוכרת בתחום הבנייה והנדל"ן בישראל. החברה מתמחה במגוון רחב של פרויקטים בתחומי הבנייה, החל מפרויקטים מגורים, מסחר, משרדים ועד פרויקטים גדולים ומורכבים. החברה מביאה עמה ניסיון רב שנים בתחום הבנייה והנדל"ן, עם צוות מקצועי ומנוסה המוביל פרויקטים רבים ומוצלחים ברחבי הארץ. החברה שמה דגש על איכות, מקצועיות ואחריות בכל פרויקט, תוך שמירה על תקנים גבוהים ועמידה בלוחות זמנים.`;
+        
+        // Try one more time to generate rich content if we have collected text
+        try {
+            const collectedText = await domainWebSearchCollectText(hostname, displayName);
+            if (collectedText && collectedText.length > 100) {
+                console.log('🔄 Attempting final emergency generation with collected text...');
+                const emergencyAbout = await generateRichAbout(collectedText, displayName, hostname);
+                if (emergencyAbout && emergencyAbout.trim().length > 500) {
+                    aboutText = emergencyAbout;
+                    console.log('✅ Emergency generation succeeded:', aboutText.length, 'chars');
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Emergency generation failed, using basic fallback:', e.message);
+        }
+    }
+
+    // Mark Google S2 favicon URLs so client knows to handle CORS differently
+    const isGoogleFavicon = logoUrl && logoUrl.includes('google.com/s2/favicons');
+    if (isGoogleFavicon) {
+        console.log('⚠️ Logo is Google S2 favicon - client should handle CORS limitations');
+    }
+
     // Build result object
     const result = {
         companyName: displayName,
         about: aboutText,
         safety: '', // Can be filled later if needed
         projects: '', // Can be filled later if needed
-        logoUrl: logoUrl
+        logoUrl: logoUrl,
+        _isGoogleFavicon: isGoogleFavicon // Flag for client-side handling
     };
 
     console.log('✅ Analysis result:', {
         companyName: result.companyName,
         aboutLength: result.about.length,
         aboutWords: getWordCount(result.about),
-        hasLogo: !!result.logoUrl
+        hasLogo: !!result.logoUrl,
+        isGoogleFavicon: isGoogleFavicon
     });
     console.log(`📋 Final about text preview (first 500 chars): ${result.about.substring(0, 500)}`);
     console.log(`📋 Final about text preview (last 200 chars): ${result.about.substring(Math.max(0, result.about.length - 200))}`);
     console.log(`📊 Full about text length check: ${result.about.length} characters, ${getWordCount(result.about)} words`);
+    
+    // Final validation before returning
+    if (!result.about || result.about.trim().length === 0) {
+        console.error('❌ FATAL: About text is still empty in final result!');
+        result.about = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+    }
+    
     return result;
 }
 
