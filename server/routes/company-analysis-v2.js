@@ -440,6 +440,10 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
         const data = await response.json();
         const reply = data?.choices?.[0]?.message?.content || '';
 
+        console.log(`📝 Raw reply from OpenAI: ${reply.length} characters`);
+        console.log(`📝 First 1000 chars of reply: ${reply.substring(0, 1000)}`);
+        console.log(`📝 Last 500 chars of reply: ${reply.substring(Math.max(0, reply.length - 500))}`);
+
         if (!reply) {
             throw new Error('No content from OpenAI');
         }
@@ -447,29 +451,99 @@ async function callChatGPTWithWebSearch({ domain, hostname, displayName, maxToke
         // Try to parse JSON from reply
         try {
             // Extract JSON if wrapped in markdown code blocks
-            const jsonMatch = reply.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/) || reply.match(/(\{[\s\S]*\})/);
-            if (jsonMatch) {
-                const parsed = JSON.parse(jsonMatch[1]);
-                console.log('✅ Successfully parsed JSON from reply');
-                return parsed;
+            let jsonStr = null;
+            const markdownMatch = reply.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
+            if (markdownMatch) {
+                jsonStr = markdownMatch[1];
+            } else {
+                // Try to find JSON object in the reply
+                const jsonMatch = reply.match(/(\{[\s\S]*\})/);
+                if (jsonMatch) {
+                    jsonStr = jsonMatch[1];
+                }
             }
+            
+            if (jsonStr) {
+                console.log(`📋 Extracted JSON string length: ${jsonStr.length} characters`);
+                // Try to parse, but handle potential issues with very long strings
+                try {
+                    const parsed = JSON.parse(jsonStr);
+                    console.log(`✅ Successfully parsed JSON from reply. About length: ${parsed.about ? parsed.about.length : 0} chars`);
+                    if (parsed.about) {
+                        console.log(`📊 About text word count: ${getWordCount(parsed.about)} words`);
+                        console.log(`📊 About text preview (first 300): ${parsed.about.substring(0, 300)}...`);
+                        console.log(`📊 About text preview (last 300): ...${parsed.about.substring(Math.max(0, parsed.about.length - 300))}`);
+                    }
+                    return parsed;
+                } catch (parseErr) {
+                    console.warn('⚠️ JSON parse failed on extracted string, trying to fix...', parseErr.message);
+                    // Try to fix common JSON issues
+                    // Handle unescaped newlines and quotes in about field
+                    const fixedJson = jsonStr
+                        .replace(/"about"\s*:\s*"([^"]*(?:\n|\\n)[^"]*)"?/gis, (match, content) => {
+                            // Escape newlines and quotes properly
+                            const escaped = content.replace(/\\n/g, '\n').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+                            return `"about":"${escaped}"`;
+                        });
+                    try {
+                        const parsed = JSON.parse(fixedJson);
+                        console.log(`✅ Successfully parsed fixed JSON. About length: ${parsed.about ? parsed.about.length : 0} chars`);
+                        return parsed;
+                    } catch (e) {
+                        console.warn('⚠️ Fixed JSON also failed, will fall back to text extraction');
+                        throw parseErr;
+                    }
+                }
+            }
+            
+            // Try direct parse
             const parsed = JSON.parse(reply);
             console.log('✅ Successfully parsed JSON from reply (direct)');
+            if (parsed.about) {
+                console.log(`📊 About text length: ${parsed.about.length} chars, ${getWordCount(parsed.about)} words`);
+            }
             return parsed;
         } catch (parseError) {
             // If not JSON, return the text as about
             console.warn('⚠️ Could not parse JSON from reply, using as plain text. Reply length:', reply.length);
             console.warn('⚠️ Parse error:', parseError.message);
-            console.warn('⚠️ First 500 chars of reply:', reply.substring(0, 500));
+            console.warn('⚠️ First 1000 chars of reply:', reply.substring(0, 1000));
+            console.warn('⚠️ Last 500 chars of reply:', reply.substring(Math.max(0, reply.length - 500)));
 
-            // Try to extract "about" and "logo_url" from text if present
-            const aboutMatch = reply.match(/["']about["']\s*:\s*["']([^"']+)["']/i) ||
-                reply.match(/about[":]\s*["']?([^"']{50,})["']?/i);
+            // Try to extract "about" and "logo_url" from text if present - improved regex for multi-line content
+            // Look for JSON-like structure even if not valid JSON
+            const aboutPatterns = [
+                // Standard JSON format: "about": "..."
+                /["']about["']\s*:\s*["']([^"']+(?:\\.[^"']*)*)["']/i,
+                // Multi-line JSON: "about": "..." with escaped quotes
+                /["']about["']\s*:\s*["']((?:[^"\\]|\\.)+)["']/is,
+                // Without quotes: about: "..."
+                /about\s*:\s*["']([^"']+)["']/i,
+                // If the entire reply looks like it's mostly about text, use it all
+            ];
+            
+            let aboutText = '';
+            for (const pattern of aboutPatterns) {
+                const match = reply.match(pattern);
+                if (match && match[1]) {
+                    aboutText = match[1].replace(/\\"/g, '"').replace(/\\n/g, '\n');
+                    console.log(`📝 Extracted about text using pattern, length: ${aboutText.length} chars`);
+                    break;
+                }
+            }
+            
+            // If no structured match, but reply is long, use it as about text
+            if (!aboutText && reply.length > 200) {
+                aboutText = reply.trim();
+                console.log(`📝 Using entire reply as about text, length: ${aboutText.length} chars`);
+            }
+
             const logoMatch = reply.match(/["']logo_url["']\s*:\s*["']([^"']+)["']/i) ||
                 reply.match(/logo[":]\s*["']?([^"']+\.(?:png|svg|jpg|jpeg|webp))["']?/i);
 
+            console.log(`✅ Returning extracted data. About length: ${aboutText.length} chars, ${getWordCount(aboutText)} words`);
             return {
-                about: aboutMatch ? aboutMatch[1] : (reply.length > 100 ? reply : ''),
+                about: aboutText || (reply.length > 100 ? reply : ''),
                 logo_url: logoMatch ? logoMatch[1] : null
             };
         }
@@ -559,7 +633,7 @@ ${(extraContext || '').slice(0, 50000)}
         const retryResult = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: retryUser, maxTokens: maxTokensForLength });
         const retryCount = getWordCount(retryResult.trim());
         console.log(`✅ After retry: ${retryCount} words (target: ${targetWords})`);
-        
+
         // If still too short after retry, try one more time with even more aggressive approach
         if (retryCount < targetWords * 0.95) {
             console.log(`⚠️ Second rewrite still too short (${retryCount} words), attempting final aggressive expansion...`);
@@ -584,7 +658,7 @@ ${(extraContext || '').slice(0, 50000)}
             console.log(`✅ After final aggressive expansion: ${finalWordCount} words (target: ${targetWords})`);
             return finalResult.trim();
         }
-        
+
         return retryResult.trim();
     }
     return final;
@@ -644,6 +718,8 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
 
         const wordCount = getWordCount(aboutText);
         console.log(`✅ ChatGPT web_search result: ${aboutText.length} characters, ${wordCount} words`);
+        console.log(`📋 About text preview (first 500 chars): ${aboutText.substring(0, 500)}`);
+        console.log(`📋 About text preview (last 200 chars): ${aboutText.substring(Math.max(0, aboutText.length - 200))}`);
 
         if (logoUrl) {
             console.log('✅ Logo URL found via web_search:', logoUrl);
@@ -779,6 +855,9 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         aboutWords: getWordCount(result.about),
         hasLogo: !!result.logoUrl
     });
+    console.log(`📋 Final about text preview (first 500 chars): ${result.about.substring(0, 500)}`);
+    console.log(`📋 Final about text preview (last 200 chars): ${result.about.substring(Math.max(0, result.about.length - 200))}`);
+    console.log(`📊 Full about text length check: ${result.about.length} characters, ${getWordCount(result.about)} words`);
     return result;
 }
 
