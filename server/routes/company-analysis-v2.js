@@ -778,93 +778,58 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     const { hostname } = new URL(normalizedUrl);
     const displayName = (companyName || '').trim() || hostname;
 
-    // 1) Try ChatGPT with web_search first (preferred method)
-    console.log('🌐 Attempting ChatGPT with web_search for:', hostname);
+    // Always use the traditional method that generates rich content (skip web_search method that returns short content)
+    console.log('🌐 Using traditional domain web search method for rich content:', hostname);
     let aboutText = '';
     let logoUrl = null;
-    const TARGET_WORDS = 3000; // Increased to 3000 words for much longer, richer content
+    const TARGET_WORDS = 3000; // Target 3000 words for rich, comprehensive content
+
+    // Use traditional method - this was the working version
+    console.log('🌐 Performing domain web search and collection for:', hostname);
+    const collectedText = await domainWebSearchCollectText(hostname, displayName);
+    console.log(`📝 Collected text length: ${collectedText.length} characters`);
 
     try {
-        const webSearchResult = await callChatGPTWithWebSearch({
-            domain: hostname,
-            hostname,
-            displayName,
-            maxTokens: 40000
-        });
-
-        aboutText = (webSearchResult.about || '').trim();
-        logoUrl = webSearchResult.logo_url || null;
-
+        // Generate rich about text using the traditional method
+        aboutText = await generateRichAbout(collectedText, displayName, hostname);
         const wordCount = getWordCount(aboutText);
-        console.log(`✅ ChatGPT web_search result: ${aboutText.length} characters, ${wordCount} words`);
-        console.log(`📋 About text preview (first 500 chars): ${aboutText.substring(0, 500)}`);
-        console.log(`📋 About text preview (last 200 chars): ${aboutText.substring(Math.max(0, aboutText.length - 200))}`);
+        console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
 
-        if (logoUrl) {
-            console.log('✅ Logo URL found via web_search:', logoUrl);
-        }
-
-        // Enforce minimum word count if too short
-        // If text is very short (less than 500 chars or 100 words), it's likely truncated or failed
-        // Always enforce expansion in such cases
-        if (wordCount < TARGET_WORDS || aboutText.length < 500 || wordCount < 100) {
-            const reason = aboutText.length < 500 ? 'too short (less than 500 chars)' :
-                wordCount < 100 ? 'too few words (less than 100)' :
-                    `below target (${wordCount} < ${TARGET_WORDS} words)`;
-            console.log(`⚠️ About text ${reason}, enforcing ${TARGET_WORDS} words minimum...`);
-            // Fallback to old method for expansion
-            const collectedText = await domainWebSearchCollectText(hostname, displayName);
-            console.log(`📚 Collected ${collectedText.length} characters of context for expansion`);
+        // Always enforce minimum - even if generation succeeded
+        if (wordCount < TARGET_WORDS || aboutText.length < 5000) {
+            console.log(`⚠️ About text too short (${wordCount} words, ${aboutText.length} chars), enforcing ${TARGET_WORDS} words minimum...`);
             aboutText = await enforceExactWordLength(
-                aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל.`,
+                aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל. החברה מתמחה בפרויקטים מגוונים בתחום הבנייה והנדל"ן.`,
                 TARGET_WORDS,
                 collectedText
             );
             const finalWordCount = getWordCount(aboutText);
             const finalLength = aboutText.length;
-            console.log(`✅ Final about text after expansion: ${finalLength} characters, ${finalWordCount} words`);
+            console.log(`✅ After enforcement: ${finalLength} characters, ${finalWordCount} words`);
             if (finalWordCount < TARGET_WORDS * 0.9 || finalLength < 5000) {
-                console.warn(`⚠️ WARNING: Final text still seems short (${finalWordCount} words, ${finalLength} chars). May need manual review.`);
-            }
-        }
-    } catch (webSearchError) {
-        console.warn('⚠️ ChatGPT web_search failed, falling back to traditional method:', webSearchError.message);
-        console.warn('⚠️ Error details:', webSearchError);
-
-        // Fallback: Use traditional method
-        console.log('🌐 Performing domain web search and collection for:', hostname);
-        const collectedText = await domainWebSearchCollectText(hostname, displayName);
-        console.log(`📝 Collected text length: ${collectedText.length} characters`);
-
-        try {
-            // Generate rich about text
-            aboutText = await generateRichAbout(collectedText, displayName, hostname);
-            const wordCount = getWordCount(aboutText);
-            console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
-
-            // Always enforce minimum - even if generation succeeded
-            if (wordCount < TARGET_WORDS) {
-                console.log(`⚠️ About text too short (${wordCount} words), enforcing ${TARGET_WORDS} words minimum...`);
+                console.warn(`⚠️ WARNING: Final text still seems short (${finalWordCount} words, ${finalLength} chars). Retrying with more aggressive expansion...`);
+                // Retry one more time with even more aggressive expansion
                 aboutText = await enforceExactWordLength(
-                    aboutText || `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל. החברה מתמחה בפרויקטים מגוונים בתחום הבנייה והנדל"ן.`,
+                    aboutText,
                     TARGET_WORDS,
                     collectedText
                 );
-                const finalWordCount = getWordCount(aboutText);
-                console.log(`✅ After enforcement: ${aboutText.length} characters, ${finalWordCount} words`);
+                const retryWordCount = getWordCount(aboutText);
+                const retryLength = aboutText.length;
+                console.log(`✅ After retry: ${retryLength} characters, ${retryWordCount} words`);
             }
+        }
 
-            // Ensure we always have some text
-            if (!aboutText || aboutText.trim().length === 0) {
-                console.error('❌ About text is empty after all attempts, using minimal fallback');
-                aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
-            }
-        } catch (fallbackError) {
-            console.error('❌ Fallback generation also failed:', fallbackError.message);
-            console.error('❌ Fallback error details:', fallbackError);
-            // Last resort: minimal text
+        // Ensure we always have some text
+        if (!aboutText || aboutText.trim().length === 0) {
+            console.error('❌ About text is empty after all attempts, using minimal fallback');
             aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
         }
+    } catch (fallbackError) {
+        console.error('❌ Generation failed:', fallbackError.message);
+        console.error('❌ Error details:', fallbackError);
+        // Last resort: minimal text
+        aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
     }
 
     // Final check - ensure aboutText is never empty
@@ -873,7 +838,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
     }
 
-    // 3) Search for logo if not already found via web_search
+    // Search for logo
     if (!logoUrl) {
         console.log('🔍 Searching for logo...');
 
@@ -934,7 +899,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         console.error('❌ CRITICAL: About text is still empty/null after all processing! Using comprehensive fallback.');
         // Generate a comprehensive fallback text
         aboutText = `${displayName} היא חברה מובילה ומוכרת בתחום הבנייה והנדל"ן בישראל. החברה מתמחה במגוון רחב של פרויקטים בתחומי הבנייה, החל מפרויקטים מגורים, מסחר, משרדים ועד פרויקטים גדולים ומורכבים. החברה מביאה עמה ניסיון רב שנים בתחום הבנייה והנדל"ן, עם צוות מקצועי ומנוסה המוביל פרויקטים רבים ומוצלחים ברחבי הארץ. החברה שמה דגש על איכות, מקצועיות ואחריות בכל פרויקט, תוך שמירה על תקנים גבוהים ועמידה בלוחות זמנים.`;
-        
+
         // Try one more time to generate rich content if we have collected text
         try {
             const collectedText = await domainWebSearchCollectText(hostname, displayName);
@@ -977,13 +942,13 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     console.log(`📋 Final about text preview (first 500 chars): ${result.about.substring(0, 500)}`);
     console.log(`📋 Final about text preview (last 200 chars): ${result.about.substring(Math.max(0, result.about.length - 200))}`);
     console.log(`📊 Full about text length check: ${result.about.length} characters, ${getWordCount(result.about)} words`);
-    
+
     // Final validation before returning
     if (!result.about || result.about.trim().length === 0) {
         console.error('❌ FATAL: About text is still empty in final result!');
         result.about = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
     }
-    
+
     return result;
 }
 
