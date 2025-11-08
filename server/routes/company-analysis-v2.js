@@ -657,11 +657,19 @@ async function generateRichAbout(collectedText, displayName, hostname) {
 ${(collectedText || '').slice(0, 70000)}
 """`;
     try {
+        console.log(`🤖 generateRichAbout: Calling OpenAI with collectedText length: ${collectedText.length}`);
         const about = await callOpenAIChatSimple({ systemPrompt: system, userPrompt: user, maxTokens: 40000 });
-        return (about || '').trim();
+        const trimmed = (about || '').trim();
+        console.log(`✅ generateRichAbout: OpenAI returned ${trimmed.length} characters, ${getWordCount(trimmed)} words`);
+        if (trimmed.length === 0) {
+            console.error('❌ CRITICAL: OpenAI returned empty string in generateRichAbout!');
+        }
+        return trimmed;
     } catch (e) {
-        console.warn('⚠️ generateRichAbout failed:', e.message);
-        return '';
+        console.error('❌ generateRichAbout failed:', e.message);
+        console.error('❌ generateRichAbout error stack:', e.stack);
+        // Don't return empty string - throw error so caller can handle it
+        throw e;
     }
 }
 
@@ -788,12 +796,26 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     console.log('🌐 Performing domain web search and collection for:', hostname);
     const collectedText = await domainWebSearchCollectText(hostname, displayName);
     console.log(`📝 Collected text length: ${collectedText.length} characters`);
+    console.log(`📝 Collected text preview (first 500 chars): ${collectedText.substring(0, 500)}`);
+
+    // Check if collected text is too short
+    if (!collectedText || collectedText.length < 100) {
+        console.warn(`⚠️ WARNING: Collected text is very short (${collectedText.length} chars). This may cause issues with generation.`);
+    }
 
     try {
         // Generate rich about text using the traditional method
+        console.log('🤖 Calling generateRichAbout...');
         aboutText = await generateRichAbout(collectedText, displayName, hostname);
         const wordCount = getWordCount(aboutText);
         console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
+        console.log(`📋 Generated about preview (first 300 chars): ${aboutText.substring(0, 300)}`);
+        
+        // Check if generation returned empty
+        if (!aboutText || aboutText.trim().length === 0) {
+            console.error('❌ CRITICAL: generateRichAbout returned empty string!');
+            throw new Error('generateRichAbout returned empty string');
+        }
 
         // Always enforce minimum - even if generation succeeded
         if (wordCount < TARGET_WORDS || aboutText.length < 5000) {
@@ -828,8 +850,35 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
     } catch (fallbackError) {
         console.error('❌ Generation failed:', fallbackError.message);
         console.error('❌ Error details:', fallbackError);
-        // Last resort: minimal text
-        aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+        console.error('❌ Error stack:', fallbackError.stack);
+        
+        // Try to generate basic content even if rich generation failed
+        try {
+            console.log('🔄 Attempting basic generation with collected text...');
+            if (collectedText && collectedText.length > 100) {
+                // Try a simpler prompt for basic content
+                const basicSystem = 'אתה כותב תוכן בעברית לעמוד "אודות" של חברות בניה ונדל"ן בישראל. כתוב טקסט מפורט ומקיף של לפחות 1000 מילים.';
+                const basicUser = `כתוב טקסט "אודות החברה" מפורט (לפחות 1000 מילים) עבור "${displayName}" (${hostname}).
+                
+מידע מהאתר:
+"""
+${collectedText.slice(0, 50000)}
+"""`;
+                const basicAbout = await callOpenAIChatSimple({ systemPrompt: basicSystem, userPrompt: basicUser, maxTokens: 16000 });
+                if (basicAbout && basicAbout.trim().length > 200) {
+                    aboutText = basicAbout.trim();
+                    console.log(`✅ Basic generation succeeded: ${aboutText.length} chars`);
+                } else {
+                    throw new Error('Basic generation also returned empty');
+                }
+            } else {
+                throw new Error('Collected text too short for basic generation');
+            }
+        } catch (basicError) {
+            console.error('❌ Basic generation also failed:', basicError.message);
+            // Last resort: minimal text
+            aboutText = `${displayName} היא חברה מובילה בתחום הבנייה והנדל"ן בישראל. החברה מתמחה במגוון רחב של פרויקטים בתחומי הבנייה והנדל"ן, עם ניסיון רב שנים וצוות מקצועי ומנוסה. החברה שמה דגש על איכות, מקצועיות ואחריות בכל פרויקט, תוך שמירה על תקנים גבוהים ועמידה בלוחות זמנים.`;
+        }
     }
 
     // Final check - ensure aboutText is never empty
