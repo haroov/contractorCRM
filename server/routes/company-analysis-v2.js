@@ -922,32 +922,41 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         console.log('⚠️ Logo is Google S2 favicon - client should handle CORS limitations');
     }
 
-    // Build result object
+    // Final validation - ensure aboutText is a valid string before building result
+    if (!aboutText || typeof aboutText !== 'string' || aboutText.trim().length === 0) {
+        console.error('❌ FATAL: About text is still empty/null before building result! Using fallback.');
+        aboutText = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+    }
+
+    // Build result object - ensure all fields are valid
     const result = {
-        companyName: displayName,
-        about: aboutText,
+        companyName: displayName || '',
+        about: String(aboutText || '').trim() || `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`,
         safety: '', // Can be filled later if needed
         projects: '', // Can be filled later if needed
-        logoUrl: logoUrl,
+        logoUrl: logoUrl || null,
         _isGoogleFavicon: isGoogleFavicon // Flag for client-side handling
     };
 
+    // Final validation - ensure about is never empty
+    if (!result.about || result.about.trim().length === 0) {
+        console.error('❌ FATAL: About text is empty in result object! Setting emergency fallback.');
+        result.about = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+    }
+
     console.log('✅ Analysis result:', {
         companyName: result.companyName,
-        aboutLength: result.about.length,
-        aboutWords: getWordCount(result.about),
+        aboutLength: result.about ? result.about.length : 0,
+        aboutWords: result.about ? getWordCount(result.about) : 0,
+        aboutType: typeof result.about,
         hasLogo: !!result.logoUrl,
         isGoogleFavicon: isGoogleFavicon
     });
-    console.log(`📋 Final about text preview (first 500 chars): ${result.about.substring(0, 500)}`);
-    console.log(`📋 Final about text preview (last 200 chars): ${result.about.substring(Math.max(0, result.about.length - 200))}`);
-    console.log(`📊 Full about text length check: ${result.about.length} characters, ${getWordCount(result.about)} words`);
-
-    // Final validation before returning
-    if (!result.about || result.about.trim().length === 0) {
-        console.error('❌ FATAL: About text is still empty in final result!');
-        result.about = `${displayName} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+    if (result.about && result.about.length > 0) {
+        console.log(`📋 Final about text preview (first 500 chars): ${result.about.substring(0, 500)}`);
+        console.log(`📋 Final about text preview (last 200 chars): ${result.about.substring(Math.max(0, result.about.length - 200))}`);
     }
+    console.log(`📊 Full about text length check: ${result.about ? result.about.length : 0} characters, ${result.about ? getWordCount(result.about) : 0} words`);
 
     return result;
 }
@@ -965,11 +974,29 @@ router.post('/analyze-company', async (req, res) => {
             return res.status(500).json({ success: false, error: 'OPENAI_API_KEY is not configured on the server' });
         }
 
+        console.log('📞 Calling analyzeCompanyWebsite with:', { website, companyName });
         const analysisResult = await analyzeCompanyWebsite(website, companyName);
+        console.log('📦 analyzeCompanyWebsite returned:', {
+            hasAbout: !!analysisResult.about,
+            aboutLength: analysisResult.about ? analysisResult.about.length : 0,
+            aboutType: typeof analysisResult.about,
+            companyName: analysisResult.companyName,
+            hasLogo: !!analysisResult.logoUrl
+        });
+
+        // Ensure about field exists and is a string
+        if (!analysisResult.about || typeof analysisResult.about !== 'string') {
+            console.error('❌ CRITICAL: analysisResult.about is missing or invalid:', {
+                about: analysisResult.about,
+                type: typeof analysisResult.about
+            });
+            analysisResult.about = `${analysisResult.companyName || 'החברה'} היא חברה פעילה בתחום הבנייה והנדל"ן בישראל.`;
+        }
 
         res.json({ success: true, data: analysisResult });
     } catch (error) {
         console.error('❌ analyze-company failed:', error);
+        console.error('❌ Error stack:', error.stack);
         res.status(500).json({
             success: false,
             error: error.message || 'Failed to analyze company website'
