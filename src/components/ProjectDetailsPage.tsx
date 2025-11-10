@@ -12692,41 +12692,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* Risk Monitors Grid */}
                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3 }}>
-                                    {/* Safety Monitor */}
-                                    <Box sx={{
-                                        p: 3,
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: 2,
-                                        bgcolor: 'background.paper'
-                                    }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: '50%',
-                                                bgcolor: '#4CAF50',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                🛡️
-                                            </Box>
-                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
-                                                בטיחות
-                                            </Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                    Avg. Score 8.5
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
-                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
-                                                גרף בטיחות יוצג כאן
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-
                                     {/* Security Monitor */}
                                     <Box sx={{
                                         p: 3,
