@@ -164,10 +164,23 @@ router.post('/set-password', requireAuth, async (req, res) => {
       });
     }
 
-    if (password.length < 6) {
+    if (password.length < 12) {
       return res.status(400).json({
         success: false,
-        message: 'סיסמה חייבת להכיל לפחות 6 תווים'
+        message: 'סיסמה חייבת להכיל לפחות 12 תווים'
+      });
+    }
+    
+    // Check password strength
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+      return res.status(400).json({
+        success: false,
+        message: 'סיסמה חייבת להכיל אותיות גדולות וקטנות, מספרים ותווים מיוחדים'
       });
     }
 
@@ -344,28 +357,23 @@ router.get('/me', async (req, res) => {
     // Check if session ID is provided in headers or query params
     const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
     console.log('🔍 /auth/me - Session ID validation:', sessionId, 'Length:', sessionId?.length);
-    if (sessionId && sessionId.length > 5) {
+    if (sessionId && sessionId.length > 10) {
       console.log('✅ /auth/me - Session ID provided, trying to find user in database');
 
       try {
         const User = require('../models/User');
-        // Find the user in the database based on the most recent login
-        const user = await User.findOne({ isActive: true }).sort({ lastLogin: -1 });
-
-        if (user) {
-          console.log('✅ /auth/me - Found user in database:', user.email);
-          res.json({
-            id: user._id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-            lastLogin: user.lastLogin
-          });
-        } else {
-          console.log('❌ /auth/me - No active user found in database');
-          res.status(404).json({ error: 'No active user found' });
-        }
+        // SECURITY FIX: Don't return arbitrary user data based on session ID
+        // This was a major security vulnerability - it could expose other users' data
+        // Instead, we should validate the session ID properly against the database
+        // For now, return an error to prevent data exposure
+        
+        console.log('❌ /auth/me - Session ID validation not implemented, denying access');
+        res.status(401).json({ error: 'Invalid session' });
+        
+        // TODO: Implement proper session validation:
+        // 1. Store session data in database with user ID
+        // 2. Validate session ID against stored sessions
+        // 3. Return user data only for valid sessions
       } catch (error) {
         console.error('❌ /auth/me - Error finding user:', error);
         res.status(500).json({ error: 'Failed to find user' });
@@ -458,6 +466,12 @@ function generateOTP() {
 
 // In-memory storage for OTPs (in production, use Redis or database)
 const otpStorage = new Map();
+
+// TODO: Replace with Redis or database storage for production
+// This in-memory storage is not suitable for production as it:
+// 1. Doesn't persist across server restarts
+// 2. Doesn't scale across multiple server instances
+// 3. Could lead to memory leaks if not properly cleaned up
 
 // Send OTP email endpoint
 router.post('/send-login-email', async (req, res) => {
