@@ -690,6 +690,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     description: '',
                     startDate: '',
                     durationMonths: 0,
+                    extensionMonths: 0,
                     valueNis: 0,
                     city: '',
                     isClosed: false,
@@ -3323,8 +3324,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         rows={4}
                                     />
 
-                                    {/* Row 3: תאריך התחלה, משך בחודשים */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
+                                    {/* Row 3: תאריך התחלה, משך בחודשים, ארכה */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
                                         <TextField
                                             fullWidth
                                             label="תאריך התחלה"
@@ -3341,6 +3342,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             value={project?.durationMonths || 0}
                                             onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
                                             disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0 }}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="ארכה (חודשים)"
+                                            type="number"
+                                            value={(project as any)?.extensionMonths || 0}
+                                            onChange={(e) => handleFieldChange('extensionMonths', parseInt(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0 }}
+                                            helperText="תקופת עיכוב צפוי"
                                         />
                                     </Box>
 
@@ -12797,41 +12809,191 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 </Box>
 
                                 {/* Project Progress */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
-                                        התקדמות פרויקט
-                                    </Typography>
-                                    <Box sx={{
-                                        height: 8,
-                                        bgcolor: '#e0e0e0',
-                                        borderRadius: 4,
-                                        position: 'relative',
-                                        overflow: 'hidden'
-                                    }}>
-                                        <Box sx={{
-                                            height: '100%',
-                                            width: '51%',
-                                            bgcolor: '#2196F3',
-                                            borderRadius: 4
-                                        }} />
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                            Proj. Start: 22/04/2023
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                                            51%
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                            Est. Delivery: 10/06/2027
-                                        </Typography>
-                                    </Box>
-                                </Box>
+                                {(() => {
+                                    // Helper function to calculate project dates and progress
+                                    const calculateProjectProgress = () => {
+                                        if (!project) {
+                                            return {
+                                                startDate: null,
+                                                endDate: null,
+                                                progressPercent: 0,
+                                                extensionMonths: 0
+                                            };
+                                        }
+
+                                        // 1. Get start date from project (with validation against policy dates)
+                                        let startDate: Date | null = null;
+                                        if (project.startDate) {
+                                            startDate = new Date(project.startDate);
+                                        }
+
+                                        // Validate against policy dates - check if there are earlier policy start dates
+                                        if (project.policyDocuments && project.policyDocuments.length > 0) {
+                                            const policyStartDates = project.policyDocuments
+                                                .map((doc: any) => {
+                                                    // Try to find policy start date - might be in validUntil or a separate field
+                                                    // For now, we'll use the earliest validUntil as a reference
+                                                    if (doc.validUntil) {
+                                                        const validUntilDate = new Date(doc.validUntil);
+                                                        // If we have durationMonths, calculate start from validUntil
+                                                        if (project.durationMonths) {
+                                                            const calculatedStart = new Date(validUntilDate);
+                                                            calculatedStart.setMonth(calculatedStart.getMonth() - project.durationMonths);
+                                                            return calculatedStart;
+                                                        }
+                                                    }
+                                                    return null;
+                                                })
+                                                .filter((date: Date | null) => date !== null) as Date[];
+
+                                            if (policyStartDates.length > 0) {
+                                                const earliestPolicyStart = new Date(Math.min(...policyStartDates.map(d => d.getTime())));
+                                                // Use the earlier date between project start and earliest policy start
+                                                if (!startDate || earliestPolicyStart < startDate) {
+                                                    startDate = earliestPolicyStart;
+                                                }
+                                            }
+                                        }
+
+                                        if (!startDate) {
+                                            return {
+                                                startDate: null,
+                                                endDate: null,
+                                                progressPercent: 0,
+                                                extensionMonths: 0
+                                            };
+                                        }
+
+                                        // 2. Calculate end date: start date + duration months (from project or policies)
+                                        let endDate: Date | null = null;
+                                        
+                                        // Check if we have durationMonths in project
+                                        if (project.durationMonths && project.durationMonths > 0) {
+                                            endDate = new Date(startDate);
+                                            endDate.setMonth(endDate.getMonth() + project.durationMonths);
+                                        }
+
+                                        // Also check policy validUntil dates - use the latest one
+                                        if (project.policyDocuments && project.policyDocuments.length > 0) {
+                                            const policyEndDates = project.policyDocuments
+                                                .map((doc: any) => doc.validUntil ? new Date(doc.validUntil) : null)
+                                                .filter((date: Date | null) => date !== null) as Date[];
+
+                                            if (policyEndDates.length > 0) {
+                                                const latestPolicyEnd = new Date(Math.max(...policyEndDates.map(d => d.getTime())));
+                                                // Use the later date between calculated end and latest policy end
+                                                if (!endDate || latestPolicyEnd > endDate) {
+                                                    endDate = latestPolicyEnd;
+                                                }
+                                            }
+                                        }
+
+                                        // 3. Add extension months if exists (for project delays)
+                                        const extensionMonths = (project as any).extensionMonths || 0;
+                                        if (extensionMonths > 0 && endDate) {
+                                            endDate.setMonth(endDate.getMonth() + extensionMonths);
+                                        }
+
+                                        if (!endDate) {
+                                            return {
+                                                startDate,
+                                                endDate: null,
+                                                progressPercent: 0,
+                                                extensionMonths
+                                            };
+                                        }
+
+                                        // 4. Calculate progress percentage based on today() relative to the period
+                                        const today = new Date();
+                                        today.setHours(0, 0, 0, 0);
+                                        const start = new Date(startDate);
+                                        start.setHours(0, 0, 0, 0);
+                                        const end = new Date(endDate);
+                                        end.setHours(23, 59, 59, 999); // Include the full end date
+
+                                        let progressPercent = 0;
+                                        
+                                        // Calculate total period in milliseconds
+                                        const totalPeriod = end.getTime() - start.getTime();
+                                        
+                                        if (totalPeriod <= 0) {
+                                            // Invalid period (end before or equal to start)
+                                            progressPercent = 0;
+                                        } else if (today < start) {
+                                            // Project hasn't started yet
+                                            progressPercent = 0;
+                                        } else if (today >= end) {
+                                            // Project is completed or overdue
+                                            progressPercent = 100;
+                                        } else {
+                                            // Calculate progress: (today - start) / (end - start) * 100
+                                            const elapsedPeriod = today.getTime() - start.getTime();
+                                            progressPercent = Math.round((elapsedPeriod / totalPeriod) * 100);
+                                            
+                                            // Ensure percentage is between 0 and 100
+                                            progressPercent = Math.max(0, Math.min(100, progressPercent));
+                                        }
+
+                                        return {
+                                            startDate,
+                                            endDate,
+                                            progressPercent,
+                                            extensionMonths
+                                        };
+                                    };
+
+                                    const { startDate, endDate, progressPercent, extensionMonths } = calculateProjectProgress();
+
+                                    const formatDateForDisplay = (date: Date | null): string => {
+                                        if (!date) return 'לא זמין';
+                                        const day = String(date.getDate()).padStart(2, '0');
+                                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                                        const year = date.getFullYear();
+                                        return `${day}/${month}/${year}`;
+                                    };
+
+                                    return (
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
+                                                התקדמות פרויקט
+                                            </Typography>
+                                            <Box sx={{
+                                                height: 8,
+                                                bgcolor: '#e0e0e0',
+                                                borderRadius: 4,
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <Box sx={{
+                                                    height: '100%',
+                                                    width: `${Math.min(100, Math.max(0, progressPercent))}%`,
+                                                    bgcolor: '#2196F3',
+                                                    borderRadius: 4,
+                                                    transition: 'width 0.3s ease'
+                                                }} />
+                                            </Box>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    Proj. Start: {formatDateForDisplay(startDate)}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                                                    {progressPercent}%
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    Est. Delivery: {formatDateForDisplay(endDate)}
+                                                    {extensionMonths > 0 && (
+                                                        <span style={{ color: '#f44336', marginRight: '4px' }}>
+                                                            {' '}(+{extensionMonths} חודשי ארכה)
+                                                        </span>
+                                                    )}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    );
+                                })()}
 
                                 {/* Risk Monitors Grid */}
                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3 }}>
-                                    
-
                                     {/* Security Monitor */}
                                     <Box sx={{
                                         p: 3,

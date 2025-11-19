@@ -34,7 +34,9 @@ import {
     Refresh,
     Warning,
     CheckCircle,
-    Error
+    Error,
+    KeyboardArrowUp,
+    KeyboardArrowDown
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 // import { format, parseISO, subDays } from 'date-fns';
@@ -91,6 +93,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
     const [activeCoords, setActiveCoords] = useState<{ x: number; y: number } | null>(null);
+    const [reportsExpanded, setReportsExpanded] = useState(false);
 
     useEffect(() => {
         fetchSafetyData();
@@ -664,52 +667,71 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             {/* Recent Reports */}
             <Card>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                        דוחות אחרונים
-                    </Typography>
-                    {reports.length === 0 ? (
-                        <Typography color="textSecondary">
-                            אין דוחות בטיחות זמינים
+                    <Box 
+                        sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            cursor: 'pointer',
+                            mb: reportsExpanded ? 2 : 0
+                        }}
+                        onClick={() => setReportsExpanded(!reportsExpanded)}
+                    >
+                        {reportsExpanded ? (
+                            <KeyboardArrowUp sx={{ color: '#6b47c1', mr: 1 }} />
+                        ) : (
+                            <KeyboardArrowDown sx={{ color: '#6b47c1', mr: 1 }} />
+                        )}
+                        <Typography variant="h6" sx={{ flex: 1 }}>
+                            דוחות אחרונים
                         </Typography>
-                    ) : (
-                        <List>
-                            {reports.slice(0, 5).map((report) => (
-                                <ListItem key={report._id} divider>
-                                    <ListItemText
-                                        primary={`${formatDate(report.date)} - ${report.site}`}
-                                        secondary={`ציון: ${report.score} | קבלן: ${report.contractorName}`}
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Chip
-                                            label={report.score}
-                                            color={getScoreColor(report.score)}
-                                            size="small"
-                                            sx={{ mr: 1 }}
-                                        />
-                                        {(report.reportUrl || report.reports?.daily?.safetyIndex?.url) && (
-                                            <Tooltip title="פתח דוח בטיחות">
-                                                <IconButton
+                    </Box>
+                    {reportsExpanded && (
+                        <>
+                            {reports.length === 0 ? (
+                                <Typography color="textSecondary">
+                                    אין דוחות בטיחות זמינים
+                                </Typography>
+                            ) : (
+                                <List>
+                                    {reports.slice(0, 5).map((report) => (
+                                        <ListItem key={report._id} divider>
+                                            <ListItemText
+                                                primary={`${formatDate(report.date)} - ${report.site}`}
+                                                secondary={`ציון: ${report.score} | קבלן: ${report.contractorName}`}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Chip
+                                                    label={report.score}
+                                                    color={getScoreColor(report.score)}
                                                     size="small"
-                                                    onClick={() => window.open(report.reportUrl || report.reports?.daily?.safetyIndex?.url, '_blank')}
-                                                >
-                                                    <OpenInNew />
-                                                </IconButton>
-                                            </Tooltip>
-                                        )}
-                                        {(report.issuesUrl || report.reports?.daily?.findings?.url) && (
-                                            <Tooltip title="פתח דוח חריגים">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => window.open(report.issuesUrl || report.reports?.daily?.findings?.url, '_blank')}
-                                                >
-                                                    <Warning />
-                                                </IconButton>
-                                            </Tooltip>
-                                        )}
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
-                        </List>
+                                                    sx={{ mr: 1 }}
+                                                />
+                                                {(report.reportUrl || report.reports?.daily?.safetyIndex?.url) && (
+                                                    <Tooltip title="פתח דוח בטיחות">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => window.open(report.reportUrl || report.reports?.daily?.safetyIndex?.url, '_blank')}
+                                                        >
+                                                            <OpenInNew />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                                {(report.issuesUrl || report.reports?.daily?.findings?.url) && (
+                                                    <Tooltip title="פתח דוח חריגים">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => window.open(report.issuesUrl || report.reports?.daily?.findings?.url, '_blank')}
+                                                        >
+                                                            <Warning />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>
