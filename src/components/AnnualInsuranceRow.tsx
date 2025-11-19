@@ -12,7 +12,7 @@ import {
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  Insurance as InsuranceIcon
+  Security as InsuranceIcon
 } from '@mui/icons-material';
 import { AnnualInsurance } from '../types/annualInsurance';
 

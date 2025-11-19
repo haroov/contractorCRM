@@ -10,7 +10,7 @@ import { annualInsurancesAPI } from '../services/api';
 import { AnnualInsurance } from '../types/annualInsurance';
 import AnnualInsuranceForm from './AnnualInsuranceForm';
 import AnnualInsuranceRow from './AnnualInsuranceRow';
-import { Insurance as InsuranceIcon } from '@mui/icons-material';
+import { Security as InsuranceIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -4016,25 +4016,24 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
 
-        {/* Annual Insurance Form Dialog */}
-        <AnnualInsuranceForm
-            open={annualInsuranceFormOpen}
-            onClose={() => setAnnualInsuranceFormOpen(false)}
-            onSave={async () => {
-                if (contractor?._id) {
-                    try {
-                        const data = await annualInsurancesAPI.getByContractor(contractor._id);
-                        setAnnualInsurances(Array.isArray(data) ? data : []);
-                    } catch (error) {
-                        console.error('Error loading annual insurances:', error);
+            {/* Annual Insurance Form Dialog */}
+            <AnnualInsuranceForm
+                open={annualInsuranceFormOpen}
+                onClose={() => setAnnualInsuranceFormOpen(false)}
+                onSave={async () => {
+                    if (contractor?._id) {
+                        try {
+                            const data = await annualInsurancesAPI.getByContractor(contractor._id);
+                            setAnnualInsurances(Array.isArray(data) ? data : []);
+                        } catch (error) {
+                            console.error('Error loading annual insurances:', error);
+                        }
                     }
-                }
-            }}
-            contractorId={contractor?._id || ''}
-        />
-    </Box>
+                }}
+                contractorId={contractor?._id || ''}
+            />
+        </Box>
     );
 });
 
