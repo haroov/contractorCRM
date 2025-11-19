@@ -13,8 +13,6 @@ const client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
 // Check if API key is available
 if (!process.env.OPENAI_API_KEY) {
     console.error("❌ OPENAI_API_KEY is not set!");
-} else {
-    console.log("✅ OPENAI_API_KEY is set:", process.env.OPENAI_API_KEY.substring(0, 10) + "...");
 }
 
 /**
@@ -58,6 +56,21 @@ function buildSystemPrompt() {
 /**
  * Try to analyze PDF directly via URL using vision models
  */
+function isSafeHttpUrl(url) {
+    try {
+        const u = new URL(url);
+        if (!['http:', 'https:'].includes(u.protocol)) return false;
+        // Block localhost and private IP ranges
+        const host = u.hostname.toLowerCase();
+        if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local')) return false;
+        const privateCidrs = [/^10\./, /^192\.168\./, /^172\.(1[6-9]|2[0-9]|3[0-1])\./];
+        if (privateCidrs.some(re => re.test(host))) return false;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 async function tryDirectPdfUrl(pdfUrl) {
     try {
         const response = await client.createChatCompletion({
@@ -113,7 +126,13 @@ async function tryDirectPdfUrl(pdfUrl) {
 async function tryTextFallback(pdfUrl) {
     try {
         console.log("🔍 Attempting to fetch PDF from URL:", pdfUrl);
-        const response = await fetch(pdfUrl);
+        if (!isSafeHttpUrl(pdfUrl)) {
+            throw new Error('Blocked URL by SSRF protection');
+        }
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        const response = await fetch(pdfUrl, { signal: controller.signal, redirect: 'follow', size: 10 * 1024 * 1024 });
+        clearTimeout(timeout);
         console.log("📡 Response status:", response.status);
         console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
         
@@ -191,6 +210,10 @@ router.post("/analyze-report", async (req, res) => {
         console.log("📄 URL:", url);
         console.log("📄 URL type:", typeof url);
         console.log("📄 URL length:", url?.length);
+
+        if (!isSafeHttpUrl(url)) {
+            return res.status(400).json({ success: false, error: 'Invalid or unsafe URL' });
+        }
 
         let data;
         try {
