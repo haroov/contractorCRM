@@ -1486,6 +1486,59 @@ app.post('/api/projects', async (req, res) => {
       console.log('⚠️ No mainContractor provided in request body');
     }
 
+    // Handle annual insurance linking if provided
+    if (req.body.annualInsuranceId && req.body.valueNis) {
+      try {
+        const projectValue = req.body.valueNis || 0;
+        
+        // Validate project value <= 50M
+        if (projectValue > 50000000) {
+          console.log('⚠️ Project value exceeds 50M, cannot add to annual insurance');
+        } else {
+          // Get annual insurance
+          const annualInsurance = await db.collection('annualInsurances').findOne({
+            _id: new ObjectId(req.body.annualInsuranceId)
+          });
+
+          if (annualInsurance) {
+            // Check if there's enough coverage
+            if (annualInsurance.remainingCoverage >= projectValue) {
+              // Update annual insurance
+              await db.collection('annualInsurances').updateOne(
+                { _id: new ObjectId(req.body.annualInsuranceId) },
+                {
+                  $push: { projectIds: result.insertedId.toString() },
+                  $inc: { 
+                    usedCoverage: projectValue,
+                    remainingCoverage: -projectValue
+                  }
+                }
+              );
+
+              // Update project with annual insurance info
+              await db.collection('projects').updateOne(
+                { _id: result.insertedId },
+                {
+                  $set: {
+                    annualInsuranceId: req.body.annualInsuranceId,
+                    isPartOfAnnualInsurance: true,
+                    coverageAmountUsed: projectValue
+                  }
+                }
+              );
+
+              console.log('✅ Added project to annual insurance:', req.body.annualInsuranceId);
+            } else {
+              console.log('⚠️ Not enough coverage in annual insurance');
+            }
+          }
+        }
+      } catch (insuranceError) {
+        console.error('❌ Error linking to annual insurance:', insuranceError);
+        // Don't fail the main request if insurance linking fails
+      }
+    }
+
     res.json(result);
   } catch (error) {
     console.error('❌ Error creating project:', error);
@@ -1569,6 +1622,67 @@ app.put('/api/projects/:id', async (req, res) => {
 
     console.log('✅ Updated project:', req.params.id, 'Modified count:', result.modifiedCount);
     console.log('🔍 Full result object:', JSON.stringify(result, null, 2));
+
+    // Handle annual insurance updates if valueNis changed
+    if (req.body.valueNis !== undefined) {
+      try {
+        const project = await db.collection('projects').findOne({ _id: new ObjectId(req.params.id) });
+        if (project && project.annualInsuranceId) {
+          const oldValue = project.coverageAmountUsed || project.valueNis || project.value || 0;
+          const newValue = req.body.valueNis || 0;
+          const difference = newValue - oldValue;
+
+          if (difference !== 0) {
+            // Validate new value <= 50M
+            if (newValue > 50000000) {
+              console.log('⚠️ Project value exceeds 50M, cannot be part of annual insurance');
+              // Remove from annual insurance
+              await db.collection('annualInsurances').updateOne(
+                { _id: new ObjectId(project.annualInsuranceId) },
+                {
+                  $pull: { projectIds: req.params.id },
+                  $inc: {
+                    usedCoverage: -oldValue,
+                    remainingCoverage: oldValue
+                  }
+                }
+              );
+              fieldsToSet.annualInsuranceId = null;
+              fieldsToSet.isPartOfAnnualInsurance = false;
+              fieldsToSet.coverageAmountUsed = null;
+            } else {
+              // Get annual insurance
+              const annualInsurance = await db.collection('annualInsurances').findOne({
+                _id: new ObjectId(project.annualInsuranceId)
+              });
+
+              if (annualInsurance) {
+                // Check if there's enough coverage for the difference
+                if (annualInsurance.remainingCoverage >= difference) {
+                  // Update annual insurance
+                  await db.collection('annualInsurances').updateOne(
+                    { _id: new ObjectId(project.annualInsuranceId) },
+                    {
+                      $inc: {
+                        usedCoverage: difference,
+                        remainingCoverage: -difference
+                      }
+                    }
+                  );
+                  fieldsToSet.coverageAmountUsed = newValue;
+                  console.log('✅ Updated annual insurance coverage for project value change');
+                } else {
+                  console.log('⚠️ Not enough coverage for value increase');
+                }
+              }
+            }
+          }
+        }
+      } catch (insuranceError) {
+        console.error('❌ Error updating annual insurance for project value change:', insuranceError);
+        // Don't fail the main request if insurance update fails
+      }
+    }
 
     // Update contractor statistics automatically
     if (req.body.mainContractor) {
@@ -1735,6 +1849,484 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   } catch (error) {
     console.error('❌ Error updating contractor stats:', error);
     res.status(500).json({ error: 'Failed to update contractor stats' });
+  }
+});
+
+// Helper function to calculate annual insurance coverage
+async function calculateAnnualInsuranceCoverage(db, annualInsuranceId) {
+  try {
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(annualInsuranceId)
+    });
+
+    if (!annualInsurance) {
+      return null;
+    }
+
+    // Get all projects for this annual insurance
+    const projects = await db.collection('projects').find({
+      annualInsuranceId: annualInsuranceId.toString()
+    }).toArray();
+
+    // Calculate used coverage
+    const usedCoverage = projects.reduce((sum, project) => {
+      return sum + (project.coverageAmountUsed || project.valueNis || project.value || 0);
+    }, 0);
+
+    // Calculate remaining coverage
+    const remainingCoverage = annualInsurance.coverageAmount - usedCoverage;
+
+    // Update annual insurance
+    await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(annualInsuranceId) },
+      {
+        $set: {
+          usedCoverage: usedCoverage,
+          remainingCoverage: Math.max(0, remainingCoverage)
+        }
+      }
+    );
+
+    return { usedCoverage, remainingCoverage };
+  } catch (error) {
+    console.error('❌ Error calculating annual insurance coverage:', error);
+    return null;
+  }
+}
+
+// Annual Insurances API
+app.get('/api/annual-insurances', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { contractorId } = req.query;
+
+    if (!contractorId) {
+      return res.status(400).json({ error: 'contractorId is required' });
+    }
+
+    const annualInsurances = await db.collection('annualInsurances').find({
+      contractorId: contractorId,
+      isActive: true
+    }).toArray();
+
+    res.json(annualInsurances);
+  } catch (error) {
+    console.error('❌ Error fetching annual insurances:', error);
+    res.status(500).json({ error: 'Failed to fetch annual insurances' });
+  }
+});
+
+app.get('/api/annual-insurances/:id', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    if (!annualInsurance) {
+      return res.status(404).json({ error: 'Annual insurance not found' });
+    }
+
+    res.json(annualInsurance);
+  } catch (error) {
+    console.error('❌ Error fetching annual insurance:', error);
+    res.status(500).json({ error: 'Failed to fetch annual insurance' });
+  }
+});
+
+app.post('/api/annual-insurances', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+
+    const annualInsuranceData = {
+      ...req.body,
+      remainingCoverage: req.body.coverageAmount || 0,
+      usedCoverage: 0,
+      projectIds: [],
+      coverageIncreases: [],
+      policyDocuments: [],
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Validate
+    if (!annualInsuranceData.coverageAmount || annualInsuranceData.coverageAmount <= 0) {
+      return res.status(400).json({ error: 'coverageAmount must be greater than 0' });
+    }
+
+    if (!annualInsuranceData.startDate || !annualInsuranceData.endDate) {
+      return res.status(400).json({ error: 'startDate and endDate are required' });
+    }
+
+    if (new Date(annualInsuranceData.startDate) >= new Date(annualInsuranceData.endDate)) {
+      return res.status(400).json({ error: 'startDate must be before endDate' });
+    }
+
+    annualInsuranceData.initialCoverageAmount = annualInsuranceData.coverageAmount;
+
+    const result = await db.collection('annualInsurances').insertOne(annualInsuranceData);
+    console.log('✅ Created new annual insurance:', result.insertedId);
+
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error creating annual insurance:', error);
+    res.status(500).json({ error: 'Failed to create annual insurance' });
+  }
+});
+
+app.put('/api/annual-insurances/:id', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+
+    delete updateData._id;
+    delete updateData.createdAt;
+
+    const result = await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateData }
+    );
+
+    // Recalculate coverage if needed
+    if (req.body.coverageAmount !== undefined || req.body.projectIds !== undefined) {
+      await calculateAnnualInsuranceCoverage(db, req.params.id);
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error updating annual insurance:', error);
+    res.status(500).json({ error: 'Failed to update annual insurance' });
+  }
+});
+
+app.delete('/api/annual-insurances/:id', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+
+    // Check if there are projects linked
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    if (annualInsurance && annualInsurance.projectIds && annualInsurance.projectIds.length > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete annual insurance with linked projects',
+        projectCount: annualInsurance.projectIds.length
+      });
+    }
+
+    const result = await db.collection('annualInsurances').deleteOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error deleting annual insurance:', error);
+    res.status(500).json({ error: 'Failed to delete annual insurance' });
+  }
+});
+
+app.post('/api/annual-insurances/:id/increase-coverage', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { amount, premium, reason } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'amount must be greater than 0' });
+    }
+
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    if (!annualInsurance) {
+      return res.status(404).json({ error: 'Annual insurance not found' });
+    }
+
+    const increaseRecord = {
+      date: new Date(),
+      amount: amount,
+      premium: premium || 0,
+      reason: reason || ''
+    };
+
+    const result = await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $inc: {
+          coverageAmount: amount,
+          remainingCoverage: amount
+        },
+        $push: {
+          coverageIncreases: increaseRecord
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error increasing coverage:', error);
+    res.status(500).json({ error: 'Failed to increase coverage' });
+  }
+});
+
+app.get('/api/annual-insurances/:id/projects', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    if (!annualInsurance) {
+      return res.status(404).json({ error: 'Annual insurance not found' });
+    }
+
+    const projectIds = annualInsurance.projectIds || [];
+    const projects = await db.collection('projects').find({
+      _id: { $in: projectIds.map(id => new ObjectId(id)) }
+    }).toArray();
+
+    res.json(projects);
+  } catch (error) {
+    console.error('❌ Error fetching projects for annual insurance:', error);
+    res.status(500).json({ error: 'Failed to fetch projects' });
+  }
+});
+
+app.post('/api/annual-insurances/:id/add-project', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { projectId } = req.body;
+
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required' });
+    }
+
+    // Get project
+    const project = await db.collection('projects').findOne({
+      _id: new ObjectId(projectId)
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Validate project value <= 50M
+    const projectValue = project.valueNis || project.value || 0;
+    if (projectValue > 50000000) {
+      return res.status(400).json({ error: 'Project value exceeds 50M, cannot add to annual insurance' });
+    }
+
+    // Get annual insurance
+    const annualInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    if (!annualInsurance) {
+      return res.status(404).json({ error: 'Annual insurance not found' });
+    }
+
+    // Check if there's enough coverage
+    if (annualInsurance.remainingCoverage < projectValue) {
+      return res.status(400).json({ 
+        error: 'Not enough coverage',
+        remainingCoverage: annualInsurance.remainingCoverage,
+        requiredCoverage: projectValue
+      });
+    }
+
+    // Update annual insurance
+    await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $push: { projectIds: projectId },
+        $inc: {
+          usedCoverage: projectValue,
+          remainingCoverage: -projectValue
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    // Update project
+    await db.collection('projects').updateOne(
+      { _id: new ObjectId(projectId) },
+      {
+        $set: {
+          annualInsuranceId: req.params.id,
+          isPartOfAnnualInsurance: true,
+          coverageAmountUsed: projectValue
+        }
+      }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('❌ Error adding project to annual insurance:', error);
+    res.status(500).json({ error: 'Failed to add project' });
+  }
+});
+
+app.post('/api/annual-insurances/:id/remove-project', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { projectId } = req.body;
+
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required' });
+    }
+
+    // Get project
+    const project = await db.collection('projects').findOne({
+      _id: new ObjectId(projectId)
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    const projectValue = project.coverageAmountUsed || project.valueNis || project.value || 0;
+
+    // Update annual insurance
+    await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $pull: { projectIds: projectId },
+        $inc: {
+          usedCoverage: -projectValue,
+          remainingCoverage: projectValue
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    // Update project
+    await db.collection('projects').updateOne(
+      { _id: new ObjectId(projectId) },
+      {
+        $set: {
+          annualInsuranceId: null,
+          isPartOfAnnualInsurance: false,
+          coverageAmountUsed: null
+        }
+      }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('❌ Error removing project from annual insurance:', error);
+    res.status(500).json({ error: 'Failed to remove project' });
+  }
+});
+
+app.post('/api/annual-insurances/:id/transfer-projects', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { targetAnnualInsuranceId, projectIds } = req.body;
+
+    if (!targetAnnualInsuranceId || !projectIds || !Array.isArray(projectIds)) {
+      return res.status(400).json({ error: 'targetAnnualInsuranceId and projectIds array are required' });
+    }
+
+    // Get projects
+    const projects = await db.collection('projects').find({
+      _id: { $in: projectIds.map(id => new ObjectId(id)) }
+    }).toArray();
+
+    // Validate projects are closed/completed
+    const invalidProjects = projects.filter(p => !p.isClosed && p.status !== 'completed');
+    if (invalidProjects.length > 0) {
+      return res.status(400).json({ 
+        error: 'Only closed or completed projects can be transferred',
+        invalidProjects: invalidProjects.map(p => p._id.toString())
+      });
+    }
+
+    // Calculate total coverage needed
+    const totalCoverage = projects.reduce((sum, p) => {
+      return sum + (p.coverageAmountUsed || p.valueNis || p.value || 0);
+    }, 0);
+
+    // Get target annual insurance
+    const targetInsurance = await db.collection('annualInsurances').findOne({
+      _id: new ObjectId(targetAnnualInsuranceId)
+    });
+
+    if (!targetInsurance) {
+      return res.status(404).json({ error: 'Target annual insurance not found' });
+    }
+
+    // Check coverage
+    if (targetInsurance.remainingCoverage < totalCoverage) {
+      return res.status(400).json({ 
+        error: 'Not enough coverage in target annual insurance',
+        remainingCoverage: targetInsurance.remainingCoverage,
+        requiredCoverage: totalCoverage
+      });
+    }
+
+    // Remove from source
+    const sourceValue = projects.reduce((sum, p) => {
+      return sum + (p.coverageAmountUsed || p.valueNis || p.value || 0);
+    }, 0);
+
+    await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $pull: { projectIds: { $in: projectIds } },
+        $inc: {
+          usedCoverage: -sourceValue,
+          remainingCoverage: sourceValue
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    // Add to target
+    await db.collection('annualInsurances').updateOne(
+      { _id: new ObjectId(targetAnnualInsuranceId) },
+      {
+        $push: { projectIds: { $each: projectIds } },
+        $inc: {
+          usedCoverage: totalCoverage,
+          remainingCoverage: -totalCoverage
+        },
+        $set: {
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    // Update projects
+    await db.collection('projects').updateMany(
+      { _id: { $in: projectIds.map(id => new ObjectId(id)) } },
+      {
+        $set: {
+          annualInsuranceId: targetAnnualInsuranceId,
+          isPartOfAnnualInsurance: true
+        }
+      }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('❌ Error transferring projects:', error);
+    res.status(500).json({ error: 'Failed to transfer projects' });
   }
 });
 

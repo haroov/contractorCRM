@@ -3,8 +3,19 @@ const router = express.Router();
 const { MongoClient, ObjectId } = require('mongodb');
 const sgMail = require('@sendgrid/mail');
 
-// MongoDB connection
-const client = new MongoClient(process.env.MONGODB_URI);
+// MongoDB connection - create new client for each request to avoid connection issues
+let mongoClient = null;
+
+// Helper function to get MongoDB client
+async function getMongoClient() {
+  if (!mongoClient || !mongoClient.topology || !mongoClient.topology.isConnected()) {
+    console.log('🔌 Creating new MongoDB connection');
+    mongoClient = new MongoClient(process.env.MONGODB_URI);
+    await mongoClient.connect();
+    console.log('✅ MongoDB connected');
+  }
+  return mongoClient;
+}
 
 // SendGrid configuration
 // Required environment variables:
@@ -37,10 +48,21 @@ router.post('/check-email', async (req, res) => {
     const db = client.db('contractor-crm');
 
     // Check if email exists in contractors.contacts
-    const contractors = await db.collection('contractors').find({
-      'contacts.email': email,
-      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser'] }
+    // Use case-insensitive search
+    const emailLower = email.toLowerCase();
+
+    // First, get all contractors that might have this email
+    const allContractors = await db.collection('contractors').find({
+      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'] }
     }).toArray();
+
+    // Filter contractors where the email matches (case-insensitive)
+    const contractors = allContractors.filter(contractor => {
+      return contractor.contacts && contractor.contacts.some(contact =>
+        contact.email && contact.email.toLowerCase() === emailLower &&
+        ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'].includes(contact.permissions)
+      );
+    });
 
     if (contractors.length > 0) {
       res.json({ exists: true, message: 'כתובת האימייל נמצאה במערכת' });
@@ -56,7 +78,9 @@ router.post('/check-email', async (req, res) => {
 // Send OTP email endpoint
 router.post('/send-otp', async (req, res) => {
   try {
+    console.log('📧 /api/contact-auth/send-otp called');
     const { email } = req.body;
+    console.log('📧 Email received:', email);
 
     // Email validation removed - email comes from URL parameter
     if (!email) {
@@ -64,15 +88,47 @@ router.post('/send-otp', async (req, res) => {
       return res.status(400).json({ error: 'אימייל לא סופק' });
     }
 
+    // Connect to MongoDB
+    let client;
+    try {
+      client = await getMongoClient();
+      console.log('✅ Connected to MongoDB');
+    } catch (connectError) {
+      console.error('❌ MongoDB connection error:', connectError);
+      return res.status(500).json({ error: 'שגיאה בחיבור למסד הנתונים' });
+    }
+
     const db = client.db('contractor-crm');
 
     // Find contact user in any contractor's contacts
-    const contractors = await db.collection('contractors').find({
-      'contacts.email': email,
-      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser'] }
+    // Use case-insensitive search
+    const emailLower = email.toLowerCase();
+
+    // First, get all contractors that might have this email
+    const allContractors = await db.collection('contractors').find({
+      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'] }
     }).toArray();
 
+    // Filter contractors where the email matches (case-insensitive)
+    const contractors = allContractors.filter(contractor => {
+      return contractor.contacts && contractor.contacts.some(contact =>
+        contact.email && contact.email.toLowerCase() === emailLower &&
+        ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'].includes(contact.permissions)
+      );
+    });
+
+    console.log(`🔍 Searching for email: ${emailLower}`);
+    console.log(`🔍 Total contractors with permissions: ${allContractors.length}`);
+    console.log(`🔍 Found ${contractors.length} contractors with this email`);
+
+    if (contractors.length > 0) {
+      console.log(`✅ Contractors found:`, contractors.map(c => ({ name: c.name, id: c._id })));
+    }
+
     if (contractors.length === 0) {
+      console.log(`❌ No contractors found for email: ${emailLower}`);
+      console.log(`🔍 Sample contacts from first contractor:`, allContractors[0]?.contacts?.slice(0, 2));
+      // Don't close connection here - it's a shared connection
       return res.status(404).json({
         error: 'כתובת האימייל לא נמצאה במערכת. אנא פנה למנהל המערכת.'
       });
@@ -90,9 +146,13 @@ router.post('/send-otp', async (req, res) => {
         contractorId: c._id.toString(),
         contractorName: c.name,
         contractorIdNumber: c.contractor_id,
-        contact: c.contacts.find(contact => contact.email === email)
+        contact: c.contacts.find(contact => contact.email && contact.email.toLowerCase() === emailLower)
       }))
     });
+
+    console.log(`✅ OTP stored for ${email}, ${contractors.length} contractors`);
+
+    // Don't close connection - it's a shared connection
 
     // Send email via SendGrid
     const msg = {
@@ -199,6 +259,7 @@ router.post('/send-otp', async (req, res) => {
   } catch (error) {
     console.error('❌ Send OTP error:', error);
     console.error('❌ Error stack:', error.stack);
+
     res.status(500).json({
       error: 'שגיאה בשליחת קוד האימות',
       details: error.message
@@ -234,6 +295,7 @@ router.post('/verify-otp', async (req, res) => {
     // OTP is valid, check if user has access to multiple contractors
     if (storedData.contractors.length > 1) {
       // User has access to multiple contractors - return list for selection
+      const firstContact = storedData.contractors[0].contact;
       return res.json({
         success: true,
         multipleContractors: true,
@@ -243,13 +305,25 @@ router.post('/verify-otp', async (req, res) => {
           contractorIdNumber: c.contractorIdNumber,
           contactRole: c.contact.role,
           contactPermissions: c.contact.permissions
-        }))
+        })),
+        contactId: firstContact.id, // Include contact ID for reference
+        contactEmail: firstContact.email,
+        contactName: firstContact.fullName
       });
     }
 
     // Single contractor - proceed with login
     const contractorData = storedData.contractors[0];
     const contact = contractorData.contact;
+
+    // Store all contractors the user has access to for switching
+    const allContractors = storedData.contractors.map(c => ({
+      contractorId: c.contractorId,
+      contractorName: c.contractorName,
+      contractorIdNumber: c.contractorIdNumber,
+      contactRole: c.contact.role,
+      contactPermissions: c.contact.permissions
+    }));
 
     // Create session data for contact user
     const sessionData = {
@@ -261,7 +335,8 @@ router.post('/verify-otp', async (req, res) => {
       contactPermissions: contact.permissions,
       contractorId: contractorData.contractorId,
       contractorName: contractorData.contractorName,
-      contractorIdNumber: contractorData.contractorIdNumber
+      contractorIdNumber: contractorData.contractorIdNumber,
+      allContractors: allContractors // Store all contractors for switching
     };
 
     // Store session data in req.session
@@ -283,7 +358,8 @@ router.post('/verify-otp', async (req, res) => {
         contractorId: contractorData.contractorId,
         contractorName: contractorData.contractorName,
         contractorIdNumber: contractorData.contractorIdNumber,
-        type: 'contact_user'
+        type: 'contact_user',
+        allContractors: allContractors // Include all contractors for frontend
       }
     });
 
@@ -330,6 +406,15 @@ router.post('/select-contractor', async (req, res) => {
 
     const contact = contractorData.contact;
 
+    // Store all contractors the user has access to for switching
+    const allContractors = storedData.contractors.map(c => ({
+      contractorId: c.contractorId,
+      contractorName: c.contractorName,
+      contractorIdNumber: c.contractorIdNumber,
+      contactRole: c.contact.role,
+      contactPermissions: c.contact.permissions
+    }));
+
     // Create session data for contact user
     const sessionData = {
       type: 'contact_user',
@@ -340,7 +425,8 @@ router.post('/select-contractor', async (req, res) => {
       contactPermissions: contact.permissions,
       contractorId: contractorData.contractorId,
       contractorName: contractorData.contractorName,
-      contractorIdNumber: contractorData.contractorIdNumber
+      contractorIdNumber: contractorData.contractorIdNumber,
+      allContractors: allContractors // Store all contractors for switching
     };
 
     // Store session data in req.session
@@ -362,13 +448,136 @@ router.post('/select-contractor', async (req, res) => {
         contractorId: contractorData.contractorId,
         contractorName: contractorData.contractorName,
         contractorIdNumber: contractorData.contractorIdNumber,
-        type: 'contact_user'
+        type: 'contact_user',
+        allContractors: allContractors // Include all contractors for frontend
       }
     });
 
   } catch (error) {
     console.error('❌ Select contractor error:', error);
     res.status(500).json({ error: 'שגיאה בבחירת הקבלן' });
+  }
+});
+
+// Switch contractor for logged-in contact user
+router.post('/switch-contractor', async (req, res) => {
+  try {
+    // Check if user is authenticated
+    if (!req.session.contactUser) {
+      return res.status(401).json({ error: 'לא מאומת' });
+    }
+
+    const { contractorId } = req.body;
+
+    if (!contractorId) {
+      return res.status(400).json({ error: 'נדרש מזהה קבלן' });
+    }
+
+    // Check if user has access to this contractor
+    const userContractors = req.session.contactUser.allContractors || [];
+    const contractorData = userContractors.find(c => c.contractorId === contractorId);
+
+    if (!contractorData) {
+      return res.status(403).json({ error: 'אין לך גישה לקבלן זה' });
+    }
+
+    // Update session with new contractor
+    req.session.contactUser.contractorId = contractorData.contractorId;
+    req.session.contactUser.contractorName = contractorData.contractorName;
+    req.session.contactUser.contractorIdNumber = contractorData.contractorIdNumber;
+
+    // Save session
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+        return res.status(500).json({ error: 'שגיאה בשמירת הסשן' });
+      }
+
+      console.log('✅ Contact user switched contractor:', req.session.contactUser.contactName, 'to contractor:', contractorData.contractorName);
+
+      res.json({
+        success: true,
+        user: {
+          id: req.session.contactUser.contactId,
+          name: req.session.contactUser.contactName,
+          email: req.session.contactUser.contactEmail,
+          role: req.session.contactUser.contactRole,
+          permissions: req.session.contactUser.contactPermissions,
+          contractorId: contractorData.contractorId,
+          contractorName: contractorData.contractorName,
+          contractorIdNumber: contractorData.contractorIdNumber,
+          type: 'contact_user',
+          allContractors: userContractors
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Switch contractor error:', error);
+    res.status(500).json({ error: 'שגיאה בהחלפת הקבלן' });
+  }
+});
+
+// Get all contractors for logged-in contact user
+router.get('/my-contractors', async (req, res) => {
+  try {
+    // Check if user is authenticated
+    if (!req.session.contactUser) {
+      return res.status(401).json({ error: 'לא מאומת' });
+    }
+
+    let userContractors = req.session.contactUser.allContractors || [];
+
+    // If allContractors is missing or empty, try to load from database
+    if (!userContractors || userContractors.length === 0) {
+      console.log('⚠️ allContractors missing in session, loading from database');
+      try {
+        const client = await getMongoClient();
+        const db = client.db('contractor-crm');
+        const email = req.session.contactUser.contactEmail;
+        const emailLower = email.toLowerCase();
+
+        // Get all contractors that have this email
+        const allContractors = await db.collection('contractors').find({
+          'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'] }
+        }).toArray();
+
+        // Filter contractors where the email matches (case-insensitive)
+        const contractors = allContractors.filter(contractor => {
+          return contractor.contacts && contractor.contacts.some(contact =>
+            contact.email && contact.email.toLowerCase() === emailLower &&
+            ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser', 'manager'].includes(contact.permissions)
+          );
+        });
+
+        if (contractors.length > 0) {
+          userContractors = contractors.map(c => ({
+            contractorId: c._id.toString(),
+            contractorName: c.name,
+            contractorIdNumber: c.contractor_id,
+            contactRole: c.contacts.find(contact => contact.email && contact.email.toLowerCase() === emailLower)?.role || '',
+            contactPermissions: c.contacts.find(contact => contact.email && contact.email.toLowerCase() === emailLower)?.permissions || ''
+          }));
+
+          // Update session with contractors
+          req.session.contactUser.allContractors = userContractors;
+          req.session.save();
+          console.log('✅ Loaded contractors from database:', userContractors.length);
+        }
+      } catch (error) {
+        console.error('Error loading contractors from database:', error);
+      }
+    }
+
+    res.json({
+      success: true,
+      contractors: userContractors,
+      currentContractorId: req.session.contactUser.contractorId
+    });
+
+  } catch (error) {
+    console.error('❌ Get my contractors error:', error);
+    res.status(500).json({ error: 'שגיאה בקבלת רשימת הקבלנים' });
   }
 });
 

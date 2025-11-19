@@ -149,6 +149,11 @@ export interface Project extends Document {
         fileCreationDate?: string; // תאריך יצירת המסמך
     };
 
+    // Annual Insurance fields - שדות ביטוח שנתי
+    annualInsuranceId?: string; // ID של הביטוח השנתי (אם קיים)
+    isPartOfAnnualInsurance?: boolean; // האם חלק מביטוח שנתי
+    coverageAmountUsed?: number; // סכום הכיסוי שהפרויקט צורך (בדרך כלל valueNis)
+
     createdAt: Date;
     updatedAt: Date;
 }
@@ -300,7 +305,11 @@ const ProjectSchema = new Schema<Project>({
         file: { type: String },
         thumbnailUrl: { type: String },
         fileCreationDate: { type: String }
-    }
+    },
+    // Annual Insurance fields - שדות ביטוח שנתי
+    annualInsuranceId: { type: String, ref: 'AnnualInsurance' },
+    isPartOfAnnualInsurance: { type: Boolean, default: false },
+    coverageAmountUsed: { type: Number, min: 0 }
 }, {
     timestamps: true,
     collection: 'projects'
@@ -312,6 +321,7 @@ ProjectSchema.index({ mainContractor: 1 });
 ProjectSchema.index({ startDate: 1 });
 ProjectSchema.index({ status: 1 });
 ProjectSchema.index({ city: 1 });
+ProjectSchema.index({ annualInsuranceId: 1 });
 
 export const ProjectModel = mongoose.model<Project>('Project', ProjectSchema);
 export default ProjectModel;

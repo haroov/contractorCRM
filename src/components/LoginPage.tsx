@@ -173,8 +173,9 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // Send OTP email to authorized user
-      const response = await fetch('/api/auth/send-login-email', {
+      // First check if this is a contact user - try contact-auth endpoint
+      console.log('🔍 Checking if email is a contact user:', email);
+      let response = await fetch('/api/contact-auth/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,18 +184,60 @@ const LoginPage: React.FC = () => {
         credentials: 'include'
       });
 
-      const data = await response.json();
+      console.log('🔍 Contact-auth response status:', response.status);
 
-      if (response.ok && data.success) {
-        setOtpSent(true);
-        setResendTimer(120); // 2 minutes = 120 seconds
-        setCanResend(false);
-        setError('נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.');
+      // If contact-auth succeeds, redirect to contact-login page
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Contact-auth response data:', data);
+        if (data.success) {
+          console.log('✅ Contact user found, redirecting to /contact-login');
+          // Redirect to contact-login page for contact users
+          window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
+          return;
+        }
+      }
+
+      // If contact-auth failed, try to parse the error
+      let contactError = null;
+      try {
+        const contactData = await response.json();
+        contactError = contactData.error || contactData.message;
+        console.log('🔍 Contact-auth error:', contactError);
+      } catch (e) {
+        console.log('🔍 Could not parse contact-auth error response');
+      }
+
+      // If contact-auth returned 404, try system user login
+      if (response.status === 404) {
+        console.log('🔍 Contact-auth returned 404, trying system user login');
+        // Email not found in contact users, try system users
+        response = await fetch('/api/auth/send-login-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setOtpSent(true);
+          setResendTimer(120); // 2 minutes = 120 seconds
+          setCanResend(false);
+          setError('נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.');
+        } else {
+          setError(data.message || 'שגיאה בשליחת המייל');
+        }
       } else {
-        setError(data.message || 'שגיאה בשליחת המייל');
+        // Contact-auth returned an error (not 404), show it
+        console.log('❌ Contact-auth error:', contactError);
+        setError(contactError || 'שגיאה בשליחת המייל');
       }
     } catch (error) {
-      console.error('Error sending OTP email:', error);
+      console.error('❌ Error sending OTP email:', error);
       setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
     } finally {
       setLoading(false);
@@ -249,8 +292,27 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // Send OTP email again
-      const response = await fetch('/api/auth/send-login-email', {
+      // Try contact-auth first, then system auth
+      let response = await fetch('/api/contact-auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Redirect to contact-login for contact users
+          window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
+          return;
+        }
+      }
+
+      // If not contact user, use system auth
+      response = await fetch('/api/auth/send-login-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

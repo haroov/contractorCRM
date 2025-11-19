@@ -194,3 +194,18 @@ module.exports = { generateMedicalThumbnails };
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

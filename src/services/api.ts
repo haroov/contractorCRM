@@ -213,4 +213,185 @@ export const contractorsAPI = {
   }
 };
 
+// Annual Insurances API
+export const annualInsurancesAPI = {
+  // Get all annual insurances by contractor
+  getByContractor: async (contractorId: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances?contractorId=${contractorId}`);
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Get annual insurance by ID
+  getById: async (id: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}`);
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Create new annual insurance
+  create: async (annualInsurance: any) => {
+    const response = await authenticatedFetch('/api/annual-insurances', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(annualInsurance),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Update annual insurance
+  update: async (id: string, annualInsurance: any) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(annualInsurance),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Delete annual insurance
+  delete: async (id: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Increase coverage
+  increaseCoverage: async (id: string, amount: number, premium: number, reason?: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}/increase-coverage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount, premium, reason }),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Add project to annual insurance
+  addProject: async (id: string, projectId: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}/add-project`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ projectId }),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Remove project from annual insurance
+  removeProject: async (id: string, projectId: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}/remove-project`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ projectId }),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Get projects for annual insurance
+  getProjects: async (id: string) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}/projects`);
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // Transfer projects
+  transferProjects: async (id: string, targetAnnualInsuranceId: string, projectIds: string[]) => {
+    const response = await authenticatedFetch(`/api/annual-insurances/${id}/transfer-projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ targetAnnualInsuranceId, projectIds }),
+    });
+
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+};
+
 export default api;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, Button, TextField, InputAdornment, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip, IconButton } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip, IconButton, Menu, MenuItem, Select, FormControl } from '@mui/material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, Close as CloseIcon, Engineering as EngineeringIcon, SwapHoriz as SwapHorizIcon } from '@mui/icons-material';
 import UserMenu from './UserMenu';
 import { useTranslation } from 'react-i18next';
 import type { Contractor } from '../types/contractor';
@@ -26,6 +26,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [user, setUser] = useState<{ name: string, picture: string, role: string, email: string } | null>(null);
   const [isContactUser, setIsContactUser] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [userContractors, setUserContractors] = useState<any[]>([]); // All contractors user has access to
+  const [switchingContractor, setSwitchingContractor] = useState(false);
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -89,13 +91,26 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   }, []);
 
-  // Auto-navigate contact users to their contractor card
+  // Auto-navigate contact users to their contractor card (only for single contractor users)
   useEffect(() => {
     if (isContactUser && contractors.length > 0) {
       const contactUserData = localStorage.getItem('contactUser');
       if (contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
+          
+          // If user has multiple contractors, don't auto-navigate - show the list
+          if (contactUser.allContractors && contactUser.allContractors.length > 1) {
+            console.log('🔍 User has multiple contractors, showing list instead of auto-navigating');
+            return;
+          }
+          
+          // Also check if contractors array has more than one contractor (fallback check)
+          if (contractors.length > 1) {
+            console.log('🔍 Multiple contractors available, showing list instead of auto-navigating');
+            return;
+          }
+          
           const userContractor = contractors.find(contractor =>
             contractor._id === contactUser.contractorId
           );
@@ -126,6 +141,43 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const contractorId = urlParams.get('contractor_id');
     const companyId = urlParams.get('companyId');
     const tab = urlParams.get('tab');
+
+    // Check if user is a contact user with multiple contractors
+    const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+    const contactUserData = localStorage.getItem('contactUser');
+    let hasMultipleContractors = false;
+    
+    if (contactUserAuthenticated === 'true' && contactUserData) {
+      try {
+        const contactUser = JSON.parse(contactUserData);
+        hasMultipleContractors = contactUser.allContractors && contactUser.allContractors.length > 1;
+      } catch (error) {
+        console.error('Error parsing contact user data:', error);
+      }
+    }
+
+    // If user has multiple contractors and no explicit contractor_id in URL, don't auto-select
+    if (hasMultipleContractors && !contractorId && !companyId) {
+      console.log('🔍 User has multiple contractors and no URL parameter, showing list instead of auto-selecting');
+      return;
+    }
+
+    // If user has multiple contractors but URL has contractor_id, still show list first
+    // Only auto-select if user explicitly navigated to a specific contractor
+    if (hasMultipleContractors && (contractorId || companyId)) {
+      console.log('🔍 User has multiple contractors but URL has contractor_id, checking if should auto-select');
+      // Check if this is a direct navigation (e.g., from a link) or a refresh
+      // If it's a refresh, we should still show the contractor
+      // But if it's a new session, we should show the list
+      const isRefresh = sessionStorage.getItem('contractor_selected');
+      if (!isRefresh) {
+        console.log('🔍 New session with multiple contractors, showing list instead of auto-selecting from URL');
+        // Clear the URL parameter to show the list
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        return;
+      }
+    }
 
     if ((contractorId || companyId) && contractors.length > 0) {
       if (mode === 'new') {
@@ -173,7 +225,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   }, [contractors]);
 
-  // Auto-select contact user's contractor (but NOT for system users)
+  // Auto-select contact user's contractor (but NOT for system users or multi-contractor users)
   useEffect(() => {
     const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
     if (contactUserAuthenticated === 'true' && contractors.length > 0) {
@@ -182,10 +234,26 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data:', contactUser);
+          console.log('🔍 allContractors:', contactUser.allContractors);
+          console.log('🔍 allContractors length:', contactUser.allContractors?.length);
+          console.log('🔍 contractors.length:', contractors.length);
 
           // Check if this is a system user - if so, don't auto-select contractor
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, not auto-selecting contractor');
+            return;
+          }
+
+          // If contractors array has more than one contractor, don't auto-select - show the list
+          // This is a fallback check in case allContractors hasn't loaded yet
+          if (contractors.length > 1) {
+            console.log('🔍 Multiple contractors available, showing list instead of auto-selecting');
+            return;
+          }
+
+          // If user has multiple contractors, don't auto-select - show the list
+          if (contactUser.allContractors && contactUser.allContractors.length > 1) {
+            console.log('🔍 User has multiple contractors, showing list instead of auto-selecting');
             return;
           }
 
@@ -225,8 +293,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data for type check:', contactUser);
-          // Treat as contact user if userType is 'contact' OR 'contractor' (both are contact users)
-          isRealContactUser = contactUser.userType === 'contact' || contactUser.userType === 'contractor';
+          // Treat as contact user if:
+          // 1. userType is 'contact' OR 'contractor' (both are contact users)
+          // 2. OR type is 'contact_user'
+          // 3. OR contactUserAuthenticated is true (means it's a contact user)
+          isRealContactUser = contactUser.userType === 'contact' || 
+                              contactUser.userType === 'contractor' || 
+                              contactUser.type === 'contact_user' ||
+                              contactUserCheck;
           console.log('🔍 Is real contact user:', isRealContactUser);
         } catch (error) {
           console.error('Error parsing contact user data:', error);
@@ -235,24 +309,161 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
 
       // Update state
-      setIsContactUser(isRealContactUser);
+      setIsContactUser(isRealContactUser || contactUserCheck); // Always set to true if contactUserCheck is true
 
       let filteredContractors;
       if (isRealContactUser && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data for filtering:', contactUser);
+          console.log('🔍 allContractors:', contactUser.allContractors);
+          console.log('🔍 allContractors length:', contactUser.allContractors?.length);
           console.log('🔍 Available contractors for filtering:', contractorsData.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name, isActive: c.isActive })));
 
-          // For contact users, show only their associated contractor
-          // Try to find by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
-          filteredContractors = contractorsData.filter(contractor =>
-            (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) &&
-            contractor.isActive === true
-          );
-          console.log('📋 Filtered contractors for contact user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
+          // If allContractors is missing or empty, try to load from server
+          let allContractorsToUse = contactUser.allContractors || [];
+          if (!allContractorsToUse || allContractorsToUse.length === 0) {
+            console.log('⚠️ allContractors missing or empty, trying to load from server');
+            try {
+              const response = await fetch('/api/contact-auth/my-contractors', {
+                credentials: 'include'
+              });
+              if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.contractors && data.contractors.length > 0) {
+                  console.log('✅ Loaded contractors from server:', data.contractors);
+                  allContractorsToUse = data.contractors;
+                  // Update localStorage
+                  contactUser.allContractors = data.contractors;
+                  localStorage.setItem('contactUser', JSON.stringify(contactUser));
+                  console.log('✅ Updated localStorage with contractors from server');
+                  
+                  // If we found multiple contractors, don't filter - show all of them
+                  if (allContractorsToUse.length > 1) {
+                    console.log('🔍 Found multiple contractors, showing all of them');
+                    const authorizedContractorIds = allContractorsToUse.map((c: any) => c.contractorId);
+                    filteredContractors = contractorsData.filter(contractor => {
+                      const contractorIdStr = contractor._id?.toString() || '';
+                      const contractorRegistryIdStr = contractor.contractor_id?.toString() || '';
+                      
+                      return authorizedContractorIds.some((authId: string) => {
+                        const authIdStr = authId?.toString() || '';
+                        return authIdStr === contractorIdStr || 
+                               authIdStr === contractorRegistryIdStr ||
+                               authIdStr === contractor._id ||
+                               authIdStr === contractor.contractor_id;
+                      }) && contractor.isActive === true;
+                    });
+                    console.log('📋 Filtered contractors after loading from server:', filteredContractors.length);
+                    console.log('📋 Filtered contractors names:', filteredContractors.map(c => c.name));
+                    setContractors(filteredContractors);
+                    await loadProjectsForStats();
+                    setLoading(false);
+                    return; // Exit early - we've already set the contractors
+                  }
+                }
+              } else {
+                console.log('⚠️ Failed to get contractors from server:', response.status);
+              }
+            } catch (error) {
+              console.error('Error loading contractors from server:', error);
+            }
+          }
+
+          // For contact users with multiple contractors, show all authorized contractors
+          if (allContractorsToUse && allContractorsToUse.length > 0) {
+            // User has access to multiple contractors - show all of them
+            const authorizedContractorIds = allContractorsToUse.map((c: any) => c.contractorId);
+            console.log('🔍 Authorized contractor IDs:', authorizedContractorIds);
+            console.log('🔍 All contractors data:', contractorsData.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
+            
+            filteredContractors = contractorsData.filter(contractor => {
+              // Compare as strings to handle both ObjectId and string formats
+              const contractorIdStr = contractor._id?.toString() || '';
+              const contractorRegistryIdStr = contractor.contractor_id?.toString() || '';
+              
+              const isAuthorized = authorizedContractorIds.some((authId: string) => {
+                const authIdStr = authId?.toString() || '';
+                return authIdStr === contractorIdStr || 
+                       authIdStr === contractorRegistryIdStr ||
+                       authIdStr === contractor._id ||
+                       authIdStr === contractor.contractor_id;
+              });
+              
+              if (isAuthorized && contractor.isActive === true) {
+                console.log('✅ Including contractor:', contractor.name, 'ID:', contractor._id, 'Registry ID:', contractor.contractor_id);
+              }
+              return isAuthorized && contractor.isActive === true;
+            });
+            console.log('📋 Filtered contractors for multi-contractor user:', filteredContractors.length, 'authorized IDs:', authorizedContractorIds);
+            console.log('📋 Filtered contractors names:', filteredContractors.map(c => c.name));
+          } else {
+            // Single contractor - show only the selected one
+            filteredContractors = contractorsData.filter(contractor =>
+              (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) &&
+              contractor.isActive === true
+            );
+            console.log('📋 Filtered contractors for single-contractor user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
+          }
         } catch (error) {
           console.error('Error parsing contact user data:', error);
+          filteredContractors = [];
+        }
+      } else if (contactUserCheck && contactUserData) {
+        // Fallback: if contactUserCheck is true but isRealContactUser is false, still try to load contractors
+        // This handles cases where the user type check failed but we know it's a contact user
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          console.log('🔍 Fallback: Treating as contact user based on contactUserCheck');
+          console.log('🔍 Contact user data:', contactUser);
+          
+          // If allContractors is missing or empty, try to load from server
+          let allContractorsToUse = contactUser.allContractors || [];
+          if (!allContractorsToUse || allContractorsToUse.length === 0) {
+            console.log('⚠️ Fallback: allContractors missing or empty, trying to load from server');
+            try {
+              const response = await fetch('/api/contact-auth/my-contractors', {
+                credentials: 'include'
+              });
+              if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.contractors && data.contractors.length > 0) {
+                  console.log('✅ Fallback: Loaded contractors from server:', data.contractors);
+                  allContractorsToUse = data.contractors;
+                  // Update localStorage
+                  contactUser.allContractors = data.contractors;
+                  localStorage.setItem('contactUser', JSON.stringify(contactUser));
+                  console.log('✅ Fallback: Updated localStorage with contractors from server');
+                }
+              }
+            } catch (error) {
+              console.error('Error loading contractors from server in fallback:', error);
+            }
+          }
+          
+          if (allContractorsToUse && allContractorsToUse.length > 0) {
+            const authorizedContractorIds = allContractorsToUse.map((c: any) => c.contractorId);
+            filteredContractors = contractorsData.filter(contractor => {
+              const contractorIdStr = contractor._id?.toString() || '';
+              const contractorRegistryIdStr = contractor.contractor_id?.toString() || '';
+              
+              return authorizedContractorIds.some((authId: string) => {
+                const authIdStr = authId?.toString() || '';
+                return authIdStr === contractorIdStr || 
+                       authIdStr === contractorRegistryIdStr ||
+                       authIdStr === contractor._id ||
+                       authIdStr === contractor.contractor_id;
+              }) && contractor.isActive === true;
+            });
+            console.log('📋 Fallback: Filtered contractors:', filteredContractors.length);
+          } else {
+            filteredContractors = contractorsData.filter(contractor =>
+              (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) &&
+              contractor.isActive === true
+            );
+          }
+        } catch (error) {
+          console.error('Error in fallback contact user handling:', error);
           filteredContractors = [];
         }
       } else {
@@ -513,6 +724,36 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             role: contactUser.role || 'contactUser',
             email: contactUser.email || ''
           });
+          
+          // Load all contractors user has access to
+          if (contactUser.allContractors && contactUser.allContractors.length > 0) {
+            setUserContractors(contactUser.allContractors);
+            console.log('✅ Loaded user contractors from localStorage:', contactUser.allContractors);
+          } else {
+            // Try to get from server
+            console.log('⚠️ No allContractors in localStorage, trying to get from server');
+            try {
+              const response = await fetch('/api/contact-auth/my-contractors', {
+                credentials: 'include'
+              });
+              if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.contractors) {
+                  setUserContractors(data.contractors);
+                  console.log('✅ Loaded user contractors from server:', data.contractors);
+                  
+                  // Update localStorage with contractors from server
+                  contactUser.allContractors = data.contractors;
+                  localStorage.setItem('contactUser', JSON.stringify(contactUser));
+                  console.log('✅ Updated localStorage with contractors from server');
+                }
+              } else {
+                console.log('⚠️ Failed to get contractors from server:', response.status);
+              }
+            } catch (error) {
+              console.error('Error loading contractors from server:', error);
+            }
+          }
           return;
         }
       }
@@ -546,6 +787,70 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         role: 'user',
         email: ''
       });
+    }
+  };
+
+  const handleSwitchContractor = async (contractorId: string) => {
+    setSwitchingContractor(true);
+    try {
+      const response = await fetch('/api/contact-auth/switch-contractor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contractorId }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Update localStorage with new contractor
+        const contactUserData = localStorage.getItem('contactUser');
+        if (contactUserData) {
+          const contactUser = JSON.parse(contactUserData);
+          contactUser.contractorId = data.user.contractorId;
+          localStorage.setItem('contactUser', JSON.stringify(contactUser));
+        }
+
+        // Reload contractors and navigate to new contractor
+        await loadContractors();
+        
+        // Find the new contractor and navigate to it
+        const newContractor = contractors.find(c => c._id === contractorId);
+        if (newContractor) {
+          handleContractorSelect(newContractor, 'view');
+          setSnackbar({ 
+            open: true, 
+            message: `עברת ל-${data.user.contractorName}`, 
+            severity: 'success' 
+          });
+        } else {
+          // Reload and try again
+          setTimeout(async () => {
+            await loadContractors();
+            const updatedContractor = contractors.find(c => c._id === contractorId);
+            if (updatedContractor) {
+              handleContractorSelect(updatedContractor, 'view');
+            }
+          }, 500);
+        }
+      } else {
+        setSnackbar({ 
+          open: true, 
+          message: data.error || 'שגיאה בהחלפת הקבלן', 
+          severity: 'error' 
+        });
+      }
+    } catch (error) {
+      console.error('❌ Switch contractor error:', error);
+      setSnackbar({ 
+        open: true, 
+        message: 'שגיאה בהתחברות לשרת', 
+        severity: 'error' 
+      });
+    } finally {
+      setSwitchingContractor(false);
     }
   };
 
@@ -1023,6 +1328,47 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
               {t('app.subtitle')}
             </Typography>
+            
+            {/* Contractor Switcher for contact users with multiple contractors */}
+            {isContactUser && userContractors.length > 1 && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                <SwapHorizIcon sx={{ color: '#882DD7' }} />
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <Select
+                    value={(() => {
+                      const contactUserData = localStorage.getItem('contactUser');
+                      if (contactUserData) {
+                        const contactUser = JSON.parse(contactUserData);
+                        return contactUser.contractorId || '';
+                      }
+                      return '';
+                    })()}
+                    onChange={(e) => handleSwitchContractor(e.target.value as string)}
+                    disabled={switchingContractor}
+                    sx={{
+                      bgcolor: 'white',
+                      '& .MuiSelect-select': {
+                        display: 'flex',
+                        alignItems: 'center'
+                      }
+                    }}
+                  >
+                    {userContractors.map((contractor: any) => (
+                      <MenuItem key={contractor.contractorId} value={contractor.contractorId}>
+                        <Box>
+                          <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                            {contractor.contractorName}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {contractor.contactRole}
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
           </Box>
 
           <UserMenu

@@ -172,6 +172,10 @@ export interface Project {
         detailLevel?: string;
         adherenceLevel?: string;
     };
+    // Annual Insurance fields - שדות ביטוח שנתי
+    annualInsuranceId?: string; // ID של הביטוח השנתי (אם קיים)
+    isPartOfAnnualInsurance?: boolean; // האם חלק מביטוח שנתי
+    coverageAmountUsed?: number; // סכום הכיסוי שהפרויקט צורך (בדרך כלל valueNis)
 }
 
 export interface Contractor extends Document {

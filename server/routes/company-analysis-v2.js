@@ -810,7 +810,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         const wordCount = getWordCount(aboutText);
         console.log(`✅ Generated about text: ${aboutText.length} characters, ${wordCount} words`);
         console.log(`📋 Generated about preview (first 300 chars): ${aboutText.substring(0, 300)}`);
-        
+
         // Check if generation returned empty
         if (!aboutText || aboutText.trim().length === 0) {
             console.error('❌ CRITICAL: generateRichAbout returned empty string!');
@@ -851,7 +851,7 @@ async function analyzeCompanyWebsite(websiteUrl, companyName) {
         console.error('❌ Generation failed:', fallbackError.message);
         console.error('❌ Error details:', fallbackError);
         console.error('❌ Error stack:', fallbackError.stack);
-        
+
         // Try to generate basic content even if rich generation failed
         try {
             console.log('🔄 Attempting basic generation with collected text...');

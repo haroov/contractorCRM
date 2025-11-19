@@ -178,20 +178,57 @@ export default function ContactLoginPage() {
         console.log('🔍 OTP verification response:', data);
 
         if (data.multipleContractors) {
-          // User has access to multiple contractors - show selection
-          console.log('📋 Multiple contractors found, showing selection');
-          setContractors(data.contractors);
-          setStep(2);
+          // User has access to multiple contractors - store all contractors and go to CRM
+          console.log('📋 Multiple contractors found, storing and going to CRM');
+          
+          // Get contact info from response
+          const firstContractor = data.contractors[0];
+          
+          // Store all contractors data
+          const essentialUserData = {
+            id: data.contactId || '', // Contact ID from server
+            email: data.contactEmail || loginData.email,
+            permissions: firstContractor.contactPermissions || 'user',
+            contractorId: firstContractor.contractorId, // Default to first contractor
+            type: 'contact_user',
+            allContractors: data.contractors.map((c: any) => ({
+              contractorId: c.contractorId,
+              contractorName: c.contractorName,
+              contractorIdNumber: c.contractorIdNumber,
+              contactRole: c.contactRole,
+              contactPermissions: c.contactPermissions
+            }))
+          };
+
+          // Store contact user data in localStorage
+          localStorage.setItem('contactUser', JSON.stringify(essentialUserData));
+          localStorage.setItem('contactUserAuthenticated', 'true');
+
+          console.log('💾 Stored contact user data with all contractors:', essentialUserData);
+          console.log('🚀 Going to CRM to show all contractors');
+          
+          // Navigate to CRM - will show all contractors
+          navigate('/');
         } else {
           // Single contractor - proceed with login
           console.log('✅ Contact user logged in successfully:', data.user);
           console.log('🔗 Navigating to contractor page with ID:', data.user.contractorId);
 
+          // Store only essential data (ObjectIds) to avoid Hebrew characters in headers
+          const essentialUserData = {
+            id: data.user.id,
+            email: data.user.email,
+            permissions: data.user.permissions,
+            contractorId: data.user.contractorId,
+            type: data.user.type,
+            allContractors: data.user.allContractors || [] // Store all contractors for switching
+          };
+
           // Store contact user data in localStorage for App.tsx to recognize
-          localStorage.setItem('contactUser', JSON.stringify(data.user));
+          localStorage.setItem('contactUser', JSON.stringify(essentialUserData));
           localStorage.setItem('contactUserAuthenticated', 'true');
 
-          console.log('💾 Stored contact user data in localStorage');
+          console.log('💾 Stored contact user data in localStorage:', essentialUserData);
 
           console.log('🚀 Contact user authenticated, staying on main page');
           // Stay on main page - the UnifiedContractorView will handle showing contractor details
@@ -242,7 +279,8 @@ export default function ContactLoginPage() {
           email: data.user.email,
           permissions: data.user.permissions,
           contractorId: data.user.contractorId,
-          type: data.user.type
+          type: data.user.type,
+          allContractors: data.user.allContractors || [] // Store all contractors for switching
         };
 
         // Clear ALL old data and store new essential data

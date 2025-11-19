@@ -8,6 +8,7 @@ import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
 import UnifiedContractorView from './components/UnifiedContractorView';
 import ClaimFormPage from './components/ClaimFormPage';
+import AnnualInsuranceDetailsPage from './components/AnnualInsuranceDetailsPage';
 // Removed API imports - using simple localStorage-based auth
 
 
@@ -334,6 +335,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ClaimFormPage currentUser={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/annual-insurance-details"
+              element={
+                <ProtectedRoute>
+                  <AnnualInsuranceDetailsPage />
                 </ProtectedRoute>
               }
             />

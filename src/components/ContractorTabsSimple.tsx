@@ -6,6 +6,11 @@ import FileUpload from './FileUpload';
 import { useNavigate } from 'react-router-dom';
 import ContractorService from '../services/contractorService';
 import { authenticatedFetch } from '../config/api';
+import { annualInsurancesAPI } from '../services/api';
+import { AnnualInsurance } from '../types/annualInsurance';
+import AnnualInsuranceForm from './AnnualInsuranceForm';
+import AnnualInsuranceRow from './AnnualInsuranceRow';
+import { Insurance as InsuranceIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -347,6 +352,8 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     // Local states for additional contractor data
     const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
     const [localProjects, setLocalProjects] = useState<any[]>(contractor?.projects || []);
+    const [annualInsurances, setAnnualInsurances] = useState<AnnualInsurance[]>([]);
+    const [annualInsuranceFormOpen, setAnnualInsuranceFormOpen] = useState(false);
     const [localNotes, setLocalNotes] = useState<{ general: string, internal: string }>(contractor?.notes || { general: '', internal: '' });
     const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating?.toString() || '0');
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
@@ -688,6 +695,22 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             analyzeCompanyWebsite(localWebsite);
         }
     }, [localWebsite]);
+
+    // Load annual insurances when contractor is available and projects tab is active
+    useEffect(() => {
+        const loadAnnualInsurances = async () => {
+            if (contractor?._id && activeTab === 3) {
+                try {
+                    const data = await annualInsurancesAPI.getByContractor(contractor._id);
+                    setAnnualInsurances(Array.isArray(data) ? data : []);
+                } catch (error) {
+                    console.error('Error loading annual insurances:', error);
+                    setAnnualInsurances([]);
+                }
+            }
+        };
+        loadAnnualInsurances();
+    }, [contractor?._id, activeTab]);
 
     // Listen for save events from the header button
     useEffect(() => {
@@ -3401,6 +3424,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
                 {activeTab === 3 && (
                     <Box>
+
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                             <TextField
                                 size="small"
@@ -3438,46 +3462,101 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                 }}
                             />
                             {canEdit && (
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={() => {
-                                        // Create new project with contractor ObjectId pre-filled
-                                        const newProject = {
-                                            _id: `new_${Date.now()}`,
-                                            name: '',
-                                            description: '',
-                                            startDate: new Date().toISOString().split('T')[0],
-                                            city: '',
-                                            value: 0,
-                                            duration: 12,
-                                            contractorName: contractor?.name || '',
-                                            contractorId: contractor?._id || '', // Use ObjectId as contractorId
-                                            isActive: true,
-                                            isNew: true
-                                        };
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => {
+                                            // Create new project with contractor ObjectId pre-filled
+                                            const newProject = {
+                                                _id: `new_${Date.now()}`,
+                                                name: '',
+                                                description: '',
+                                                startDate: new Date().toISOString().split('T')[0],
+                                                city: '',
+                                                value: 0,
+                                                duration: 12,
+                                                contractorName: contractor?.name || '',
+                                                contractorId: contractor?._id || '', // Use ObjectId as contractorId
+                                                isActive: true,
+                                                isNew: true
+                                            };
 
-                                        // Add to local projects
-                                        const updatedProjects = [...localProjects, newProject];
-                                        setLocalProjects(updatedProjects);
+                                            // Add to local projects
+                                            const updatedProjects = [...localProjects, newProject];
+                                            setLocalProjects(updatedProjects);
 
-                                        // Navigate to project edit page using the existing function
-                                        navigateToProject(newProject, 'new');
+                                            // Navigate to project edit page using the existing function
+                                            navigateToProject(newProject, 'new');
 
-                                        console.log('🆕 Created new project and navigating to new project page');
-                                    }}
-                                    size="small"
-                                    sx={{
-                                        backgroundColor: '#6b47c1', // סגול שוקו
-                                        '&:hover': {
-                                            backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
-                                        }
-                                    }}
-                                >
-                                    הוספה
-                                </Button>
+                                            console.log('🆕 Created new project and navigating to new project page');
+                                        }}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: '#6b47c1', // סגול שוקו
+                                            '&:hover': {
+                                                backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
+                                            }
+                                        }}
+                                    >
+                                        הוספה
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<InsuranceIcon />}
+                                        onClick={() => setAnnualInsuranceFormOpen(true)}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: '#6b47c1', // סגול שוקו
+                                            '&:hover': {
+                                                backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
+                                            }
+                                        }}
+                                    >
+                                        פוליסה פתוחה
+                                    </Button>
+                                </>
                             )}
                         </Box>
+
+                        {/* Display Annual Insurances */}
+                        {annualInsurances.length > 0 && (
+                            <Box sx={{ mb: 3 }}>
+                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                                    פוליסות פתוחות
+                                </Typography>
+                                <TableContainer component={Paper} sx={{ boxShadow: 'none', mb: 2 }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>מספר פוליסה</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>חברת ביטוח</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>כיסוי כולל</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>כיסוי נותר</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>תאריך התחלה</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>תאריך סיום</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}>פרויקטים</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left' }}></TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {annualInsurances.map((insurance) => (
+                                                <AnnualInsuranceRow
+                                                    key={insurance._id || insurance.id}
+                                                    annualInsurance={insurance}
+                                                    onRowClick={(ai) => {
+                                                        navigate(`/annual-insurance-details?id=${ai._id || ai.id}&contractorId=${contractor?._id}`);
+                                                    }}
+                                                    projects={localProjects.filter(p => 
+                                                        (insurance._id || insurance.id) === (p.annualInsuranceId)
+                                                    )}
+                                                />
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Box>
+                        )}
 
                         {/* Project Filter Tabs */}
                         <Box sx={{ mb: 2 }}>
@@ -3537,8 +3616,22 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     {(project.valueNis || project.value) ? `₪${(project.valueNis || project.value).toLocaleString()}` : ''}
                                                 </TableCell>
                                                 <TableCell sx={{ textAlign: 'left' }}>
-                                                    {project.status === 'active' || project.status === 'current' ? 'פעיל' :
-                                                        project.status === 'future' ? 'עתידי' : 'הושלם'}
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        {project.status === 'active' || project.status === 'current' ? 'פעיל' :
+                                                            project.status === 'future' ? 'עתידי' : 'הושלם'}
+                                                        {project.isPartOfAnnualInsurance && (
+                                                            <Chip
+                                                                label="פוליסה פתוחה"
+                                                                size="small"
+                                                                sx={{ 
+                                                                    backgroundColor: '#e3f2fd', 
+                                                                    color: '#1976d2',
+                                                                    fontSize: '0.7rem',
+                                                                    height: '20px'
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Box>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -3924,6 +4017,24 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 </DialogActions>
             </Dialog>
         </Box>
+
+        {/* Annual Insurance Form Dialog */}
+        <AnnualInsuranceForm
+            open={annualInsuranceFormOpen}
+            onClose={() => setAnnualInsuranceFormOpen(false)}
+            onSave={async () => {
+                if (contractor?._id) {
+                    try {
+                        const data = await annualInsurancesAPI.getByContractor(contractor._id);
+                        setAnnualInsurances(Array.isArray(data) ? data : []);
+                    } catch (error) {
+                        console.error('Error loading annual insurances:', error);
+                    }
+                }
+            }}
+            contractorId={contractor?._id || ''}
+        />
+    </Box>
     );
 });
 

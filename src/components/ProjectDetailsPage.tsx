@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import gisService from '../services/gisService';
-import { projectsAPI } from '../services/api';
+import { projectsAPI, annualInsurancesAPI } from '../services/api';
+import { AnnualInsurance } from '../types/annualInsurance';
 import { authenticatedFetch } from '../config/api';
 import ContractorService from '../services/contractorService';
 import SafetyDashboard from './SafetyDashboard';
@@ -482,6 +483,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [annualInsurances, setAnnualInsurances] = useState<AnnualInsurance[]>([]);
+    const [insuranceType, setInsuranceType] = useState<'standalone' | 'annual'>('standalone');
+    const [selectedAnnualInsuranceId, setSelectedAnnualInsuranceId] = useState<string>('');
     const [fileUploadState, setFileUploadState] = useState<{ [key: string]: { url: string; thumbnailUrl?: string; creationDate?: string } }>({});
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [expandedSubcontractors, setExpandedSubcontractors] = useState<{ [key: number]: boolean }>({});
@@ -809,6 +813,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 // Also load contractor name from API if we have contractorId
                 if (contractorId) {
                     loadContractorName(contractorId);
+                    // Load annual insurances for this contractor
+                    const loadAnnualInsurances = async () => {
+                        try {
+                            const data = await annualInsurancesAPI.getByContractor(contractorId);
+                            setAnnualInsurances(Array.isArray(data) ? data : []);
+                        } catch (error) {
+                            console.error('Error loading annual insurances:', error);
+                        }
+                    };
+                    loadAnnualInsurances();
                 }
 
                 setLoading(false);
@@ -1103,6 +1117,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                             if (contractorId) {
                                 loadContractorName(contractorId);
+                                // Load annual insurances for this contractor
+                                const loadAnnualInsurances = async () => {
+                                    try {
+                                        const data = await annualInsurancesAPI.getByContractor(contractorId);
+                                        setAnnualInsurances(Array.isArray(data) ? data : []);
+                                    } catch (error) {
+                                        console.error('Error loading annual insurances:', error);
+                                    }
+                                };
+                                loadAnnualInsurances();
                             } else {
                                 console.log('❌ No valid contractor ID found in project data');
                                 console.log('❌ Available fields:', {
@@ -2818,10 +2842,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             // projectsAPI is now imported statically
 
             if (mode === 'new') {
+                // Validate annual insurance if selected
+                if (insuranceType === 'annual' && selectedAnnualInsuranceId) {
+                    const projectValue = project.valueNis || project.value || 0;
+                    if (projectValue > 50000000) {
+                        alert('פרויקטים מעל 50 מיליון ש״ח לא יכולים להיות חלק מפוליסה פתוחה');
+                        setSaving(false);
+                        return;
+                    }
+                    
+                    const selectedInsurance = annualInsurances.find(ai => (ai._id || ai.id) === selectedAnnualInsuranceId);
+                    if (selectedInsurance && selectedInsurance.remainingCoverage < projectValue) {
+                        alert(`אין מספיק כיסוי בפוליסה זו. נדרש ${projectValue.toLocaleString('he-IL')} ₪ אך נותר רק ${selectedInsurance.remainingCoverage.toLocaleString('he-IL')} ₪.`);
+                        setSaving(false);
+                        return;
+                    }
+                }
+
                 // Create new project - move key fields to root level
                 const projectToSave = {
                     ...project,
                     mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
+                    // Add annual insurance fields if selected
+                    ...(insuranceType === 'annual' && selectedAnnualInsuranceId ? {
+                        annualInsuranceId: selectedAnnualInsuranceId,
+                        isPartOfAnnualInsurance: true,
+                        coverageAmountUsed: project.valueNis || project.value || 0
+                    } : {}),
                     // Move key fields from nested objects to root level
                     projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
                     garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
@@ -2847,6 +2894,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     theftCoverage: projectToSave.insuranceSpecification?.theftCoverage,
                     workPropertyCoverage: projectToSave.insuranceSpecification?.workPropertyCoverage,
                     adjacentPropertyCoverage: projectToSave.insuranceSpecification?.adjacentPropertyCoverage
+                });
+                console.log('🔄 Annual insurance in new project:', {
+                    annualInsuranceId: projectToSave.annualInsuranceId,
+                    isPartOfAnnualInsurance: projectToSave.isPartOfAnnualInsurance,
+                    coverageAmountUsed: projectToSave.coverageAmountUsed
                 });
                 console.log('🔄 Key fields moved to root:', {
                     projectType: projectToSave.projectType,
@@ -3302,6 +3354,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                 const numValue = numericValue ? parseInt(numericValue) : 0;
                                                 handleFieldChange('valueNis', numValue);
+                                                
+                                                // Auto-select insurance type based on value
+                                                if (numValue > 50000000) {
+                                                    setInsuranceType('standalone');
+                                                } else if (numValue > 0 && annualInsurances.length > 0) {
+                                                    // Auto-select annual if value <= 50M and there are active annual insurances
+                                                    setInsuranceType('annual');
+                                                }
                                             }}
                                             disabled={mode === 'view' || !canEdit}
                                             onKeyDown={(e) => {
@@ -3321,6 +3381,84 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}
                                         />
                                     </Box>
+
+                                    {/* Insurance Type Selection - Only for new projects */}
+                                    {mode === 'new' && canEdit && (
+                                        <Box sx={{ mt: 2 }}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>סוג ביטוח</InputLabel>
+                                                <Select
+                                                    value={insuranceType}
+                                                    onChange={(e) => {
+                                                        const newType = e.target.value as 'standalone' | 'annual';
+                                                        setInsuranceType(newType);
+                                                        if (newType === 'standalone') {
+                                                            setSelectedAnnualInsuranceId('');
+                                                        }
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit || (project?.valueNis || project?.value || 0) > 50000000}
+                                                >
+                                                    <MenuItem value="standalone">ביטוח עצמאי לפרויקט</MenuItem>
+                                                    <MenuItem value="annual" disabled={annualInsurances.length === 0 || (project?.valueNis || project?.value || 0) > 50000000}>
+                                                        הוסף לפוליסה פתוחה קיימת
+                                                    </MenuItem>
+                                                </Select>
+                                            </FormControl>
+
+                                            {insuranceType === 'annual' && (
+                                                <Box sx={{ mt: 2 }}>
+                                                    {annualInsurances.length === 0 ? (
+                                                        <Alert severity="info" sx={{ mt: 1 }}>
+                                                            אין פוליסה פתוחה פעילה. ניתן ליצור פוליסה חדשה ממסך הפרויקטים.
+                                                        </Alert>
+                                                    ) : (
+                                                        <>
+                                                            <FormControl fullWidth sx={{ mt: 1 }}>
+                                                                <InputLabel>בחר פוליסה פתוחה</InputLabel>
+                                                                <Select
+                                                                    value={selectedAnnualInsuranceId}
+                                                                    onChange={(e) => setSelectedAnnualInsuranceId(e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                >
+                                                                    {annualInsurances.map((insurance) => (
+                                                                        <MenuItem key={insurance._id || insurance.id} value={insurance._id || insurance.id}>
+                                                                            {insurance.policyNumber} - {insurance.insurer} 
+                                                                            {' '}(כיסוי נותר: {insurance.remainingCoverage.toLocaleString('he-IL')} ₪)
+                                                                        </MenuItem>
+                                                                    ))}
+                                                                </Select>
+                                                            </FormControl>
+                                                            {selectedAnnualInsuranceId && (() => {
+                                                                const selectedInsurance = annualInsurances.find(ai => (ai._id || ai.id) === selectedAnnualInsuranceId);
+                                                                const projectValue = project?.valueNis || project?.value || 0;
+                                                                const hasEnoughCoverage = selectedInsurance && selectedInsurance.remainingCoverage >= projectValue;
+                                                                
+                                                                return (
+                                                                    <Box sx={{ mt: 1 }}>
+                                                                        {selectedInsurance && (
+                                                                            <Typography variant="body2" color="text.secondary">
+                                                                                כיסוי נותר: {selectedInsurance.remainingCoverage.toLocaleString('he-IL')} ₪
+                                                                            </Typography>
+                                                                        )}
+                                                                        {projectValue > 0 && !hasEnoughCoverage && (
+                                                                            <Alert severity="warning" sx={{ mt: 1 }}>
+                                                                                אין מספיק כיסוי בפוליסה זו. נדרש {projectValue.toLocaleString('he-IL')} ₪ אך נותר רק {selectedInsurance?.remainingCoverage.toLocaleString('he-IL') || 0} ₪.
+                                                                            </Alert>
+                                                                        )}
+                                                                        {projectValue > 50000000 && (
+                                                                            <Alert severity="error" sx={{ mt: 1 }}>
+                                                                                פרויקטים מעל 50 מיליון ש״ח לא יכולים להיות חלק מפוליסה פתוחה. נא לבחור ביטוח עצמאי.
+                                                                            </Alert>
+                                                                        )}
+                                                                    </Box>
+                                                                );
+                                                            })()}
+                                                        </>
+                                                    )}
+                                                </Box>
+                                            )}
+                                        </Box>
+                                    )}
 
 
                                     {/* Stakeholders Table */}
@@ -12692,40 +12830,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* Risk Monitors Grid */}
                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3 }}>
-                                    {/* Safety Monitor */}
-                                    <Box sx={{
-                                        p: 3,
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: 2,
-                                        bgcolor: 'background.paper'
-                                    }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: '50%',
-                                                bgcolor: '#4CAF50',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                🛡️
-                                            </Box>
-                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
-                                                בטיחות
-                                            </Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                    Avg. Score 8.5
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
-                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
-                                                גרף בטיחות יוצג כאן
-                                            </Typography>
-                                        </Box>
-                                    </Box>
+                                    
 
                                     {/* Security Monitor */}
                                     <Box sx={{
