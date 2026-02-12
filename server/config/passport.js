@@ -19,7 +19,10 @@ const isEmailAllowed = async (email) => {
 };
 
 // Ensure we always use absolute URL for callbackURL
-const callbackURL = process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback";
+// Prefer explicit env var; otherwise use Render's external URL; finally fallback to localhost for dev.
+const callbackURL =
+  process.env.GOOGLE_CALLBACK_URL ||
+  (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/auth/google/callback` : "http://localhost:3001/auth/google/callback");
 console.log('🔐 Passport callbackURL:', callbackURL);
 console.log('🔐 GOOGLE_CALLBACK_URL env var:', process.env.GOOGLE_CALLBACK_URL);
 console.log('🔐 Environment check in passport:');
@@ -37,7 +40,7 @@ passport.use(new GoogleStrategy({
   console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString(), 'FORCE_UPDATE_V247_SENDGRID');
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔐 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
-  console.log('🔐 Callback URL:', process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback");
+  console.log('🔐 Callback URL:', callbackURL);
   console.log('🔐 Full profile:', JSON.stringify(profile, null, 2));
 
   try {

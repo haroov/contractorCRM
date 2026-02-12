@@ -1273,7 +1273,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         try {
             const projectId = project._id || project.id;
             console.log('🔍 Loading claims for project:', projectId);
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/project/${projectId}`);
+            const response = await authenticatedFetch(`/api/claims/project/${projectId}`);
             console.log('🔍 Claims API response status:', response.status);
 
             if (response.ok) {
@@ -1306,7 +1306,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
         try {
             console.log('Sending DELETE request for claim:', claimId);
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
+            const response = await authenticatedFetch(`/api/claims/${claimId}`, {
                 method: 'DELETE'
             });
 
@@ -1333,7 +1333,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     // Remove the deleted claim ID
                     const updatedClaimsId = claimsIdArray.filter((id: string) => id !== claimId);
 
-                    await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
+                    await authenticatedFetch(`/api/projects/${projectId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',

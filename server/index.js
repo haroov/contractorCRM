@@ -1,6 +1,14 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+// Crash visibility: log unexpected errors (Render will restart on crash).
+process.on('unhandledRejection', (reason) => {
+  console.error('❌ Unhandled Promise Rejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -135,6 +143,12 @@ function flattenInsuranceCoverageFields(project) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Behind Render/Cloudflare we need to trust the proxy for correct HTTPS detection.
+// This is important for secure cookies + OAuth redirects in production.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -223,6 +237,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'contractor-crm-secret-key',
   resave: false,
   saveUninitialized: false,
+  proxy: process.env.NODE_ENV === 'production',
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm',
     touchAfter: 24 * 3600 // lazy session update
@@ -230,7 +245,8 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
     httpOnly: true, // More secure
-    sameSite: 'lax',
+    // Cross-site requests (dash -> api) require SameSite=None (with Secure).
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

@@ -9,6 +9,7 @@ import type { Contractor } from '../types/contractor';
 import UserManagement from './UserManagement';
 import SkeletonLoader from './SkeletonLoader';
 import ContractorTabsSimple from './ContractorTabsSimple';
+import { authenticatedFetch } from '../config/api';
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
@@ -487,7 +488,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const loadProjectsForStats = async () => {
     try {
       console.log('🔍 Loading projects for statistics...');
-      const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
+      const response = await authenticatedFetch('/api/projects');
       if (response.ok) {
         const data = await response.json();
         const projectsData = Array.isArray(data) ? data : (data.projects || []);
@@ -507,7 +508,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const loadProjects = async () => {
     try {
       setProjectsLoading(true);
-      const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
+      const response = await authenticatedFetch('/api/projects');
       if (response.ok) {
         const data = await response.json();
         // Handle both array response and object with projects property

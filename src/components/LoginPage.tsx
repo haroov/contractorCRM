@@ -16,6 +16,7 @@ import { Google as GoogleIcon, Microsoft as MicrosoftIcon } from '@mui/icons-mat
 // Removed API imports - using simple localStorage-based auth
 import logo from '../assets/logo.svg';
 import { useTranslation } from 'react-i18next';
+import { API_CONFIG } from '../config/api';
 
 interface User {
   id: string;
@@ -109,23 +110,9 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // Build Google OAuth URL to open Google authentication
-      const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-      // Use absolute URL for redirect_uri - this is the key fix!
-      const redirectUri = 'https://contractorcrm-api.onrender.com/auth/google/callback';
-      const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
-        redirect_uri: redirectUri,
-        scope: 'profile email',
-        access_type: 'offline',
-        prompt: 'select_account consent' // Force account selection and password entry
-      });
-
-      const fullUrl = `${googleAuthUrl}?${params.toString()}`;
-
-      // Redirect to Google OAuth
-      window.location.href = fullUrl;
+      // Redirect to backend OAuth route so clientId/callbackURL come from server env
+      const prompt = encodeURIComponent('select_account consent');
+      window.location.href = `${API_CONFIG.BASE_URL}/auth/google?prompt=${prompt}`;
     } catch (error) {
       console.error('Error with Google OAuth:', error);
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');

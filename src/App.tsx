@@ -9,7 +9,7 @@ import SkeletonLoader from './components/SkeletonLoader';
 import UnifiedContractorView from './components/UnifiedContractorView';
 import ClaimFormPage from './components/ClaimFormPage';
 import AnnualInsuranceDetailsPage from './components/AnnualInsuranceDetailsPage';
-// Removed API imports - using simple localStorage-based auth
+import { authenticatedFetch } from './config/api';
 
 
 interface User {
@@ -159,12 +159,7 @@ function App() {
 
       // Try to get user info from server first
       try {
-        const response = await fetch(`/auth/me`, {
-          credentials: 'include',
-          headers: {
-            'X-Session-ID': sessionId
-          }
-        });
+        const response = await authenticatedFetch('/auth/me');
 
         if (response.ok) {
           const userData = await response.json();
@@ -202,12 +197,7 @@ function App() {
       console.log('✅ User already authenticated with sessionId:', storedSessionId);
       // Try to get user info from server
       try {
-        const response = await fetch(`/auth/me`, {
-          credentials: 'include',
-          headers: {
-            'X-Session-ID': storedSessionId
-          }
-        });
+        const response = await authenticatedFetch('/auth/me');
 
         if (response.ok) {
           const userData = await response.json();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { authenticatedFetch } from '../config/api';
 import {
     Box,
     Typography,
@@ -430,10 +431,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const loadSubcontractors = async (projectId: string) => {
         try {
-            const apiUrl = `https://contractorcrm-api.onrender.com/api/projects/${projectId}`;
             console.log('🔍 Loading subcontractors for project:', projectId);
-            console.log('🔍 API URL:', apiUrl);
-            const response = await fetch(apiUrl);
+            const response = await authenticatedFetch(`/api/projects/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log('🔍 Full API response:', data);
@@ -484,7 +483,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         console.log('🔍 Loading claim with ID:', claimId);
         setLoading(true);
         try {
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`);
+            const response = await authenticatedFetch(`/api/claims/${claimId}`);
             console.log('🔍 Load claim response status:', response.status);
             if (response.ok) {
                 const data = await response.json();
@@ -697,7 +696,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const loadProjectData = async (projectId: string) => {
         try {
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
+            const response = await authenticatedFetch(`/api/projects/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log('🔍 Loaded project data:', data);
@@ -1493,7 +1492,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         setSaving(true);
         try {
             const claimId = searchParams.get('claimId');
-            const url = isEditMode && claimId ? `https://contractorcrm-api.onrender.com/api/claims/${claimId}` : 'https://contractorcrm-api.onrender.com/api/claims';
+            const url = isEditMode && claimId ? `/api/claims/${claimId}` : '/api/claims';
             const method = isEditMode && claimId ? 'PUT' : 'POST';
 
             console.log('🔍 handleSave - isEditMode:', isEditMode, 'claimId:', claimId);
@@ -1501,7 +1500,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             console.log('🔍 URL:', url);
             console.log('🔍 Method:', method);
 
-            const response = await fetch(url, {
+            const response = await authenticatedFetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',

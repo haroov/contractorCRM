@@ -28,8 +28,11 @@ router.get('/google', (req, res, next) => {
 
   // Build Google OAuth URL manually to include prompt parameter
   const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-  // Ensure we always use absolute URL for redirect_uri
-  const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'https://contractor-crm-api.onrender.com/auth/google/callback';
+  // Ensure we always use an absolute URL for redirect_uri
+  // Prefer explicit env var; otherwise use Render's external URL; finally derive from request host.
+  const redirectUri =
+    process.env.GOOGLE_CALLBACK_URL ||
+    (process.env.RENDER_EXTERNAL_URL ? `${process.env.RENDER_EXTERNAL_URL}/auth/google/callback` : `${req.protocol}://${req.get('host')}/auth/google/callback`);
   console.log('🔐 Using redirect_uri:', redirectUri);
 
   const params = new URLSearchParams({
@@ -205,49 +208,54 @@ router.post('/set-password', requireAuth, async (req, res) => {
 });
 
 // Google OAuth callback
-router.get('/google/callback', (req, res) => {
-  console.log('🔐 Google OAuth callback received - RESTART FIX');
-  console.log('🔐 Query params:', req.query);
+router.get('/google/callback', (req, res, next) => {
+  const DASH_BASE_URL = process.env.DASH_BASE_URL || 'https://dash.chocoinsurance.com';
+  const fail = (reason) => res.redirect(`${DASH_BASE_URL}/login?error=${reason}`);
+
+  console.log('🔐 Google OAuth callback received');
+  console.log('🔐 Query keys:', Object.keys(req.query || {}));
   console.log('🔐 Timestamp:', new Date().toISOString());
-  console.log('🔐 FORCE SERVER RESTART - Callback timestamp:', new Date().toISOString());
 
   try {
-    // Handle the callback manually
-    passport.authenticate('google', {
-      failureRedirect: 'https://dash.chocoinsurance.com/login?error=auth_failed'
-    })(req, res, (err) => {
+    passport.authenticate('google', (err, user, info) => {
       if (err) {
-        console.error('❌ Passport authentication error:', err);
-        return res.redirect('https://dash.chocoinsurance.com/login?error=auth_failed');
+        console.error('❌ Passport Google callback error:', err);
+        return fail('auth_failed');
       }
 
-      if (!req.user) {
-        console.error('❌ No user found after authentication');
-        return res.redirect('https://dash.chocoinsurance.com/login?error=no_user');
+      if (!user) {
+        console.error('❌ No user returned from Google strategy:', info);
+        return fail('no_user');
       }
 
-      console.log('🎉 Google OAuth callback successful!');
-      console.log('👤 User:', req.user);
-      console.log('🔐 Session ID:', req.sessionID);
-      console.log('🔐 Session data:', req.session);
-
-      // Force session save
-      req.session.save((err) => {
-        if (err) {
-          console.error('❌ Session save error:', err);
-        } else {
-          console.log('✅ Session saved successfully');
+      // Establish a login session (required for req.user + sessionID)
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error('❌ req.logIn error:', loginErr);
+          return fail('login_failed');
         }
 
-        // Successful authentication, redirect to main CRM page with session ID
-        const redirectUrl = `https://dash.chocoinsurance.com/?sessionId=${req.sessionID}`;
-        console.log('🔄 Redirecting to:', redirectUrl);
-        res.redirect(redirectUrl);
+        // Store minimal session marker (optional, but useful for debugging)
+        try {
+          req.session.userId = user._id?.toString?.() || user.id?.toString?.() || null;
+        } catch (e) {
+          console.error('⚠️ Could not set session userId:', e);
+        }
+
+        const sid = req.sessionID;
+        if (!sid) {
+          console.error('❌ Missing sessionID after login');
+          return fail('no_session');
+        }
+
+        const redirectUrl = `${DASH_BASE_URL}/?sessionId=${encodeURIComponent(sid)}`;
+        console.log('✅ Google OAuth success, redirecting to:', redirectUrl);
+        return res.redirect(redirectUrl);
       });
-    });
+    })(req, res, next);
   } catch (error) {
-    console.error('❌ Callback error:', error);
-    res.redirect('https://dash.chocoinsurance.com/login?error=callback_error');
+    console.error('❌ Callback handler exception:', error);
+    return fail('callback_error');
   }
 });
 
