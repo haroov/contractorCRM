@@ -209,8 +209,18 @@ router.post('/set-password', requireAuth, async (req, res) => {
 
 // Google OAuth callback
 router.get('/google/callback', (req, res, next) => {
-  const DASH_BASE_URL = process.env.DASH_BASE_URL || 'https://dash.chocoinsurance.com';
-  const fail = (reason) => res.redirect(`${DASH_BASE_URL}/login?error=${reason}`);
+  // Always redirect to the DASH origin (no path). This prevents misconfiguration like
+  // DASH_BASE_URL=https://dash.../login which would drop the sessionId (login page clears it).
+  const rawDashBaseUrl = process.env.DASH_BASE_URL || 'https://dash.chocoinsurance.com';
+  let dashOrigin = 'https://dash.chocoinsurance.com';
+  try {
+    dashOrigin = new URL(rawDashBaseUrl).origin;
+  } catch (_e) {
+    // Best-effort fallback
+    dashOrigin = (rawDashBaseUrl || dashOrigin).replace(/\/+$/, '');
+  }
+
+  const fail = (reason) => res.redirect(`${dashOrigin}/login?error=${reason}`);
 
   console.log('🔐 Google OAuth callback received');
   console.log('🔐 Query keys:', Object.keys(req.query || {}));
@@ -248,7 +258,7 @@ router.get('/google/callback', (req, res, next) => {
           return fail('no_session');
         }
 
-        const redirectUrl = `${DASH_BASE_URL}/?sessionId=${encodeURIComponent(sid)}`;
+        const redirectUrl = `${dashOrigin}/?sessionId=${encodeURIComponent(sid)}`;
         console.log('✅ Google OAuth success, redirecting to:', redirectUrl);
         return res.redirect(redirectUrl);
       });
