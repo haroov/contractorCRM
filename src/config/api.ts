@@ -51,6 +51,13 @@ export const getSessionId = (): string | null => {
     const urlSessionId = urlParams.get('sessionId');
     const localSessionId = localStorage.getItem('sessionId');
 
+    // If a sessionId is present in the URL, always prefer it.
+    // This prevents stale contact-user flags from causing us to ignore a valid system sessionId
+    // right after Google OAuth redirects back to the dashboard.
+    if (urlSessionId) {
+        return urlSessionId;
+    }
+
     // Check if this is a contact user (not system admin)
     const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
     const contactUser = localStorage.getItem('contactUser');
@@ -68,7 +75,7 @@ export const getSessionId = (): string | null => {
     }
 
     // For system users (admin/regular), we need sessionId
-    return urlSessionId || localSessionId;
+    return localSessionId;
 };
 
 // Helper function to create authenticated fetch options

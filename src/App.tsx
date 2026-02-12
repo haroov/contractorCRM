@@ -134,6 +134,12 @@ function App() {
 
     if (sessionId) {
       console.log('🔑 Found session ID in URL:', sessionId);
+      // A system sessionId in the URL means we're doing system-user auth (Google OAuth).
+      // Clear any stale contact-user flags that would cause authenticatedFetch/getSessionId
+      // to ignore the sessionId and bounce the user back to /login.
+      localStorage.removeItem('contactUser');
+      localStorage.removeItem('contactUserAuthenticated');
+
       localStorage.setItem('sessionId', sessionId);
       // Remove sessionId from URL to clean it up
       const newUrl = window.location.pathname;
